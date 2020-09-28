@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	middlewareVersion     = "0.0.2"
+	middlewareVersion     = "0.0.3"
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
 			RosettaVersion:    "1.4.4",
@@ -78,8 +78,9 @@ func TestNetworkEndpoints_Offline(t *testing.T) {
 
 func TestNetworkEndpoints_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
-		Mode:    configuration.Online,
-		Network: networkIdentifier,
+		Mode:                   configuration.Online,
+		Network:                networkIdentifier,
+		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 	}
 	mockIndexer := &mocks.Indexer{}
 	mockClient := &mocks.Client{}
@@ -103,7 +104,11 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 			},
 		},
 	}
-	mockClient.On("NetworkStatus", ctx).Return(rawStatus, nil)
+	mockClient.On("GetPeers", ctx).Return([]*types.Peer{
+		{
+			PeerID: "77.93.223.9:8333",
+		},
+	}, nil)
 	mockIndexer.On(
 		"GetBlockLazy",
 		ctx,
@@ -117,6 +122,11 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	assert.Equal(t, &types.NetworkStatusResponse{
 		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 		CurrentBlockIdentifier: blockResponse.Block.BlockIdentifier,
+		Peers: []*types.Peer{
+			{
+				PeerID: "77.93.223.9:8333",
+			},
+		},
 	}, networkStatus)
 
 	networkOptions, err := servicer.NetworkOptions(ctx, nil)
