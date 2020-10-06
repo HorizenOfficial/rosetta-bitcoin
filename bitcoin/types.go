@@ -182,12 +182,10 @@ type Block struct {
 	Height            int64   `json:"height"`
 	PreviousBlockHash string  `json:"previousblockhash"`
 	Time              int64   `json:"time"`
-	MedianTime        int64   `json:"mediantime"`
-	Nonce             int64   `json:"nonce"`
+	Nonce             string   `json:"nonce"`
 	MerkleRoot        string  `json:"merkleroot"`
 	Version           int32   `json:"version"`
 	Size              int64   `json:"size"`
-	Weight            int64   `json:"weight"`
 	Bits              string  `json:"bits"`
 	Difficulty        float64 `json:"difficulty"`
 
@@ -201,8 +199,6 @@ func (b Block) Metadata() (map[string]interface{}, error) {
 		MerkleRoot: b.MerkleRoot,
 		Version:    b.Version,
 		Size:       b.Size,
-		Weight:     b.Weight,
-		MedianTime: b.MedianTime,
 		Bits:       b.Bits,
 		Difficulty: b.Difficulty,
 	}
@@ -213,12 +209,10 @@ func (b Block) Metadata() (map[string]interface{}, error) {
 // BlockMetadata is a collection of useful
 // metadata in a block.
 type BlockMetadata struct {
-	Nonce      int64   `json:"nonce,omitempty"`
+	Nonce      string   `json:"nonce,omitempty"`
 	MerkleRoot string  `json:"merkleroot,omitempty"`
 	Version    int32   `json:"version,omitempty"`
 	Size       int64   `json:"size,omitempty"`
-	Weight     int64   `json:"weight,omitempty"`
-	MedianTime int64   `json:"mediantime,omitempty"`
 	Bits       string  `json:"bits,omitempty"`
 	Difficulty float64 `json:"difficulty,omitempty"`
 }
@@ -231,20 +225,32 @@ type Transaction struct {
 	Vsize    int64  `json:"vsize"`
 	Version  int32  `json:"version"`
 	Locktime int64  `json:"locktime"`
-	Weight   int64  `json:"weight"`
 
 	Inputs  []*Input  `json:"vin"`
 	Outputs []*Output `json:"vout"`
+	Joinsplits []*Joinsplit `json:"vjoinsplit"`
+}
+
+type Joinsplit struct {
+	VPub_old 		float64 	`json:"vpub_old"`
+	VPub_new 		float64 	`json:"vpub_new"`
+	Anchor 			string 	 	`json:"anchor"`
+	Nullifiers 		[]string 	`json:"nullifiers"`
+	Commitments 	[]string 	`json:"commitments"`
+	OneTimePubKey 	string 		`json:"onetimePubkey"`
+	RandomSeed 		string 		`json:"randomSeed"`
+	Macs 			[]string 	`json:"macs"`
+	Proof 			string 		`json:"proof"`
+	Ciphertexts 	[]string 	`json:"ciphertexts"`
 }
 
 // Metadata returns the metadata for a transaction.
 func (t Transaction) Metadata() (map[string]interface{}, error) {
 	m := &TransactionMetadata{
 		Size:     t.Size,
-		Vsize:    t.Vsize,
 		Version:  t.Version,
 		Locktime: t.Locktime,
-		Weight:   t.Weight,
+		Joinsplit: t.Joinsplits,
 	}
 
 	return types.MarshalMap(m)
@@ -254,10 +260,9 @@ func (t Transaction) Metadata() (map[string]interface{}, error) {
 // metadata in a transaction.
 type TransactionMetadata struct {
 	Size     int64 `json:"size,omitempty"`
-	Vsize    int64 `json:"vsize,omitempty"`
 	Version  int32 `json:"version,omitempty"`
 	Locktime int64 `json:"locktime,omitempty"`
-	Weight   int64 `json:"weight,omitempty"`
+	Joinsplit []*Joinsplit `json:"vjoinsplit,omitempty"`
 }
 
 // Input is a raw input in a Bitcoin transaction.
@@ -266,7 +271,6 @@ type Input struct {
 	Vout        int64      `json:"vout"`
 	ScriptSig   *ScriptSig `json:"scriptSig"`
 	Sequence    int64      `json:"sequence"`
-	TxInWitness []string   `json:"txinwitness"`
 
 	// Relevant when the input is the coinbase input
 	Coinbase string `json:"coinbase"`
@@ -277,7 +281,6 @@ func (i Input) Metadata() (map[string]interface{}, error) {
 	m := &OperationMetadata{
 		ScriptSig:   i.ScriptSig,
 		Sequence:    i.Sequence,
-		TxInWitness: i.TxInWitness,
 		Coinbase:    i.Coinbase,
 	}
 
@@ -309,7 +312,6 @@ type OperationMetadata struct {
 	// Input Metadata
 	ScriptSig   *ScriptSig `json:"scriptsig,omitempty"`
 	Sequence    int64      `json:"sequence,omitempty"`
-	TxInWitness []string   `json:"txinwitness,omitempty"`
 
 	// Output Metadata
 	ScriptPubKey *ScriptPubKey `json:"scriptPubKey,omitempty"`

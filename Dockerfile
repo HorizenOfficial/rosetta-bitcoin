@@ -33,7 +33,7 @@ RUN apt-get -qqy update \
     unzip \
     wget \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-  
+
 
 RUN apt-get -qqy update \
   && apt-get -qqy --no-install-recommends install \
@@ -41,7 +41,7 @@ RUN apt-get -qqy update \
     bc \
     vim \
     git \
-    binutils \    
+    binutils \
     xz-utils \
     python3-pip \
     build-essential \
@@ -51,8 +51,8 @@ RUN apt-get -qqy update \
     g++-multilib \
     autoconf \
     libtool \
-    ncurses-dev \ 
-    zlib1g-dev \ 
+    ncurses-dev \
+    zlib1g-dev \
     bsdmainutils \
     automake \
     ssh-client \
@@ -65,13 +65,13 @@ RUN apt-get -qqy update \
 # VERSION: Bitcoin Core 0.20.1
 RUN git clone https://github.com/HorizenOfficial/zen.git \
   && cd zen \
-  && git checkout  v2.0.21-1
+  && git checkout  mo/getblock_verbose
 
 RUN cd zen \
-  && zcutil/build.sh -j2 
+  && zcutil/build.sh -j2
 
 RUN mv zen/src/zend /app/zend \
-  && rm -rf zen 
+  && rm -rf zen
 
 # Build Rosetta Server Components
 FROM ubuntu:18.04 as rosetta-builder
@@ -94,13 +94,13 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 # Use native remote build context to build in any directory
-COPY . src 
+COPY . src
 RUN cd src \
   && go build \
   && cd .. \
   && mv src/rosetta-zen /app/rosetta-zen \
   && mv src/assets/* /app \
-  && rm -rf src 
+  && rm -rf src
 
 ## Build Final Image
 FROM ubuntu:18.04
