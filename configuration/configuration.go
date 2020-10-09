@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
 
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/storage"

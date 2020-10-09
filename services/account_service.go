@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/ark2038/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"

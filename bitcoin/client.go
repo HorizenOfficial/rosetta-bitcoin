@@ -26,7 +26,7 @@ import (
 	"strconv"
 	"time"
 
-	bitcoinUtils "github.com/ark2038/rosetta-zen/utils"
+	bitcoinUtils "github.com/HorizenOfficial/rosetta-zen/utils"
 
 	"github.com/btcsuite/btcutil"
 	"github.com/coinbase/rosetta-sdk-go/storage"

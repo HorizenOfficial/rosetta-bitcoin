@@ -24,8 +24,8 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
-	"github.com/ark2038/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/txscript"

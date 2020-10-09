@@ -1,4 +1,4 @@
-module github.com/ark2038/rosetta-zen
+module github.com/HorizenOfficial/rosetta-zen
 
 go 1.13
 
