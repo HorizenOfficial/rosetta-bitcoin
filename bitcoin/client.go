@@ -28,7 +28,7 @@ import (
 
 	bitcoinUtils "github.com/HorizenOfficial/rosetta-zen/utils"
 
-	"github.com/btcsuite/btcutil"
+	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -755,7 +755,7 @@ func (b *Client) parseInputTransactionOperation(
 }
 
 // parseAmount returns the atomic value of the specified amount.
-// https://godoc.org/github.com/btcsuite/btcutil#NewAmount
+// https://godoc.org/github.com/HorizenOfficial/rosetta-zen/btcutil#NewAmount
 func (b *Client) parseAmount(amount float64) (uint64, error) {
 	atomicAmount, err := btcutil.NewAmount(amount)
 	if err != nil {

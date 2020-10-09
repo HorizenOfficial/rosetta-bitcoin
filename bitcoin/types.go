@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
