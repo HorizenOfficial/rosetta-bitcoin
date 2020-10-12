@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
+	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
 	_ "github.com/HorizenOfficial/rosetta-zen/btcd/database/ffldb"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
