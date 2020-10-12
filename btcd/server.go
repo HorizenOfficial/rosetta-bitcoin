@@ -22,22 +22,22 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/addrmgr"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain/indexers"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/connmgr"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mempool"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mining"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mining/cpuminer"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/netsync"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/peer"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil/bloom"
+	"github.com/btcsuite/btcd/addrmgr"
+	"github.com/btcsuite/btcd/connmgr"
+	"github.com/btcsuite/btcd/mempool"
+	"github.com/btcsuite/btcd/mining"
+	"github.com/btcsuite/btcd/mining/cpuminer"
+	"github.com/btcsuite/btcd/netsync"
+	"github.com/btcsuite/btcd/peer"
 )
 
 const (
@@ -1143,7 +1143,7 @@ func (sp *serverPeer) enforceNodeBloomFlag(cmd string) bool {
 // disconnected if an invalid fee filter value is provided.
 func (sp *serverPeer) OnFeeFilter(_ *peer.Peer, msg *wire.MsgFeeFilter) {
 	// Check that the passed minimum fee is a valid amount.
-	if msg.MinFee < 0 || msg.MinFee > btcutil.MaxSatoshi {
+	if msg.MinFee < 0 || msg.MinFee > btcutil.MaxZentoshi {
 		peerLog.Debugf("Peer %v sent an invalid feefilter '%v' -- "+
 			"disconnecting", sp, btcutil.Amount(msg.MinFee))
 		sp.Disconnect()

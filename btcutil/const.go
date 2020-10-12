@@ -5,12 +5,12 @@
 package btcutil
 
 const (
-	// SatoshiPerBitcent is the number of satoshi in one bitcoin cent.
-	SatoshiPerBitcent = 1e6
+	//ZentoshiPerZencent is the number of zentoshi in one zencoin cent.
+	ZentoshiPerZencent = 1e6
 
-	// SatoshiPerBitcoin is the number of satoshi in one bitcoin (1 BTC).
-	SatoshiPerBitcoin = 1e8
+	// ZentoshiPerZen is the number of zentoshi in one zen (1 ZEN).
+	ZentoshiPerZen = 1e8
 
-	// MaxSatoshi is the maximum transaction amount allowed in satoshi.
-	MaxSatoshi = 21e6 * SatoshiPerBitcoin
+	// MaxZentoshi is the maximum transaction amount allowed in zentoshi.
+	MaxZentoshi = 21e6 * ZentoshiPerZen
 )

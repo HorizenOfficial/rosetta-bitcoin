@@ -30,18 +30,18 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain/indexers"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/btcec"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/btcjson"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mempool"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mining"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mining/cpuminer"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/peer"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
-	"github.com/HorizenOfficial/rosetta-zen/websocket"
+	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcd/mempool"
+	"github.com/btcsuite/btcd/mining"
+	"github.com/btcsuite/btcd/mining/cpuminer"
+	"github.com/btcsuite/btcd/peer"
+	"github.com/btcsuite/websocket"
 )
 
 // API version constants
@@ -545,7 +545,7 @@ func handleCreateRawTransaction(s *rpcServer, cmd interface{}, closeChan <-chan 
 	params := s.cfg.ChainParams
 	for encodedAddr, amount := range c.Amounts {
 		// Ensure amount is in the valid range for monetary amounts.
-		if amount <= 0 || amount*btcutil.SatoshiPerBitcoin > btcutil.MaxSatoshi {
+		if amount <= 0 || amount*btcutil.ZentoshiPerZen > btcutil.MaxZentoshi {
 			return nil, &btcjson.RPCError{
 				Code:    btcjson.ErrRPCType,
 				Message: "Invalid amount",
@@ -728,7 +728,7 @@ func createVoutList(mtx *wire.MsgTx, chainParams *chaincfg.Params, filterAddrMap
 
 		var vout btcjson.Vout
 		vout.N = uint32(i)
-		vout.Value = btcutil.Amount(v.Value).ToBTC()
+		vout.Value = btcutil.Amount(v.Value).ToZEN()
 		vout.ScriptPubKey.Addresses = encodedAddrs
 		vout.ScriptPubKey.Asm = disbuf
 		vout.ScriptPubKey.Hex = hex.EncodeToString(v.PkScript)
@@ -2315,7 +2315,7 @@ func handleGetInfo(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (in
 		Proxy:           cfg.Proxy,
 		Difficulty:      getDifficultyRatio(best.Bits, s.cfg.ChainParams),
 		TestNet:         cfg.TestNet3,
-		RelayFee:        cfg.minRelayTxFee.ToBTC(),
+		RelayFee:        cfg.minRelayTxFee.ToZEN(),
 	}
 
 	return ret, nil
@@ -2784,7 +2784,7 @@ func handleGetTxOut(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (i
 	txOutReply := &btcjson.GetTxOutResult{
 		BestBlock:     bestBlockHash,
 		Confirmations: int64(confirmations),
-		Value:         btcutil.Amount(value).ToBTC(),
+		Value:         btcutil.Amount(value).ToZEN(),
 		ScriptPubKey: btcjson.ScriptPubKeyResult{
 			Asm:       disbuf,
 			Hex:       hex.EncodeToString(pkScript),
@@ -3041,7 +3041,7 @@ func createVinListPrevOut(s *rpcServer, mtx *wire.MsgTx, chainParams *chaincfg.P
 			vinListEntry := &vinList[len(vinList)-1]
 			vinListEntry.PrevOut = &btcjson.PrevOut{
 				Addresses: encodedAddrs,
-				Value:     btcutil.Amount(originTxOut.Value).ToBTC(),
+				Value:     btcutil.Amount(originTxOut.Value).ToZEN(),
 			}
 		}
 	}

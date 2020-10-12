@@ -10,17 +10,17 @@ import (
 func ExampleAmount() {
 
 	a := btcutil.Amount(0)
-	fmt.Println("Zero Satoshi:", a)
+	fmt.Println("Zero Zentoshi:", a)
 
 	a = btcutil.Amount(1e8)
-	fmt.Println("100,000,000 Satoshis:", a)
+	fmt.Println("100,000,000 Zentoshi:", a)
 
 	a = btcutil.Amount(1e5)
-	fmt.Println("100,000 Satoshis:", a)
+	fmt.Println("100,000 Zentoshi:", a)
 	// Output:
-	// Zero Satoshi: 0 BTC
-	// 100,000,000 Satoshis: 1 BTC
-	// 100,000 Satoshis: 0.001 BTC
+	// Zero Zentoshi: 0 ZEN
+	// 100,000,000 Zentoshi: 1 ZEN
+	// 100,000 Zentoshi: 0.001 ZEN
 }
 
 func ExampleNewAmount() {
@@ -52,25 +52,25 @@ func ExampleNewAmount() {
 	}
 	fmt.Println(amountNaN) //Output 4
 
-	// Output: 1 BTC
-	// 0.01234567 BTC
-	// 0 BTC
-	// invalid bitcoin amount
+	// Output: 1 ZEN
+	// 0.01234567 ZEN
+	// 0 ZEN
+	// invalid zen amount
 }
 
 func ExampleAmount_unitConversions() {
 	amount := btcutil.Amount(44433322211100)
 
-	fmt.Println("Satoshi to kBTC:", amount.Format(btcutil.AmountKiloBTC))
-	fmt.Println("Satoshi to BTC:", amount)
-	fmt.Println("Satoshi to MilliBTC:", amount.Format(btcutil.AmountMilliBTC))
-	fmt.Println("Satoshi to MicroBTC:", amount.Format(btcutil.AmountMicroBTC))
-	fmt.Println("Satoshi to Satoshi:", amount.Format(btcutil.AmountSatoshi))
+	fmt.Println("Zentoshi to kZEN:", amount.Format(btcutil.AmountKiloZEN))
+	fmt.Println("Zentoshi to ZEN:", amount)
+	fmt.Println("Zentoshi to MilliZEN:", amount.Format(btcutil.AmountMilliZEN))
+	fmt.Println("Zentoshi to MicroZEN:", amount.Format(btcutil.AmountMicroZEN))
+	fmt.Println("Zentoshi to Zentoshi:", amount.Format(btcutil.AmountZentoshi))
 
 	// Output:
-	// Satoshi to kBTC: 444.333222111 kBTC
-	// Satoshi to BTC: 444333.222111 BTC
-	// Satoshi to MilliBTC: 444333222.111 mBTC
-	// Satoshi to MicroBTC: 444333222111 μBTC
-	// Satoshi to Satoshi: 44433322211100 Satoshi
+	// Zentoshi to kZEN: 444.333222111 kZEN
+	// Zentoshi to ZEN: 444333.222111 ZEN
+	// Zentoshi to MilliZEN: 444333222.111 mZEN
+	// Zentoshi to MicroZEN: 444333222111 μZEN
+	// Zentoshi to Zentoshi: 44433322211100 Zentoshi
 }

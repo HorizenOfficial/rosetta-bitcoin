@@ -23,13 +23,13 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/connmgr"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
 	_ "github.com/HorizenOfficial/rosetta-zen/btcd/database/ffldb"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mempool"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/peer"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
-	"github.com/HorizenOfficial/rosetta-zen/go-socks/socks"
+	"github.com/btcsuite/btcd/connmgr"
+	"github.com/btcsuite/btcd/mempool"
+	"github.com/btcsuite/btcd/peer"
+	"github.com/btcsuite/go-socks/socks"
 	flags "github.com/jessevdk/go-flags"
 )
 

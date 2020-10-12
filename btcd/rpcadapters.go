@@ -9,11 +9,11 @@ import (
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/mempool"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/netsync"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/peer"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
+	"github.com/btcsuite/btcd/mempool"
+	"github.com/btcsuite/btcd/netsync"
+	"github.com/btcsuite/btcd/peer"
 )
 
 // rpcPeer provides a peer for use with the RPC server and implements the

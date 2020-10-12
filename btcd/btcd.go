@@ -15,9 +15,9 @@ import (
 	"runtime/debug"
 	"runtime/pprof"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain/indexers"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/limits"
+	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain/indexers"
+	"github.com/btcsuite/btcd/limits"
 )
 
 const (

@@ -21,14 +21,14 @@ import (
 	"time"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/btcjson"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
-	"github.com/HorizenOfficial/rosetta-zen/websocket"
+	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/websocket"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -830,7 +830,7 @@ func (m *wsNotificationManager) notifyForNewTx(clients map[chan struct{}]*wsClie
 		amount += txOut.Value
 	}
 
-	ntfn := btcjson.NewTxAcceptedNtfn(txHashStr, btcutil.Amount(amount).ToBTC())
+	ntfn := btcjson.NewTxAcceptedNtfn(txHashStr, btcutil.Amount(amount).ToZEN())
 	marshalledJSON, err := btcjson.MarshalCmd(nil, ntfn)
 	if err != nil {
 		rpcsLog.Errorf("Failed to marshal tx notification: %s", err.Error())
