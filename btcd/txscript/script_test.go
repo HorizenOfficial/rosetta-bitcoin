@@ -4181,38 +4181,6 @@ func TestIsPayToScriptHash(t *testing.T) {
 	}
 }
 
-// TestIsPayToWitnessScriptHash ensures the IsPayToWitnessScriptHash function
-// returns the expected results for all the scripts in scriptClassTests.
-func TestIsPayToWitnessScriptHash(t *testing.T) {
-	t.Parallel()
-
-	for _, test := range scriptClassTests {
-		script := mustParseShortForm(test.script)
-		shouldBe := (test.class == WitnessV0ScriptHashTy)
-		p2wsh := IsPayToWitnessScriptHash(script)
-		if p2wsh != shouldBe {
-			t.Errorf("%s: expected p2wsh %v, got %v", test.name,
-				shouldBe, p2wsh)
-		}
-	}
-}
-
-// TestIsPayToWitnessPubKeyHash ensures the IsPayToWitnessPubKeyHash function
-// returns the expected results for all the scripts in scriptClassTests.
-func TestIsPayToWitnessPubKeyHash(t *testing.T) {
-	t.Parallel()
-
-	for _, test := range scriptClassTests {
-		script := mustParseShortForm(test.script)
-		shouldBe := (test.class == WitnessV0PubKeyHashTy)
-		p2wkh := IsPayToWitnessPubKeyHash(script)
-		if p2wkh != shouldBe {
-			t.Errorf("%s: expected p2wkh %v, got %v", test.name,
-				shouldBe, p2wkh)
-		}
-	}
-}
-
 // TestHasCanonicalPushes ensures the canonicalPush function properly determines
 // what is considered a canonical push for the purposes of removeOpcodeByData.
 func TestHasCanonicalPushes(t *testing.T) {

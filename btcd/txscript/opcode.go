@@ -2125,26 +2125,12 @@ func opcodeCheckSig(op *parsedOpcode, vm *Engine) error {
 
 	// Generate the signature hash based on the signature hash type.
 	var hash []byte
-	if vm.isWitnessVersionActive(0) {
-		var sigHashes *TxSigHashes
-		if vm.hashCache != nil {
-			sigHashes = vm.hashCache
-		} else {
-			sigHashes = NewTxSigHashes(&vm.tx)
-		}
 
-		hash, err = calcWitnessSignatureHash(subScript, sigHashes, hashType,
-			&vm.tx, vm.txIdx, vm.inputAmount)
-		if err != nil {
-			return err
-		}
-	} else {
-		// Remove the signature since there is no way for a signature
-		// to sign itself.
-		subScript = removeOpcodeByData(subScript, fullSigBytes)
+	// Remove the signature since there is no way for a signature
+	// to sign itself.
+	subScript = removeOpcodeByData(subScript, fullSigBytes)
 
-		hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx)
-	}
+	hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx)
 
 	pubKey, err := btcec.ParsePubKey(pkBytes, btcec.S256())
 	if err != nil {
@@ -2398,22 +2384,7 @@ func opcodeCheckMultiSig(op *parsedOpcode, vm *Engine) error {
 
 		// Generate the signature hash based on the signature hash type.
 		var hash []byte
-		if vm.isWitnessVersionActive(0) {
-			var sigHashes *TxSigHashes
-			if vm.hashCache != nil {
-				sigHashes = vm.hashCache
-			} else {
-				sigHashes = NewTxSigHashes(&vm.tx)
-			}
-
-			hash, err = calcWitnessSignatureHash(script, sigHashes, hashType,
-				&vm.tx, vm.txIdx, vm.inputAmount)
-			if err != nil {
-				return err
-			}
-		} else {
-			hash = calcSignatureHash(script, hashType, &vm.tx, vm.txIdx)
-		}
+		hash = calcSignatureHash(script, hashType, &vm.tx, vm.txIdx)
 
 		var valid bool
 		if vm.sigCache != nil {

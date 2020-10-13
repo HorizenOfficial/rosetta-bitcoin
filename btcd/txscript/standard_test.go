@@ -463,71 +463,6 @@ func TestCalcScriptInfo(t *testing.T) {
 				SigOps:         3,
 			},
 		},
-		{
-			// A v0 p2wkh spend.
-			name:     "p2wkh script",
-			pkScript: "OP_0 DATA_20 0x365ab47888e150ff46f8d51bce36dcd680f1283f",
-			witness: []string{
-				"3045022100ee9fe8f9487afa977" +
-					"6647ebcf0883ce0cd37454d7ce19889d34ba2c9" +
-					"9ce5a9f402200341cb469d0efd3955acb9e46" +
-					"f568d7e2cc10f9084aaff94ced6dc50a59134ad01",
-				"03f0000d0639a22bfaf217e4c9428" +
-					"9c2b0cc7fa1036f7fd5d9f61a9d6ec153100e",
-			},
-			segwit: true,
-			scriptInfo: ScriptInfo{
-				PkScriptClass:  WitnessV0PubKeyHashTy,
-				NumInputs:      2,
-				ExpectedInputs: 2,
-				SigOps:         1,
-			},
-		},
-		{
-			// Nested p2sh v0
-			name: "p2wkh nested inside p2sh",
-			pkScript: "HASH160 DATA_20 " +
-				"0xb3a84b564602a9d68b4c9f19c2ea61458ff7826c EQUAL",
-			sigScript: "DATA_22 0x0014ad0ffa2e387f07e7ead14dc56d5a97dbd6ff5a23",
-			witness: []string{
-				"3045022100cb1c2ac1ff1d57d" +
-					"db98f7bdead905f8bf5bcc8641b029ce8eef25" +
-					"c75a9e22a4702203be621b5c86b771288706be5" +
-					"a7eee1db4fceabf9afb7583c1cc6ee3f8297b21201",
-				"03f0000d0639a22bfaf217e4c9" +
-					"4289c2b0cc7fa1036f7fd5d9f61a9d6ec153100e",
-			},
-			segwit: true,
-			bip16:  true,
-			scriptInfo: ScriptInfo{
-				PkScriptClass:  ScriptHashTy,
-				NumInputs:      3,
-				ExpectedInputs: 3,
-				SigOps:         1,
-			},
-		},
-		{
-			// A v0 p2wsh spend.
-			name: "p2wsh spend of a p2wkh witness script",
-			pkScript: "0 DATA_32 0xe112b88a0cd87ba387f44" +
-				"9d443ee2596eb353beb1f0351ab2cba8909d875db23",
-			witness: []string{
-				"3045022100cb1c2ac1ff1d57d" +
-					"db98f7bdead905f8bf5bcc8641b029ce8eef25" +
-					"c75a9e22a4702203be621b5c86b771288706be5" +
-					"a7eee1db4fceabf9afb7583c1cc6ee3f8297b21201",
-				"03f0000d0639a22bfaf217e4c9" +
-					"4289c2b0cc7fa1036f7fd5d9f61a9d6ec153100e",
-				"76a914064977cb7b4a2e0c9680df0ef696e9e0e296b39988ac",
-			},
-			segwit: true,
-			scriptInfo: ScriptInfo{
-				PkScriptClass:  WitnessV0ScriptHashTy,
-				NumInputs:      3,
-				ExpectedInputs: 3,
-				SigOps:         1,
-			},
-		},
 	}
 
 	for _, test := range tests {
@@ -1030,20 +965,6 @@ var scriptClassTests = []struct {
 			"d6ff1dd81ee96eedd3a9d4aeaf86695e80 " +
 			"3 CHECKMULTISIG",
 		class: NonStandardTy,
-	},
-
-	// New standard segwit script templates.
-	{
-		// A pay to witness pub key hash pk script.
-		name:   "Pay To Witness PubkeyHash",
-		script: "0 DATA_20 0x1d0f172a0ecb48aee1be1f2687d2963ae33f71a1",
-		class:  WitnessV0PubKeyHashTy,
-	},
-	{
-		// A pay to witness scripthash pk script.
-		name:   "Pay To Witness Scripthash",
-		script: "0 DATA_32 0x9f96ade4b41d5433f4eda31e1738ec2b36f6e7d1420d94a6af99801a88f7f7ff",
-		class:  WitnessV0ScriptHashTy,
 	},
 }
 
