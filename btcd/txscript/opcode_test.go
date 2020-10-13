@@ -117,6 +117,9 @@ func TestOpcodeDisasm(t *testing.T) {
 			case 0xb2:
 				// OP_NOP3 is an alias of OP_CHECKSEQUENCEVERIFY
 				expectedStr = "OP_CHECKSEQUENCEVERIFY"
+			case 0xb4:
+				// OP_NOP5 is an alias of OP_CHECKBLOCKATHEIGHT
+				expectedStr = "OP_CHECKBLOCKATHEIGHT"
 			default:
 				val := byte(opcodeVal - (0xb0 - 1))
 				expectedStr = "OP_NOP" + strconv.Itoa(int(val))
@@ -183,6 +186,9 @@ func TestOpcodeDisasm(t *testing.T) {
 			case 0xb2:
 				// OP_NOP3 is an alias of OP_CHECKSEQUENCEVERIFY
 				expectedStr = "OP_CHECKSEQUENCEVERIFY"
+			case 0xb4:
+				// OP_NOP5 is an alias of OP_CHECKBLOCKATHEIGHT
+				expectedStr = "OP_CHECKBLOCKATHEIGHT"
 			default:
 				val := byte(opcodeVal - (0xb0 - 1))
 				expectedStr = "OP_NOP" + strconv.Itoa(int(val))

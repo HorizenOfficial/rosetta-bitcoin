@@ -219,6 +219,7 @@ const (
 	OP_CHECKSEQUENCEVERIFY = 0xb2 // 178 - AKA OP_NOP3
 	OP_NOP4                = 0xb3 // 179
 	OP_NOP5                = 0xb4 // 180
+	OP_CHECKBLOCKATHEIGHT  = 0xb4 // 180 - AKA OP_NOP5
 	OP_NOP6                = 0xb5 // 181
 	OP_NOP7                = 0xb6 // 182
 	OP_NOP8                = 0xb7 // 183
@@ -419,6 +420,7 @@ var opcodeArray = [256]opcode{
 	OP_RETURN:              {OP_RETURN, "OP_RETURN", 1, opcodeReturn},
 	OP_CHECKLOCKTIMEVERIFY: {OP_CHECKLOCKTIMEVERIFY, "OP_CHECKLOCKTIMEVERIFY", 1, opcodeCheckLockTimeVerify},
 	OP_CHECKSEQUENCEVERIFY: {OP_CHECKSEQUENCEVERIFY, "OP_CHECKSEQUENCEVERIFY", 1, opcodeCheckSequenceVerify},
+	OP_CHECKBLOCKATHEIGHT:  {OP_CHECKBLOCKATHEIGHT, "OP_CHECKBLOCKATHEIGHT", 1, opcodeCheckBlockAtHeight},
 
 	// Stack opcodes.
 	OP_TOALTSTACK:   {OP_TOALTSTACK, "OP_TOALTSTACK", 1, opcodeToAltStack},
@@ -502,7 +504,6 @@ var opcodeArray = [256]opcode{
 	// Reserved opcodes.
 	OP_NOP1:  {OP_NOP1, "OP_NOP1", 1, opcodeNop},
 	OP_NOP4:  {OP_NOP4, "OP_NOP4", 1, opcodeNop},
-	OP_NOP5:  {OP_NOP5, "OP_NOP5", 1, opcodeNop},
 	OP_NOP6:  {OP_NOP6, "OP_NOP6", 1, opcodeNop},
 	OP_NOP7:  {OP_NOP7, "OP_NOP7", 1, opcodeNop},
 	OP_NOP8:  {OP_NOP8, "OP_NOP8", 1, opcodeNop},
@@ -1191,6 +1192,40 @@ func opcodeCheckLockTimeVerify(op *parsedOpcode, vm *Engine) error {
 	}
 
 	return nil
+}
+
+func opcodeCheckBlockAtHeight(op *parsedOpcode, vm *Engine) error {
+	if vm.dstack.Depth() < 2 {
+		return scriptError(ErrInvalidStackOperation,
+			"invalid stack depth")
+	}
+	vchBlockIndex, err := vm.dstack.PeekByteArray(0)
+	if err != nil {
+		return err
+	}
+
+	vchBlockHash, err := vm.dstack.PeekByteArray(1)
+	if err != nil {
+		return err
+	}
+
+	nHeight, err := makeScriptNum(vchBlockIndex, vm.dstack.verifyMinimalData, 4)
+	if err != nil {
+		return err
+	}
+
+	if nHeight < 0 || !checkBlockHash(nHeight, vchBlockHash) {
+		return scriptError(ErrInvalidStackOperation,
+			"check blockhash at height failed")
+	}
+
+	vm.dstack.PopByteArray()
+	vm.dstack.PopByteArray()
+	return nil
+}
+
+func checkBlockHash(nHeight scriptNum, vchBlockHash []byte) bool {
+	return true //return true just for now
 }
 
 // opcodeCheckSequenceVerify compares the top item on the data stack to the
@@ -2444,4 +2479,5 @@ func init() {
 	OpcodeByName["OP_TRUE"] = OP_TRUE
 	OpcodeByName["OP_NOP2"] = OP_CHECKLOCKTIMEVERIFY
 	OpcodeByName["OP_NOP3"] = OP_CHECKSEQUENCEVERIFY
+	OpcodeByName["OP_NOP5"] = OP_CHECKBLOCKATHEIGHT
 }
