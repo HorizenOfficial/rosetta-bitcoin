@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 package hdkeychain_test
-
+/*
 import (
 	"fmt"
 
@@ -180,3 +180,4 @@ func Example_audits() {
 	// Output:
 	// Audit key N(m/*): xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8
 }
+*/

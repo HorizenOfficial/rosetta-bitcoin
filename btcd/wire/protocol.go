@@ -141,31 +141,28 @@ func (f ServiceFlag) String() string {
 // BitcoinNet represents which bitcoin network a message belongs to.
 type BitcoinNet uint32
 
-// Constants used to indicate the message bitcoin network.  They can also be
+// Constants used to indicate the message Horizen network.  They can also be
 // used to seek to the next message when a stream's state is unknown, but
 // this package does not provide that functionality since it's generally a
 // better idea to simply disconnect clients that are misbehaving over TCP.
 const (
-	// MainNet represents the main bitcoin network.
-	MainNet BitcoinNet = 0xd9b4bef9
+	// MainNet represents the main Horizen network.
+	MainNet BitcoinNet = 0x63617368
 
-	// TestNet represents the regression test network.
-	TestNet BitcoinNet = 0xdab5bffa
+	// TestNet represents the testnet network.
+	TestNet BitcoinNet = 0xbff2cde6
 
-	// TestNet3 represents the test network (version 3).
-	TestNet3 BitcoinNet = 0x0709110b
+	// Regtest represents the regtest network.
+	Regtest BitcoinNet = 0x2f54cc9d
 
-	// SimNet represents the simulation test network.
-	SimNet BitcoinNet = 0x12141c16
 )
 
 // bnStrings is a map of bitcoin networks back to their constant names for
 // pretty printing.
 var bnStrings = map[BitcoinNet]string{
-	MainNet:  "MainNet",
-	TestNet:  "TestNet",
-	TestNet3: "TestNet3",
-	SimNet:   "SimNet",
+	MainNet: "MainNet",
+	TestNet: "TestNet",
+	Regtest: "Regtest",
 }
 
 // String returns the BitcoinNet in human-readable form.

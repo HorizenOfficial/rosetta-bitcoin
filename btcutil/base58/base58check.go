@@ -6,6 +6,7 @@ package base58
 
 import (
 	"crypto/sha256"
+	"encoding/binary"
 	"errors"
 )
 
@@ -25,9 +26,12 @@ func checksum(input []byte) (cksum [4]byte) {
 }
 
 // CheckEncode prepends a version byte and appends a four byte checksum.
-func CheckEncode(input []byte, version byte) string {
-	b := make([]byte, 0, 1+len(input)+4)
-	b = append(b, version)
+func CheckEncode(input []byte, version uint16) string {
+	b := make([]byte, 0, 2+len(input)+4)
+	var versionByte = make([]byte, 2)
+	binary.BigEndian.PutUint16(versionByte,version)
+	b = append(b, versionByte[0])
+	b = append(b, versionByte[1])
 	b = append(b, input[:]...)
 	cksum := checksum(b)
 	b = append(b, cksum[:]...)
@@ -35,18 +39,21 @@ func CheckEncode(input []byte, version byte) string {
 }
 
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
-func CheckDecode(input string) (result []byte, version byte, err error) {
+func CheckDecode(input string) (result []byte, version uint16, err error) {
 	decoded := Decode(input)
+	b := make([]byte, 0, 2)
+	b = append(b, decoded[0])
+	b = append(b, decoded[1])
 	if len(decoded) < 5 {
 		return nil, 0, ErrInvalidFormat
 	}
-	version = decoded[0]
+	version = binary.BigEndian.Uint16(b)
 	var cksum [4]byte
 	copy(cksum[:], decoded[len(decoded)-4:])
 	if checksum(decoded[:len(decoded)-4]) != cksum {
 		return nil, 0, ErrChecksum
 	}
-	payload := decoded[1 : len(decoded)-4]
+	payload := decoded[2 : len(decoded)-4]
 	result = append(result, payload...)
 	return
 }
