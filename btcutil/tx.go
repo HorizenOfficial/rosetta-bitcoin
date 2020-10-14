@@ -65,20 +65,6 @@ func (t *Tx) WitnessHash() *chainhash.Hash {
 	return &hash
 }
 
-// HasWitness returns false if none of the inputs within the transaction
-// contain witness data, true false otherwise. This equivalent to calling
-// HasWitness on the underlying wire.MsgTx, however it caches the result so
-// subsequent calls are more efficient.
-func (t *Tx) HasWitness() bool {
-	if t.txHasWitness != nil {
-		return *t.txHasWitness
-	}
-
-	hasWitness := t.msgTx.HasWitness()
-	t.txHasWitness = &hasWitness
-	return hasWitness
-}
-
 // Index returns the saved index of the transaction within a block.  This value
 // will be TxIndexUnknown if it hasn't already explicitly been set.
 func (t *Tx) Index() int {

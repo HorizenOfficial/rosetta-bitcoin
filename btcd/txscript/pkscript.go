@@ -7,7 +7,6 @@ import (
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/btcec"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -145,7 +144,7 @@ func (s PkScript) String() string {
 // input's signature script or witness.
 //
 // NOTE: Only P2PKH, P2SH, P2WSH, and P2WPKH redeem scripts are supported.
-func ComputePkScript(sigScript []byte, witness wire.TxWitness) (PkScript, error) {
+func ComputePkScript(sigScript []byte) (PkScript, error) {
 	switch {
 	case len(sigScript) > 0:
 		return computeNonWitnessPkScript(sigScript)
