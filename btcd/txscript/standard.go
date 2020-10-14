@@ -56,6 +56,7 @@ const (
 	ScriptHashTy                             // Pay to script hash.
 	MultiSigTy                               // Multi signature.
 	NullDataTy                               // Empty data-only (provably prunable).
+	WitnessV0PubKeyHashTy                    // Pay witness pubkey hash.
 )
 
 // scriptClassToName houses the human-readable strings which describe each
@@ -67,6 +68,7 @@ var scriptClassToName = []string{
 	ScriptHashTy:          "scripthash",
 	MultiSigTy:            "multisig",
 	NullDataTy:            "nulldata",
+	WitnessV0PubKeyHashTy: "witness_v0_keyhash",
 }
 
 // String implements the Stringer interface by returning the name of

@@ -71,7 +71,7 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	addr, err := btcutil.NewAddressWitnessPubKeyHash(
+	addr, err := btcutil.NewAddressPubKeyHash(
 		btcutil.Hash160(request.PublicKey.Bytes),
 		s.config.Params,
 	)
@@ -476,7 +476,6 @@ func (s *ConstructionAPIService) ConstructionHash(
 			fmt.Errorf("%w signed transaction cannot be decoded", err),
 		)
 	}
-
 	var signed signedTransaction
 	if err := json.Unmarshal(decodedTx, &signed); err != nil {
 		return nil, wrapErr(
@@ -484,7 +483,6 @@ func (s *ConstructionAPIService) ConstructionHash(
 			fmt.Errorf("%w unable to unmarshal signed bitcoin transaction", err),
 		)
 	}
-
 	bytesTx, err := hex.DecodeString(signed.Transaction)
 	if err != nil {
 		return nil, wrapErr(

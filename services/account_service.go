@@ -23,7 +23,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-// AccountAPIService implements the server.AccountAPIServicer interface.
+// AccountAPIService implements the server.AccountAPIService interface.
 type AccountAPIService struct {
 	config *configuration.Configuration
 	i      Indexer
