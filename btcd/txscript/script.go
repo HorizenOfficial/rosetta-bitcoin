@@ -60,6 +60,18 @@ func isScriptHash(pops []parsedOpcode) bool {
 		pops[2].opcode.value == OP_EQUAL
 }
 
+// isScriptHashReplayOut returns true if the script passed is a pay-to-script-hash with replay protection
+// transaction, false otherwise.
+func isScriptHashReplayOut(pops []parsedOpcode) bool {
+	return len(pops) == 6 &&
+		pops[0].opcode.value == OP_HASH160 &&
+		pops[1].opcode.value == OP_DATA_20 &&
+		pops[2].opcode.value == OP_EQUAL &&
+		pops[3].opcode.value == OP_DATA_32 &&
+		pops[4].opcode.value == OP_DATA_3 &&
+		pops[5].opcode.value == OP_CHECKBLOCKATHEIGHT
+}
+
 // IsPayToScriptHash returns true if the script is in the standard
 // pay-to-script-hash (P2SH) format, false otherwise.
 func IsPayToScriptHash(script []byte) bool {

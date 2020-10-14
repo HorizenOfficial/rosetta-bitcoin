@@ -1010,19 +1010,9 @@ func TestStringifyClass(t *testing.T) {
 			stringed: "pubkeyhash",
 		},
 		{
-			name:     "witnesspubkeyhash",
-			class:    WitnessV0PubKeyHashTy,
-			stringed: "witness_v0_keyhash",
-		},
-		{
 			name:     "scripthash",
 			class:    ScriptHashTy,
 			stringed: "scripthash",
-		},
-		{
-			name:     "witnessscripthash",
-			class:    WitnessV0ScriptHashTy,
-			stringed: "witness_v0_scripthash",
 		},
 		{
 			name:     "multisigty",
