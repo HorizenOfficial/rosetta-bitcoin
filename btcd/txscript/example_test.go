@@ -16,16 +16,17 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 )
 
-// This example demonstrates creating a script which pays to a bitcoin address.
+// This example demonstrates creating a p2pk script
 // It also prints the created script hex and uses the DisasmString function to
 // display the disassembled script.
-func ExamplePayToAddrScript() {
+func ExamplePayToAddrScript_PayToPublicKey() {
 	// Parse the address to send the coins to into a btcutil.Address
 	// which is useful to ensure the accuracy of the address and determine
 	// the address type.  It is also required for the upcoming call to
 	// PayToAddrScript.
-	addressStr := "12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV"
+	addressStr := "znYyGhbvKwRdqVBZPN3KUkQLPE3QYTPxN73"
 	address, err := btcutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
+
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -47,15 +48,136 @@ func ExamplePayToAddrScript() {
 	fmt.Println("Script Disassembly:", disasm)
 
 	// Output:
-	// Script Hex: 76a914128004ff2fcaf13b2b91eb654b1dc2b674f7ec6188ac
-	// Script Disassembly: OP_DUP OP_HASH160 128004ff2fcaf13b2b91eb654b1dc2b674f7ec61 OP_EQUALVERIFY OP_CHECKSIG
+	// Script Hex: 76a914567f61e0dd2ff69bc019f744b7f780ec81e87c8a88ac
+	// Script Disassembly: OP_DUP OP_HASH160 567f61e0dd2ff69bc019f744b7f780ec81e87c8a OP_EQUALVERIFY OP_CHECKSIG
 }
 
-// This example demonstrates extracting information from a standard public key
-// script.
+// This example demonstrates creating a p2h script
+// It also prints the created script hex and uses the DisasmString function to
+// display the disassembled script.
+func ExamplePayToAddrScript_PayToHash() {
+	// Parse the address to send the coins to into a btcutil.Address
+	// which is useful to ensure the accuracy of the address and determine
+	// the address type.  It is also required for the upcoming call to
+	// PayToAddrScript.
+	addressStr := "zsfULrmbX7xbhqhAFRffVqCw9RyGv2hqNNG"
+	address, err := btcutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Create a public key script that pays to the address.
+	script, err := txscript.PayToAddrScript(address)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Script Hex: %x\n", script)
+
+	disasm, err := txscript.DisasmString(script)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Disassembly:", disasm)
+
+	// Output:
+	// Script Hex: a9140ae425efe434874e2a090d44ae853caa73c703de87
+	// Script Disassembly: OP_HASH160 0ae425efe434874e2a090d44ae853caa73c703de OP_EQUAL
+}
+
+// This example demonstrates creating a p2pk script with replay protection.
+// It also prints the created script hex and uses the DisasmString function to
+// display the disassembled script.
+func ExamplePayToAddrReplayOutScript_PayToPublicKey() {
+	// Parse the address to send the coins to into a btcutil.Address
+	// which is useful to ensure the accuracy of the address and determine
+	// the address type.  It is also required for the upcoming call to
+	// PayToAddrScript.
+	addressStr := "znbfGJmzkL8JxBuskpzAcbv8frMjvWK8zL5"
+	blockHash, errDecode := hex.DecodeString("47f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c78000400000000")
+	blockHeight := int32(811742)
+	address, err := btcutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
+
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		return
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Create a public key script that pays to the address.
+	script, err := txscript.PayToAddrReplayOutScript(address, blockHash, blockHeight)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Script Hex: %x\n", script)
+
+	disasm, err := txscript.DisasmString(script)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Disassembly:", disasm)
+
+	// Output:
+	// Script Hex: 76a91473fff1a04bd772b89ed146d8dce862e8580579dc88ac2047f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c7800040000000003de620cb4
+	// Script Disassembly: OP_DUP OP_HASH160 73fff1a04bd772b89ed146d8dce862e8580579dc OP_EQUALVERIFY OP_CHECKSIG 47f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c78000400000000 de620c OP_CHECKBLOCKATHEIGHT
+}
+
+// This example demonstrates creating a p2h script with replay protection.
+// It also prints the created script hex and uses the DisasmString function to
+// display the disassembled script.
+func ExamplePayToAddrReplayOutScript_PayToHash() {
+	// Parse the address to send the coins to into a btcutil.Address
+	// which is useful to ensure the accuracy of the address and determine
+	// the address type.  It is also required for the upcoming call to
+	// PayToAddrScript.
+	addressStr := "zsyF68hcYYNLPj5i4PfQJ1kUY6nsFnZkc82"
+	blockHash, errDecode := hex.DecodeString("00000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052")
+	blockHeight := int32(142091)
+	address, err := btcutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
+
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		return
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Create a public key script that pays to the address.
+	script, err := txscript.PayToAddrReplayOutScript(address, blockHash, blockHeight)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Script Hex: %x\n", script)
+
+	disasm, err := txscript.DisasmString(script)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Disassembly:", disasm)
+
+	// Output:
+	// Script Hex: a914cdd4b6749cf4b394c1e48c3ede7fe483512af9db872000000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052030b2b02b4
+	// Script Disassembly: OP_HASH160 cdd4b6749cf4b394c1e48c3ede7fe483512af9db OP_EQUAL 00000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052 0b2b02 OP_CHECKBLOCKATHEIGHT
+}
+
+// This example demonstrates extracting information from a standard p2pk script
 func ExampleExtractPkScriptAddrs() {
 	// Start with a standard pay-to-pubkey-hash script.
-	scriptHex := "76a914128004ff2fcaf13b2b91eb654b1dc2b674f7ec6188ac"
+	scriptHex := "76a914567f61e0dd2ff69bc019f744b7f780ec81e87c8a88ac"
 	script, err := hex.DecodeString(scriptHex)
 	if err != nil {
 		fmt.Println(err)
@@ -75,7 +197,91 @@ func ExampleExtractPkScriptAddrs() {
 
 	// Output:
 	// Script Class: pubkeyhash
-	// Addresses: [12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV]
+	// Addresses: [znYyGhbvKwRdqVBZPN3KUkQLPE3QYTPxN73]
+	// Required Signatures: 1
+}
+
+// This example demonstrates extracting information from a standard p2pk script with replay portection.
+func ExampleExtractPkScriptReplayOutAddrs() {
+	// Start with a standard pay-to-pubkey-hash script with replay protection.
+	scriptHex := "76a91473fff1a04bd772b89ed146d8dce862e8580579dc88ac2047f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c7800040000000003de620cb4"
+	script, err := hex.DecodeString(scriptHex)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Extract and print details from the script.
+	scriptClass, addresses, reqSigs, err := txscript.ExtractPkScriptAddrs(
+		script, &chaincfg.MainNetParams)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Class:", scriptClass)
+	fmt.Println("Addresses:", addresses)
+	fmt.Println("Required Signatures:", reqSigs)
+
+	// Output:
+	// Script Class: pubkeyhashreplayout
+	// Addresses: [znbfGJmzkL8JxBuskpzAcbv8frMjvWK8zL5]
+	// Required Signatures: 1
+}
+
+// This example demonstrates extracting information from a standard p2h script
+func ExampleExtractP2sAddrs() {
+	// Start with a standard p2h script
+	scriptHex := "a9140ae425efe434874e2a090d44ae853caa73c703de87"
+	script, err := hex.DecodeString(scriptHex)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Extract and print details from the script.
+	scriptClass, addresses, reqSigs, err := txscript.ExtractPkScriptAddrs(
+		script, &chaincfg.MainNetParams)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Class:", scriptClass)
+	fmt.Println("Addresses:", addresses)
+	fmt.Println("Required Signatures:", reqSigs)
+
+	// Output:
+	// Script Class: scripthash
+	// Addresses: [zsfULrmbX7xbhqhAFRffVqCw9RyGv2hqNNG]
+	// Required Signatures: 1
+}
+
+// This example demonstrates extracting information from a standard p2h script with replay protection
+func ExampleExtractP2sReplayOutAddrs() {
+	// Start with a standard p2h script
+	scriptHex := "a914cdd4b6749cf4b394c1e48c3ede7fe483512af9db872000000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052030b2b02b4"
+	script, err := hex.DecodeString(scriptHex)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Extract and print details from the script.
+	scriptClass, addresses, reqSigs, err := txscript.ExtractPkScriptAddrs(
+		script, &chaincfg.MainNetParams)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Script Class:", scriptClass)
+	fmt.Println("Addresses:", addresses)
+	fmt.Println("Required Signatures:", reqSigs)
+
+	// Output:
+	// Script Class: scripthashreplayout
+	// Addresses: [zsyF68hcYYNLPj5i4PfQJ1kUY6nsFnZkc82]
 	// Required Signatures: 1
 }
 
@@ -103,7 +309,7 @@ func ExampleSignTxOutput() {
 	// contains a single output that pays to address in the amount of 1 BTC.
 	originTx := wire.NewMsgTx(wire.TxVersion)
 	prevOut := wire.NewOutPoint(&chainhash.Hash{}, ^uint32(0))
-	txIn := wire.NewTxIn(prevOut, []byte{txscript.OP_0, txscript.OP_0}, nil)
+	txIn := wire.NewTxIn(prevOut, []byte{txscript.OP_0, txscript.OP_0})
 	originTx.AddTxIn(txIn)
 	pkScript, err := txscript.PayToAddrScript(addr)
 	if err != nil {
@@ -121,7 +327,7 @@ func ExampleSignTxOutput() {
 	// signature script at this point since it hasn't been created or signed
 	// yet, hence nil is provided for it.
 	prevOut = wire.NewOutPoint(&originTxHash, 0)
-	txIn = wire.NewTxIn(prevOut, nil, nil)
+	txIn = wire.NewTxIn(prevOut, nil)
 	redeemTx.AddTxIn(txIn)
 
 	// Ordinarily this would contain that actual destination of the funds,

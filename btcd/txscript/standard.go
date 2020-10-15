@@ -53,7 +53,9 @@ const (
 	NonStandardTy         ScriptClass = iota // None of the recognized forms.
 	PubKeyTy                                 // Pay pubkey.
 	PubKeyHashTy                             // Pay pubkey hash.
+	PubKeyHashReplayOutTy                    // Pay pubkey hash replay protection
 	ScriptHashTy                             // Pay to script hash.
+	ScriptHashReplayOutTy                    // Pay to script hash replay protection.
 	MultiSigTy                               // Multi signature.
 	NullDataTy                               // Empty data-only (provably prunable).
 	WitnessV0PubKeyHashTy                    // Pay witness pubkey hash.
@@ -65,7 +67,9 @@ var scriptClassToName = []string{
 	NonStandardTy:         "nonstandard",
 	PubKeyTy:              "pubkey",
 	PubKeyHashTy:          "pubkeyhash",
+	PubKeyHashReplayOutTy: "pubkeyhashreplayout",
 	ScriptHashTy:          "scripthash",
+	ScriptHashReplayOutTy: "scripthashreplayout",
 	MultiSigTy:            "multisig",
 	NullDataTy:            "nulldata",
 	WitnessV0PubKeyHashTy: "witness_v0_keyhash",
@@ -99,7 +103,20 @@ func isPubkeyHash(pops []parsedOpcode) bool {
 		pops[2].opcode.value == OP_DATA_20 &&
 		pops[3].opcode.value == OP_EQUALVERIFY &&
 		pops[4].opcode.value == OP_CHECKSIG
+}
 
+// isPubkeyHash returns true if the script passed is a pay-to-pubkey-hash
+// transaction, false otherwise.
+func isPubkeyHashReplayOut(pops []parsedOpcode) bool {
+	return len(pops) == 8 &&
+		pops[0].opcode.value == OP_DUP &&
+		pops[1].opcode.value == OP_HASH160 &&
+		pops[2].opcode.value == OP_DATA_20 &&
+		pops[3].opcode.value == OP_EQUALVERIFY &&
+		pops[4].opcode.value == OP_CHECKSIG &&
+		pops[5].opcode.value == OP_DATA_32 &&
+		pops[6].opcode.value == OP_DATA_3 &&
+		pops[7].opcode.value == OP_CHECKBLOCKATHEIGHT
 }
 
 // isMultiSig returns true if the passed script is a multisig transaction, false
@@ -161,8 +178,12 @@ func typeOfScript(pops []parsedOpcode) ScriptClass {
 		return PubKeyTy
 	} else if isPubkeyHash(pops) {
 		return PubKeyHashTy
+	} else if isPubkeyHashReplayOut(pops) {
+		return PubKeyHashReplayOutTy
 	} else if isScriptHash(pops) {
 		return ScriptHashTy
+	} else if isScriptHashReplayOut(pops) {
+		return ScriptHashReplayOutTy
 	} else if isMultiSig(pops) {
 		return MultiSigTy
 	} else if isNullData(pops) {
@@ -211,7 +232,14 @@ func expectedInputs(pops []parsedOpcode, class ScriptClass) int {
 	case PubKeyHashTy:
 		return 2
 
+	case PubKeyHashReplayOutTy:
+		return 2
+
 	case ScriptHashTy:
+		// Not including script.  That is handled by the caller.
+		return 1
+
+	case ScriptHashReplayOutTy:
 		// Not including script.  That is handled by the caller.
 		return 1
 
@@ -369,6 +397,16 @@ func payToPubKeyHashScript(pubKeyHash []byte) ([]byte, error) {
 		Script()
 }
 
+// payToPubKeyHashScriptReplayOut creates a new script to pay a transaction
+// output to a 20-byte pubkey hash with replay protection.
+// It is expected that the input is a valid hash.
+func payToPubKeyHashReplayOutScript(pubKeyHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+	return NewScriptBuilder().AddOp(OP_DUP).AddOp(OP_HASH160).
+		AddData(pubKeyHash).AddOp(OP_EQUALVERIFY).AddOp(OP_CHECKSIG).
+		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		Script()
+}
+
 // payToWitnessPubKeyHashScript creates a new script to pay to a version 0
 // pubkey hash witness program. The passed hash is expected to be valid.
 func payToWitnessPubKeyHashScript(pubKeyHash []byte) ([]byte, error) {
@@ -380,6 +418,14 @@ func payToWitnessPubKeyHashScript(pubKeyHash []byte) ([]byte, error) {
 func payToScriptHashScript(scriptHash []byte) ([]byte, error) {
 	return NewScriptBuilder().AddOp(OP_HASH160).AddData(scriptHash).
 		AddOp(OP_EQUAL).Script()
+}
+
+// payToScriptHashScript creates a new script to pay a transaction output to a
+// script hash with replay protection. It is expected that the input is a valid hash.
+func payToScriptHashReplayOutScript(scriptHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+	return NewScriptBuilder().AddOp(OP_HASH160).AddData(scriptHash).AddOp(OP_EQUAL).
+		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		Script()
 }
 
 // payToWitnessPubKeyHashScript creates a new script to pay to a version 0
@@ -395,11 +441,18 @@ func payToPubKeyScript(serializedPubKey []byte) ([]byte, error) {
 		AddOp(OP_CHECKSIG).Script()
 }
 
+// payToPubKeyReplayOutScript creates a new script to pay a transaction output to a
+// public key with replay protection. It is expected that the input is a valid pubkey.
+func payToPubKeyReplayOutScript(serializedPubKey []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+	return NewScriptBuilder().AddData(serializedPubKey).AddOp(OP_CHECKSIG).
+		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		Script()
+}
+
 // PayToAddrScript creates a new script to pay a transaction output to a the
 // specified address.
 func PayToAddrScript(addr btcutil.Address) ([]byte, error) {
 	const nilAddrErrStr = "unable to generate payment script for nil address"
-
 	switch addr := addr.(type) {
 	case *btcutil.AddressPubKeyHash:
 		if addr == nil {
@@ -421,6 +474,39 @@ func PayToAddrScript(addr btcutil.Address) ([]byte, error) {
 				nilAddrErrStr)
 		}
 		return payToPubKeyScript(addr.ScriptAddress())
+
+	}
+
+	str := fmt.Sprintf("unable to generate payment script for unsupported "+
+		"address type %T", addr)
+	return nil, scriptError(ErrUnsupportedAddress, str)
+}
+
+// PayToAddrReplayOutScript creates a new script to pay a transaction output to the
+// specified address with replay protection.
+func PayToAddrReplayOutScript(addr btcutil.Address, blockHash []byte, blockHeight int32) ([]byte, error) {
+	const nilAddrErrStr = "unable to generate payment script for nil address"
+	switch addr := addr.(type) {
+	case *btcutil.AddressPubKeyHash:
+		if addr == nil {
+			return nil, scriptError(ErrUnsupportedAddress,
+				nilAddrErrStr)
+		}
+		return payToPubKeyHashReplayOutScript(addr.ScriptAddress(), blockHash, blockHeight)
+
+	case *btcutil.AddressScriptHash:
+		if addr == nil {
+			return nil, scriptError(ErrUnsupportedAddress,
+				nilAddrErrStr)
+		}
+		return payToScriptHashReplayOutScript(addr.ScriptAddress(), blockHash, blockHeight)
+
+	case *btcutil.AddressPubKey:
+		if addr == nil {
+			return nil, scriptError(ErrUnsupportedAddress,
+				nilAddrErrStr)
+		}
+		return payToPubKeyReplayOutScript(addr.ScriptAddress(), blockHash, blockHeight)
 
 	}
 
@@ -500,7 +586,7 @@ func ExtractPkScriptAddrs(pkScript []byte, chainParams *chaincfg.Params) (Script
 
 	scriptClass := typeOfScript(pops)
 	switch scriptClass {
-	case PubKeyHashTy:
+	case PubKeyHashTy, PubKeyHashReplayOutTy:
 		// A pay-to-pubkey-hash script is of the form:
 		//  OP_DUP OP_HASH160 <hash> OP_EQUALVERIFY OP_CHECKSIG
 		// Therefore the pubkey hash is the 3rd item on the stack.
@@ -523,7 +609,7 @@ func ExtractPkScriptAddrs(pkScript []byte, chainParams *chaincfg.Params) (Script
 			addrs = append(addrs, addr)
 		}
 
-	case ScriptHashTy:
+	case ScriptHashTy, ScriptHashReplayOutTy:
 		// A pay-to-script-hash script is of the form:
 		//  OP_HASH160 <scripthash> OP_EQUAL
 		// Therefore the script hash is the 2nd item on the stack.
@@ -534,7 +620,6 @@ func ExtractPkScriptAddrs(pkScript []byte, chainParams *chaincfg.Params) (Script
 		if err == nil {
 			addrs = append(addrs, addr)
 		}
-
 
 	case MultiSigTy:
 		// A multi-signature script is of the form:
