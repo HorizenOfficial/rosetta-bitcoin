@@ -68,7 +68,6 @@ func isScriptHashReplayOut(pops []parsedOpcode) bool {
 		pops[1].opcode.value == OP_DATA_20 &&
 		pops[2].opcode.value == OP_EQUAL &&
 		pops[3].opcode.value == OP_DATA_32 &&
-		pops[4].opcode.value == OP_DATA_3 &&
 		pops[5].opcode.value == OP_CHECKBLOCKATHEIGHT
 }
 

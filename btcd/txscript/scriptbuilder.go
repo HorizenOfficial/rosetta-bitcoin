@@ -183,6 +183,24 @@ func (b *ScriptBuilder) AddFullData(data []byte) *ScriptBuilder {
 	return b.addData(data)
 }
 
+func reverseBuffer(buffer []byte) []byte {
+	revertedBuffer := make([]byte, len(buffer))
+	c := 0
+	for i := len(buffer) - 1; i > 0; i -= 2 {
+		revertedBuffer[c] = buffer[i]
+		c += 1
+		revertedBuffer[c] = buffer[i-1]
+		c += 1
+	}
+	return revertedBuffer
+}
+
+//same as AddData but revert the bytearray before adding
+func (b *ScriptBuilder) AddDataReverted(data []byte) *ScriptBuilder {
+	dataReverted := reverseBuffer(data)
+	return b.AddData(dataReverted)
+}
+
 // AddData pushes the passed data to the end of the script.  It automatically
 // chooses canonical opcodes depending on the length of the data.  A zero length
 // buffer will lead to a push of empty data onto the stack (OP_0) and any push

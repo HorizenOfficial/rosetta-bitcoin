@@ -115,7 +115,6 @@ func isPubkeyHashReplayOut(pops []parsedOpcode) bool {
 		pops[3].opcode.value == OP_EQUALVERIFY &&
 		pops[4].opcode.value == OP_CHECKSIG &&
 		pops[5].opcode.value == OP_DATA_32 &&
-		pops[6].opcode.value == OP_DATA_3 &&
 		pops[7].opcode.value == OP_CHECKBLOCKATHEIGHT
 }
 
@@ -403,7 +402,7 @@ func payToPubKeyHashScript(pubKeyHash []byte) ([]byte, error) {
 func payToPubKeyHashReplayOutScript(pubKeyHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
 	return NewScriptBuilder().AddOp(OP_DUP).AddOp(OP_HASH160).
 		AddData(pubKeyHash).AddOp(OP_EQUALVERIFY).AddOp(OP_CHECKSIG).
-		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
 		Script()
 }
 
@@ -424,7 +423,7 @@ func payToScriptHashScript(scriptHash []byte) ([]byte, error) {
 // script hash with replay protection. It is expected that the input is a valid hash.
 func payToScriptHashReplayOutScript(scriptHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
 	return NewScriptBuilder().AddOp(OP_HASH160).AddData(scriptHash).AddOp(OP_EQUAL).
-		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
 		Script()
 }
 
@@ -445,7 +444,7 @@ func payToPubKeyScript(serializedPubKey []byte) ([]byte, error) {
 // public key with replay protection. It is expected that the input is a valid pubkey.
 func payToPubKeyReplayOutScript(serializedPubKey []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
 	return NewScriptBuilder().AddData(serializedPubKey).AddOp(OP_CHECKSIG).
-		AddData(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
+		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
 		Script()
 }
 

@@ -123,7 +123,7 @@ func sign(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 		}
 
 		return script, class, addresses, nrequired, nil
-	case PubKeyHashTy:
+	case PubKeyHashTy, PubKeyHashReplayOutTy:
 		// look up key for address
 		key, compressed, err := kdb.GetKey(addresses[0])
 		if err != nil {
@@ -137,7 +137,7 @@ func sign(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 		}
 
 		return script, class, addresses, nrequired, nil
-	case ScriptHashTy:
+	case ScriptHashTy, ScriptHashReplayOutTy:
 		script, err := sdb.GetScript(addresses[0])
 		if err != nil {
 			return nil, class, nil, 0, err

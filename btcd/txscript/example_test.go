@@ -127,8 +127,8 @@ func ExamplePayToAddrReplayOutScript_PayToPublicKey() {
 	fmt.Println("Script Disassembly:", disasm)
 
 	// Output:
-	// Script Hex: 76a91473fff1a04bd772b89ed146d8dce862e8580579dc88ac2047f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c7800040000000003de620cb4
-	// Script Disassembly: OP_DUP OP_HASH160 73fff1a04bd772b89ed146d8dce862e8580579dc OP_EQUALVERIFY OP_CHECKSIG 47f1273bab0e66e76a5c2dd8fed808a23b2c08a22fcc46c00c78000400000000 de620c OP_CHECKBLOCKATHEIGHT
+	// Script Hex: 76a91473fff1a04bd772b89ed146d8dce862e8580579dc88ac20000000000400780cc046cc2fa2082c3ba208d8fed82d5c6ae7660eab3b27f14703de620cb4
+	// Script Disassembly: OP_DUP OP_HASH160 73fff1a04bd772b89ed146d8dce862e8580579dc OP_EQUALVERIFY OP_CHECKSIG 000000000400780cc046cc2fa2082c3ba208d8fed82d5c6ae7660eab3b27f147 de620c OP_CHECKBLOCKATHEIGHT
 }
 
 // This example demonstrates creating a p2h script with replay protection.
@@ -170,8 +170,8 @@ func ExamplePayToAddrReplayOutScript_PayToHash() {
 	fmt.Println("Script Disassembly:", disasm)
 
 	// Output:
-	// Script Hex: a914cdd4b6749cf4b394c1e48c3ede7fe483512af9db872000000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052030b2b02b4
-	// Script Disassembly: OP_HASH160 cdd4b6749cf4b394c1e48c3ede7fe483512af9db OP_EQUAL 00000001cf4e27ce1dd8028408ed0a48edd445ba388170c9468ba0d42fff3052 0b2b02 OP_CHECKBLOCKATHEIGHT
+	// Script Hex: a914cdd4b6749cf4b394c1e48c3ede7fe483512af9db87205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b4
+	// Script Disassembly: OP_HASH160 cdd4b6749cf4b394c1e48c3ede7fe483512af9db OP_EQUAL 5230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000 0b2b02 OP_CHECKBLOCKATHEIGHT
 }
 
 // This example demonstrates extracting information from a standard p2pk script
