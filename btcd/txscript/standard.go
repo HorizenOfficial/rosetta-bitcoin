@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 )
 
@@ -282,8 +281,7 @@ type ScriptInfo struct {
 // pair.  It will error if the pair is in someway invalid such that they can not
 // be analysed, i.e. if they do not parse or the pkScript is not a push-only
 // script
-func CalcScriptInfo(sigScript, pkScript []byte, witness wire.TxWitness,
-	bip16, segwit bool) (*ScriptInfo, error) {
+func CalcScriptInfo(sigScript, pkScript []byte) (*ScriptInfo, error) {
 
 	sigPops, err := parseScript(sigScript)
 	if err != nil {
@@ -309,7 +307,7 @@ func CalcScriptInfo(sigScript, pkScript []byte, witness wire.TxWitness,
 
 	switch {
 	// Count sigops taking into account pay-to-script-hash.
-	case si.PkScriptClass == ScriptHashTy && bip16 && !segwit:
+	case si.PkScriptClass == ScriptHashTy:
 		// The pay-to-hash-script is the final data push of the
 		// signature script.
 		script := sigPops[len(sigPops)-1].data
@@ -330,25 +328,6 @@ func CalcScriptInfo(sigScript, pkScript []byte, witness wire.TxWitness,
 		// will fail).
 		si.NumInputs = len(sigPops)
 
-	// We'll attempt to detect the nested p2sh case so we can accurately
-	// count the signature operations involved.
-	case si.PkScriptClass == ScriptHashTy &&
-		IsWitnessProgram(sigScript[1:]) && bip16 && segwit:
-
-		// Extract the pushed witness program from the sigScript so we
-		// can determine the number of expected inputs.
-		pkPops, _ := parseScript(sigScript[1:])
-		shInputs := expectedInputs(pkPops, typeOfScript(pkPops))
-		if shInputs == -1 {
-			si.ExpectedInputs = -1
-		} else {
-			si.ExpectedInputs += shInputs
-		}
-
-		si.SigOps = GetWitnessSigOpCount(sigScript, pkScript, witness)
-
-		si.NumInputs = len(witness)
-		si.NumInputs += len(sigPops)
 
 	default:
 		si.SigOps = getSigOpCount(pkPops, true)
