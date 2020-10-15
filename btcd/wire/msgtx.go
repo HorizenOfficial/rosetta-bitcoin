@@ -237,6 +237,21 @@ type TxIn struct {
 	Sequence         uint32
 }
 
+type Joinsplit struct {
+	Vpub_old uint64
+	Vpub_new uint64
+	Anchor []byte
+	Nullifiers [][]byte
+	Commitments [][]byte
+	OneTimePubKey []byte
+	RandomSeed []byte
+	Macs [][]byte
+	Proof []byte
+	CipherText [][]byte
+	joinSplitPubKey []byte
+	joinSplitSig []byte
+}
+
 // SerializeSize returns the number of bytes it would take to serialize the
 // the transaction input.
 func (t *TxIn) SerializeSize() int {
@@ -256,27 +271,6 @@ func NewTxIn(prevOut *OutPoint, signatureScript []byte) *TxIn {
 		SignatureScript:  signatureScript,
 		Sequence:         MaxTxInSequenceNum,
 	}
-}
-
-// TxWitness defines the witness for a TxIn. A witness is to be interpreted as
-// a slice of byte slices, or a stack with one or many elements.
-type TxWitness [][]byte
-
-// SerializeSize returns the number of bytes it would take to serialize the the
-// transaction input's witness.
-func (t TxWitness) SerializeSize() int {
-	// A varint to signal the number of elements the witness has.
-	n := VarIntSerializeSize(uint64(len(t)))
-
-	// For each element in the witness, we'll need a varint to signal the
-	// size of the element, then finally the number of bytes the element
-	// itself comprises.
-	for _, witItem := range t {
-		n += VarIntSerializeSize(uint64(len(witItem)))
-		n += len(witItem)
-	}
-
-	return n
 }
 
 // TxOut defines a bitcoin transaction output.
@@ -313,6 +307,7 @@ type MsgTx struct {
 	TxIn     []*TxIn
 	TxOut    []*TxOut
 	LockTime uint32
+	TxJoinsplit []*Joinsplit
 }
 
 // AddTxIn adds a transaction input to the message.
@@ -563,6 +558,21 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32, enc MessageEncoding) error
 		scriptPool.Return(pkScript)
 	}
 
+	if (msg.Version >= 2 || msg.Version == -3 ) {
+		// Count the number of inputs
+		count, err = ReadVarInt(r, pver)
+		txJoinsplits := make([]Joinsplit, count)
+		msg.TxJoinsplit = make([]*Joinsplit, count)
+
+		for i := uint64(0); i < count; i++ {
+			to := &txJoinsplits[i]
+			msg.TxJoinsplit[i] = to
+			err = readTxJoinsplit(r, pver, msg.Version, to)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -627,7 +637,23 @@ func (msg *MsgTx) BtcEncode(w io.Writer, pver uint32, enc MessageEncoding) error
 		}
 	}
 
-	return binarySerializer.PutUint32(w, littleEndian, msg.LockTime)
+	err = binarySerializer.PutUint32(w, littleEndian, msg.LockTime)
+
+	if (msg.Version >= 2 || msg.Version == -3) {
+		count = uint64(len(msg.TxJoinsplit))
+		err = WriteVarInt(w, pver, count)
+		if err != nil {
+			return err
+		}
+		for _, to := range msg.TxJoinsplit {
+			err =  WriteTxJoinsplit(w, pver, msg.Version, to)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return err
 }
 
 // Serialize encodes the transaction to w using a format that suitable for
@@ -867,18 +893,177 @@ func WriteTxOut(w io.Writer, pver uint32, version int32, to *TxOut) error {
 	return WriteVarBytes(w, pver, to.PkScript)
 }
 
-// writeTxWitness encodes the bitcoin protocol encoding for a transaction
-// input's witness into to w.
-func writeTxWitness(w io.Writer, pver uint32, version int32, wit [][]byte) error {
-	err := WriteVarInt(w, pver, uint64(len(wit)))
+// readTxJoinspleet
+// (Joinsplit).
+func readTxJoinsplit(r io.Reader, pver uint32, version int32, to *Joinsplit) error {
+	err := readElement(r, &to.Vpub_old)
 	if err != nil {
 		return err
 	}
-	for _, item := range wit {
-		err = WriteVarBytes(w, pver, item)
+	err = readElement(r, &to.Vpub_new)
+	if err != nil {
+		return err
+	}
+	b := make([]byte, 32)
+	_, err = io.ReadFull(r,b)
+	if err != nil {
+		return err
+	}
+	to.Anchor = reverseBuffer(b)
+
+	nullifiers := make([][]byte,2)
+	tmp := make([]byte,32)
+	_, err = io.ReadFull(r,tmp)
+	nullifiers[0] = reverseBuffer(tmp)
+	_, err = io.ReadFull(r,tmp)
+	nullifiers[1] = reverseBuffer(tmp)
+	to.Nullifiers = nullifiers
+
+	commitment := make([][]byte,2)
+	tmp = make([]byte,32)
+	_, err = io.ReadFull(r,tmp)
+	commitment[0] = reverseBuffer(tmp)
+	_, err = io.ReadFull(r,tmp)
+	commitment[1] = reverseBuffer(tmp)
+	to.Commitments = commitment
+
+	b = make([]byte, 32)
+	_, err = io.ReadFull(r,b)
+	if err != nil {
+		return err
+	}
+	to.OneTimePubKey = reverseBuffer(b)
+
+	b = make([]byte, 32)
+	_, err = io.ReadFull(r,b)
+	if err != nil {
+		return err
+	}
+	to.RandomSeed = reverseBuffer(b)
+
+	macs := make([][]byte,2)
+	tmp = make([]byte,32)
+	_, err = io.ReadFull(r,tmp)
+	macs[0] = reverseBuffer(tmp)
+	_, err = io.ReadFull(r,tmp)
+	macs[1] = reverseBuffer(tmp)
+	to.Macs = macs
+
+	if (version == -3) {
+		b = make([]byte, 48 + 96 + 48)
+		_, err = io.ReadFull(r,b)
+		if err != nil {
+			return err
+		}
+	} else {
+		b = make([]byte, 296)
+		_, err = io.ReadFull(r,b)
 		if err != nil {
 			return err
 		}
 	}
-	return nil
+	to.Proof = b
+
+	ciphertext := make([][]byte,2)
+	tmp = make([]byte,1 + 8 + 32 + 32 + 512 + 16)
+	_, err = io.ReadFull(r,tmp)
+	ciphertext[0] = tmp
+	tmp = make([]byte,1 + 8 + 32 + 32 + 512 + 16)
+	_, err = io.ReadFull(r,tmp)
+	ciphertext[1] = tmp
+	to.CipherText = ciphertext
+
+	joinsplitPubKey := make([]byte,32)
+	_, err = io.ReadFull(r,joinsplitPubKey)
+	to.joinSplitPubKey = joinsplitPubKey
+
+	joinSplitSig := make([]byte,64)
+	_, err = io.ReadFull(r,joinSplitSig)
+	to.joinSplitSig = joinSplitSig
+
+	return err
+}
+
+// WriteTxJoinsplit encodes to into the zen protocol encoding for a transaction
+// joinsplit (TxJoinsplit) to w.
+//
+func WriteTxJoinsplit(w io.Writer, pver uint32, version int32, to *Joinsplit) error {
+	err := binarySerializer.PutUint64(w, littleEndian, uint64(to.Vpub_old))
+	if err != nil {
+		return err
+	}
+	err = binarySerializer.PutUint64(w, littleEndian, uint64(to.Vpub_new))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Anchor))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Nullifiers[0]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Nullifiers[1]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Commitments[0]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Commitments[1]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.OneTimePubKey))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.RandomSeed))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Macs[0]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(reverseBuffer(to.Macs[1]))
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(to.Proof)
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(to.CipherText[0])
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(to.CipherText[1])
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(to.joinSplitPubKey)
+	if err != nil {
+		return err
+	}
+	_,err = w.Write(to.joinSplitSig)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func reverseBuffer(buffer [] byte) ([]byte){
+	revertedBuffer := make ([]byte,len(buffer))
+	c := 0
+	for i:=len(buffer)-1; i>0; i-=2 {
+		revertedBuffer[c] = buffer[i]
+		c += 1
+		revertedBuffer[c] = buffer[i-1]
+		c += 1
+	}
+	return revertedBuffer
 }
