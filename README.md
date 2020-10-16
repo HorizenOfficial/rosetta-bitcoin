@@ -69,7 +69,7 @@ docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081
 _If you cloned the repository, you can run `make run-testnet-offline`._
 
 
-### Recommended OS Settings
+### Network Settings
 To increase the load `rosetta-zen` can handle, it is recommended to tune your OS
 settings to allow for more connections. On a linux-based OS, you can run the following
 commands ([source](http://www.tweaked.io/guide/kernel)):
@@ -86,6 +86,12 @@ enabling it._
 
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
+
+### Memory-Mapped Files
+`rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
+persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
+architecture (the virtual address space easily exceeds 100s of GBs) and may need to increase the
+allocated size of swap space to avoid a kernel OOM.
 
 ## Architecture
 `rosetta-zen` uses the `syncer`, `storage`, `parser`, and `server` package
