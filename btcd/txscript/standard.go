@@ -378,7 +378,7 @@ func payToPubKeyHashScript(pubKeyHash []byte) ([]byte, error) {
 // payToPubKeyHashScriptReplayOut creates a new script to pay a transaction
 // output to a 20-byte pubkey hash with replay protection.
 // It is expected that the input is a valid hash.
-func payToPubKeyHashReplayOutScript(pubKeyHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+func payToPubKeyHashReplayOutScript(pubKeyHash []byte, blockHash []byte, blockHeight int64) ([]byte, error) {
 	return NewScriptBuilder().AddOp(OP_DUP).AddOp(OP_HASH160).
 		AddData(pubKeyHash).AddOp(OP_EQUALVERIFY).AddOp(OP_CHECKSIG).
 		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
@@ -400,7 +400,7 @@ func payToScriptHashScript(scriptHash []byte) ([]byte, error) {
 
 // payToScriptHashScript creates a new script to pay a transaction output to a
 // script hash with replay protection. It is expected that the input is a valid hash.
-func payToScriptHashReplayOutScript(scriptHash []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+func payToScriptHashReplayOutScript(scriptHash []byte, blockHash []byte, blockHeight int64) ([]byte, error) {
 	return NewScriptBuilder().AddOp(OP_HASH160).AddData(scriptHash).AddOp(OP_EQUAL).
 		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
 		Script()
@@ -421,7 +421,7 @@ func payToPubKeyScript(serializedPubKey []byte) ([]byte, error) {
 
 // payToPubKeyReplayOutScript creates a new script to pay a transaction output to a
 // public key with replay protection. It is expected that the input is a valid pubkey.
-func payToPubKeyReplayOutScript(serializedPubKey []byte, blockHash []byte, blockHeight int32) ([]byte, error) {
+func payToPubKeyReplayOutScript(serializedPubKey []byte, blockHash []byte, blockHeight int64) ([]byte, error) {
 	return NewScriptBuilder().AddData(serializedPubKey).AddOp(OP_CHECKSIG).
 		AddDataReverted(blockHash).AddInt64(int64(blockHeight)).AddOp(OP_CHECKBLOCKATHEIGHT).
 		Script()
@@ -462,7 +462,7 @@ func PayToAddrScript(addr btcutil.Address) ([]byte, error) {
 
 // PayToAddrReplayOutScript creates a new script to pay a transaction output to the
 // specified address with replay protection.
-func PayToAddrReplayOutScript(addr btcutil.Address, blockHash []byte, blockHeight int32) ([]byte, error) {
+func PayToAddrReplayOutScript(addr btcutil.Address, blockHash []byte, blockHeight int64) ([]byte, error) {
 	const nilAddrErrStr = "unable to generate payment script for nil address"
 	switch addr := addr.(type) {
 	case *btcutil.AddressPubKeyHash:

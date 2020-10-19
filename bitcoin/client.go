@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -76,7 +77,7 @@ const (
 	requestMethodSendRawTransaction requestMethod = "sendrawtransaction"
 
 	// https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html
-	requestMethodEstimateSmartFee requestMethod = "estimatesmartfee"
+	requestMethodEstimateSmartFee requestMethod = "estimatefee"
 
 	// https://developer.bitcoin.org/reference/rpc/getrawmempool.html
 	requestMethodRawMempool requestMethod = "getrawmempool"
@@ -290,14 +291,15 @@ func (b *Client) SuggestedFeeRate(
 ) (float64, error) {
 	// Parameters:
 	//   1. conf_target (confirmation target in blocks)
+	/* TODO: Waiting for estimatefee analysis from the mainchain guys
 	params := []interface{}{confTarget}
 
 	response := &suggestedFeeRateResponse{}
 	if err := b.post(ctx, requestMethodEstimateSmartFee, params, response); err != nil {
 		return -1, fmt.Errorf("%w: error getting fee estimate", err)
-	}
+	}*/
 
-	return response.Result.FeeRate, nil
+	return bitcoin.MinFeeRate, nil
 }
 
 // PruneBlockchain prunes up to the provided height.
@@ -386,6 +388,20 @@ func (b *Client) getBlockchainInfo(
 	return response.Result, nil
 }
 
+// getBlockchainInfo performs the `getblockchaininfo` JSON-RPC request
+func (b *Client) GetBestBlock(
+	ctx context.Context,
+) (int64, error) {
+	params := []interface{}{}
+	response := &blockchainInfoResponse{}
+	if err := b.post(ctx, requestMethodGetBlockchainInfo, params, response); err != nil {
+		return 0, fmt.Errorf("%w: unbale to get blockchain info", err)
+	}
+
+	return response.Result.Blocks, nil
+}
+
+
 // getBlockHash returns the hash for a specified block identifier.
 // If the identifier includes a hash it will return that hash.
 // If the identifier only includes an index, if will fetch the hash that corresponds to
@@ -408,7 +424,7 @@ func (b *Client) getBlockHash(
 		return *identifier.Hash, nil
 	}
 
-	return b.getHashFromIndex(ctx, *identifier.Index)
+	return b.GetHashFromIndex(ctx, *identifier.Index)
 }
 
 // parseBlock returns a *types.Block from a Block
@@ -449,7 +465,7 @@ func (b *Client) parseBlockData(block *Block) (*types.Block, error) {
 // getHashFromIndex performs the `getblockhash` JSON-RPC request for the specified
 // block index, and returns the hash.
 // https://bitcoin.org/en/developer-reference#getblockhash
-func (b *Client) getHashFromIndex(
+func (b *Client) GetHashFromIndex(
 	ctx context.Context,
 	index int64,
 ) (string, error) {

@@ -559,7 +559,7 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32, enc MessageEncoding) error
 	}
 
 	if (msg.Version >= 2 || msg.Version == -3 ) {
-		// Count the number of inputs
+		// Count the number of joinsplits
 		count, err = ReadVarInt(r, pver)
 		txJoinsplits := make([]Joinsplit, count)
 		msg.TxJoinsplit = make([]*Joinsplit, count)
@@ -909,22 +909,22 @@ func readTxJoinsplit(r io.Reader, pver uint32, version int32, to *Joinsplit) err
 	if err != nil {
 		return err
 	}
-	to.Anchor = reverseBuffer(b)
+	to.Anchor = ReverseBuffer(b)
 
 	nullifiers := make([][]byte,2)
 	tmp := make([]byte,32)
 	_, err = io.ReadFull(r,tmp)
-	nullifiers[0] = reverseBuffer(tmp)
+	nullifiers[0] = ReverseBuffer(tmp)
 	_, err = io.ReadFull(r,tmp)
-	nullifiers[1] = reverseBuffer(tmp)
+	nullifiers[1] = ReverseBuffer(tmp)
 	to.Nullifiers = nullifiers
 
 	commitment := make([][]byte,2)
 	tmp = make([]byte,32)
 	_, err = io.ReadFull(r,tmp)
-	commitment[0] = reverseBuffer(tmp)
+	commitment[0] = ReverseBuffer(tmp)
 	_, err = io.ReadFull(r,tmp)
-	commitment[1] = reverseBuffer(tmp)
+	commitment[1] = ReverseBuffer(tmp)
 	to.Commitments = commitment
 
 	b = make([]byte, 32)
@@ -932,21 +932,21 @@ func readTxJoinsplit(r io.Reader, pver uint32, version int32, to *Joinsplit) err
 	if err != nil {
 		return err
 	}
-	to.OneTimePubKey = reverseBuffer(b)
+	to.OneTimePubKey = ReverseBuffer(b)
 
 	b = make([]byte, 32)
 	_, err = io.ReadFull(r,b)
 	if err != nil {
 		return err
 	}
-	to.RandomSeed = reverseBuffer(b)
+	to.RandomSeed = ReverseBuffer(b)
 
 	macs := make([][]byte,2)
 	tmp = make([]byte,32)
 	_, err = io.ReadFull(r,tmp)
-	macs[0] = reverseBuffer(tmp)
+	macs[0] = ReverseBuffer(tmp)
 	_, err = io.ReadFull(r,tmp)
-	macs[1] = reverseBuffer(tmp)
+	macs[1] = ReverseBuffer(tmp)
 	to.Macs = macs
 
 	if (version == -3) {
@@ -996,39 +996,39 @@ func WriteTxJoinsplit(w io.Writer, pver uint32, version int32, to *Joinsplit) er
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Anchor))
+	_,err = w.Write(ReverseBuffer(to.Anchor))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Nullifiers[0]))
+	_,err = w.Write(ReverseBuffer(to.Nullifiers[0]))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Nullifiers[1]))
+	_,err = w.Write(ReverseBuffer(to.Nullifiers[1]))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Commitments[0]))
+	_,err = w.Write(ReverseBuffer(to.Commitments[0]))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Commitments[1]))
+	_,err = w.Write(ReverseBuffer(to.Commitments[1]))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.OneTimePubKey))
+	_,err = w.Write(ReverseBuffer(to.OneTimePubKey))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.RandomSeed))
+	_,err = w.Write(ReverseBuffer(to.RandomSeed))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Macs[0]))
+	_,err = w.Write(ReverseBuffer(to.Macs[0]))
 	if err != nil {
 		return err
 	}
-	_,err = w.Write(reverseBuffer(to.Macs[1]))
+	_,err = w.Write(ReverseBuffer(to.Macs[1]))
 	if err != nil {
 		return err
 	}
@@ -1056,7 +1056,7 @@ func WriteTxJoinsplit(w io.Writer, pver uint32, version int32, to *Joinsplit) er
 	return err
 }
 
-func reverseBuffer(buffer [] byte) ([]byte){
+func ReverseBuffer(buffer [] byte) ([]byte){
 	revertedBuffer := make ([]byte,len(buffer))
 	c := 0
 	for i:=len(buffer)-1; i>0; i-=2 {

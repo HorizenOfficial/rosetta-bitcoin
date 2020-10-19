@@ -209,7 +209,14 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 		return nil, wrapErr(ErrScriptPubKeysMissing, err)
 	}
 
-	metadata, err := types.MarshalMap(&constructionMetadata{ScriptPubKeys: scripts})
+	// Determine the blockhash for the replay protection
+	bestblockHash, err := s.client.GetBestBlock(ctx)
+	if err != nil {
+		return nil, wrapErr(ErrCouldNotGetBestBlock, err)
+	}
+	hashReplay, err := s.client.GetHashFromIndex(ctx,bestblockHash-100)
+
+	metadata, err := types.MarshalMap(&constructionMetadata{ScriptPubKeys: scripts, ReplayBlockHeight: bestblockHash-100, ReplayBlockHash: hashReplay})
 	if err != nil {
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
@@ -260,6 +267,10 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	if err != nil {
 		return nil, wrapErr(ErrUnclearIntent, err)
 	}
+	var metadata constructionMetadata
+	if err := types.UnmarshalMap(request.Metadata, &metadata); err != nil {
+		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+	}
 
 	tx := wire.NewMsgTx(wire.TxVersion)
 	for _, input := range matches[0].Operations {
@@ -293,7 +304,8 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 			)
 		}
 
-		pkScript, err := txscript.PayToAddrScript(addr)
+		hashReplayToByte, err := hex.DecodeString(metadata.ReplayBlockHash)
+		pkScript, err := txscript.PayToAddrReplayOutScript(addr, hashReplayToByte, metadata.ReplayBlockHeight)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -312,10 +324,6 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	inputAmounts := make([]string, len(tx.TxIn))
 	inputAddresses := make([]string, len(tx.TxIn))
 	payloads := make([]*types.SigningPayload, len(tx.TxIn))
-	var metadata constructionMetadata
-	if err := types.UnmarshalMap(request.Metadata, &metadata); err != nil {
-		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
-	}
 
 	for i := range tx.TxIn {
 		address := matches[0].Operations[i].Account.Address
@@ -323,7 +331,6 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		if err != nil {
 			return nil, wrapErr(ErrUnableToDecodeScriptPubKey, err)
 		}
-
 		class, _, err := bitcoin.ParseSingleAddress(s.config.Params, script)
 		if err != nil {
 			return nil, wrapErr(
@@ -334,17 +341,31 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 
 		inputAddresses[i] = address
 		inputAmounts[i] = matches[0].Amounts[i].String()
-		absAmount := new(big.Int).Abs(matches[0].Amounts[i]).Int64()
 
-		switch class {
-		case txscript.WitnessV0PubKeyHashTy:
-			//should never happen
-		default:
+		if (class == txscript.NonStandardTy) {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
 			)
 		}
+		hash, err := txscript.CalcSignatureHash(
+			script,
+			txscript.SigHashAll,
+			tx,
+			i,
+		)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToCalculateSignatureHash, err)
+		}
+
+		payloads[i] = &types.SigningPayload{
+			AccountIdentifier: &types.AccountIdentifier{
+				Address: address,
+			},
+			Bytes:         hash,
+			SignatureType: types.Ecdsa,
+		}
+
 	}
 
 	buf := bytes.NewBuffer(make([]byte, 0, tx.SerializeSize()))
@@ -361,7 +382,6 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	if err != nil {
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
-
 	return &types.ConstructionPayloadsResponse{
 		UnsignedTransaction: hex.EncodeToString(rawTx),
 		Payloads:            payloads,
@@ -429,17 +449,19 @@ func (s *ConstructionAPIService) ConstructionCombine(
 			)
 		}
 
-		pkData := request.Signatures[i].PublicKey.Bytes
 		fullsig := normalizeSignature(request.Signatures[i].Bytes)
+		pkData := request.Signatures[i].PublicKey.Bytes
 
-		switch class {
-		case txscript.WitnessV0PubKeyHashTy:
-			tx.TxIn[i].Witness = wire.TxWitness{fullsig, pkData}
-		default:
+		if (class == txscript.NonStandardTy) {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
 			)
+		}
+
+		tx.TxIn[i].SignatureScript, err = txscript.NewScriptBuilder().AddData(fullsig).AddData(pkData).Script()
+		if (err!=nil) {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, fmt.Errorf("%w calculate input signature!", err))
 		}
 	}
 
@@ -640,14 +662,13 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 	ops := []*types.Operation{}
 	signers := []*types.AccountIdentifier{}
 	for i, input := range tx.TxIn {
-		pkScript, err := txscript.ComputePkScript(input.SignatureScript, input.Witness)
+		pkScript, err := txscript.ComputePkScript(input.SignatureScript)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToComputePkScript,
 				fmt.Errorf("%w: unable to compute pk script", err),
 			)
 		}
-
 		_, addr, err := bitcoin.ParseSingleAddress(s.config.Params, pkScript.Script())
 		if err != nil {
 			return nil, wrapErr(

@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/coinbase/rosetta-sdk-go/storage"
@@ -1455,7 +1457,7 @@ func TestParseBlock(t *testing.T) {
 	}
 }
 
-/*
+
 func TestSuggestedFeeRate(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture
@@ -1472,7 +1474,7 @@ func TestSuggestedFeeRate(t *testing.T) {
 				},
 			},
 			expectedRate: float64(0.00001),
-		},
+		},/*
 		"invalid range error": {
 			responses: []responseFixture{
 				{
@@ -1492,7 +1494,7 @@ func TestSuggestedFeeRate(t *testing.T) {
 				},
 			},
 			expectedError: errors.New("invalid response: 500 Internal Server Error"),
-		},
+		},*/
 	}
 
 	for name, test := range tests {
@@ -1527,7 +1529,7 @@ func TestSuggestedFeeRate(t *testing.T) {
 		})
 	}
 }
-
+/*
 func TestRawMempool(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture

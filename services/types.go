@@ -18,7 +18,6 @@ import (
 	"context"
 
 	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
-
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -48,6 +47,8 @@ type Client interface {
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)
+	GetBestBlock (context.Context) (int64, error)
+	GetHashFromIndex(context.Context, int64) (string, error)
 }
 
 // Indexer is used by the servicers to get block and account data.
@@ -83,6 +84,9 @@ type preprocessOptions struct {
 
 type constructionMetadata struct {
 	ScriptPubKeys []*bitcoin.ScriptPubKey `json:"script_pub_keys"`
+	ReplayBlockHeight int64 `json:"replay_block_height"`
+	ReplayBlockHash string `json:"replay_block_hash"`
+
 }
 
 type signedTransaction struct {

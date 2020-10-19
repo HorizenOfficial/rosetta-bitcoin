@@ -3,7 +3,7 @@
   "blockchain": "Zen",
   "network": "test"
  },
- "data_directory": "bitcoin-testnet-data",
+ "data_directory": "Zen-testnet-data",
  "http_timeout": 300,
  "max_retries": 5,
  "retry_elapsed_time": 0,
@@ -20,6 +20,7 @@
   "broadcast_behind_tip": false,
   "block_broadcast_limit": 0,
   "rebroadcast_all": false,
+
   "workflows": [
    {
     "name": "request_funds",
@@ -29,7 +30,7 @@
       "name": "find_account",
       "actions": [
        {
-        "input": "{\"symbol\":\"tBTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"tZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -60,7 +61,7 @@
       "name": "create_account",
       "actions": [
        {
-        "input": "{\"network\":\"Testnet3\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"test\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "network"
        },
@@ -90,12 +91,12 @@
       "name": "transfer_dry_run",
       "actions": [
        {
-        "input": "{\"network\":\"Testnet3\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"test\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer_dry_run.network"
        },
        {
-        "input": "{\"symbol\":\"tBTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"tZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -206,7 +207,7 @@
         "type": "assert"
        },
        {
-        "input": "{\"network\":\"Testnet3\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"test\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer.network"
        },
@@ -236,12 +237,12 @@
       "name": "transfer_dry_run",
       "actions": [
        {
-        "input": "{\"network\":\"Testnet3\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"test\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer_dry_run.network"
        },
        {
-        "input": "{\"symbol\":\"tBTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"tZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -328,7 +329,7 @@
         "type": "assert"
        },
        {
-        "input": "{\"network\":\"Testnet3\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"test\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer.network"
        },

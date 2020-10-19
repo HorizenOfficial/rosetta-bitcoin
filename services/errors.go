@@ -40,6 +40,7 @@ var (
 		ErrUnableToGetCoins,
 		ErrTransactionNotFound,
 		ErrCouldNotGetFeeRate,
+		ErrCouldNotGetBestBlock,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -172,6 +173,13 @@ var (
 	ErrCouldNotGetFeeRate = &types.Error{
 		Code:    17, // nolint
 		Message: "Could not get suggested fee rate",
+	}
+
+	// ErrCouldNotGetBestBlock is returned when the fetch
+	// to get the best block heigth.
+	ErrCouldNotGetBestBlock = &types.Error{
+		Code:    18, // nolint
+		Message: "Could not get best block height",
 	}
 )
 
