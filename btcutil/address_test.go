@@ -685,7 +685,6 @@ func TestAddresses(t *testing.T) {
 		}
 		// Valid test, compare address created with f against expected result.
 		addr, err := test.f()
-		fmt.Println("Address calcolato: "+addr.String()+" Address result: "+test.result.String())
 		if err != nil {
 			t.Errorf("%v: address is valid but creating new address failed with error %v",
 				test.name, err)

@@ -536,19 +536,13 @@ func loadConfig() (*config, []string, error) {
 	numNets := 0
 	// Count number of network flags passed; assign active network params
 	// while we're at it
-	if cfg.TestNet3 {
-		numNets++
-		activeNetParams = &testNet3Params
-	}
 	if cfg.RegressionTest {
 		numNets++
-		activeNetParams = &regressionNetParams
+		activeNetParams = &RegtestParams
 	}
-	if cfg.SimNet {
+	if cfg.TestNet3 {
 		numNets++
-		// Also disable dns seeding on the simulation test network.
-		activeNetParams = &simNetParams
-		cfg.DisableDNSSeed = true
+		activeNetParams = &regressionNetParams
 	}
 	if numNets > 1 {
 		str := "%s: The testnet, regtest, segnet, and simnet params " +
@@ -1155,32 +1149,4 @@ func createDefaultConfigFile(destinationPath string) error {
 	}
 
 	return nil
-}
-
-// btcdDial connects to the address on the named network using the appropriate
-// dial function depending on the address and configuration options.  For
-// example, .onion addresses will be dialed using the onion specific proxy if
-// one was specified, but will otherwise use the normal dial function (which
-// could itself use a proxy or not).
-func btcdDial(addr net.Addr) (net.Conn, error) {
-	if strings.Contains(addr.String(), ".onion:") {
-		return cfg.oniondial(addr.Network(), addr.String(),
-			defaultConnectTimeout)
-	}
-	return cfg.dial(addr.Network(), addr.String(), defaultConnectTimeout)
-}
-
-// btcdLookup resolves the IP of the given host using the correct DNS lookup
-// function depending on the configuration options.  For example, addresses will
-// be resolved using tor when the --proxy flag was specified unless --noonion
-// was also specified in which case the normal system DNS resolver will be used.
-//
-// Any attempt to resolve a tor address (.onion) will return an error since they
-// are not intended to be resolved outside of the tor proxy.
-func btcdLookup(host string) ([]net.IP, error) {
-	if strings.HasSuffix(host, ".onion") {
-		return nil, fmt.Errorf("attempt to resolve tor address %s", host)
-	}
-
-	return cfg.lookup(host)
 }

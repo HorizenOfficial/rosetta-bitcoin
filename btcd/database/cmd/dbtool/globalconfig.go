@@ -70,7 +70,7 @@ func validDbType(dbType string) bool {
 // removed and the network parameter's name used instead.
 func netName(chainParams *chaincfg.Params) string {
 	switch chainParams.Net {
-	case wire.TestNet3:
+	case wire.TestNet:
 		return "testnet"
 	default:
 		return chainParams.Name
@@ -87,15 +87,11 @@ func setupGlobalConfig() error {
 	numNets := 0
 	if cfg.TestNet3 {
 		numNets++
-		activeNetParams = &chaincfg.TestNet3Params
+		activeNetParams = &chaincfg.RegressionNetParams
 	}
 	if cfg.RegressionTest {
 		numNets++
-		activeNetParams = &chaincfg.RegressionNetParams
-	}
-	if cfg.SimNet {
-		numNets++
-		activeNetParams = &chaincfg.SimNetParams
+		activeNetParams = &chaincfg.RegtestParams
 	}
 	if numNets > 1 {
 		return errors.New("The testnet, regtest, and simnet params " +

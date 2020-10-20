@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
-	"github.com/btcsuite/btcd/btcec"
+	"github.com/HorizenOfficial/rosetta-zen/btcd/btcec"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"

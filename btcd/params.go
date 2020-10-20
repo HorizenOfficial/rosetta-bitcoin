@@ -6,7 +6,6 @@ package main
 
 import (
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 )
 
 // activeNetParams is a pointer to the parameters specific to the
@@ -28,7 +27,7 @@ type params struct {
 // to emulate the full reference implementation RPC API.
 var mainNetParams = params{
 	Params:  &chaincfg.MainNetParams,
-	rpcPort: "8334",
+	rpcPort: "9033",
 }
 
 // regressionNetParams contains parameters specific to the regression test
@@ -37,23 +36,17 @@ var mainNetParams = params{
 // details.
 var regressionNetParams = params{
 	Params:  &chaincfg.RegressionNetParams,
-	rpcPort: "18334",
+	rpcPort: "19033",
 }
 
 // testNet3Params contains parameters specific to the test network (version 3)
 // (wire.TestNet3).  NOTE: The RPC port is intentionally different than the
 // reference implementation - see the mainNetParams comment for details.
-var testNet3Params = params{
-	Params:  &chaincfg.TestNet3Params,
-	rpcPort: "18334",
+var RegtestParams = params{
+	Params:  &chaincfg.RegtestParams,
+	rpcPort: "19133",
 }
 
-// simNetParams contains parameters specific to the simulation test network
-// (wire.SimNet).
-var simNetParams = params{
-	Params:  &chaincfg.SimNetParams,
-	rpcPort: "18556",
-}
 
 // netName returns the name used when referring to a bitcoin network.  At the
 // time of writing, btcd currently places blocks for testnet version 3 in the
@@ -65,10 +58,5 @@ var simNetParams = params{
 // "testnet3" is planned for the future, at which point this function can be
 // removed and the network parameter's name used instead.
 func netName(chainParams *params) string {
-	switch chainParams.Net {
-	case wire.TestNet3:
-		return "testnet"
-	default:
-		return chainParams.Name
-	}
+	return chainParams.Name
 }

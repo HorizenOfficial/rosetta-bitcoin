@@ -5,9 +5,6 @@
 package blockchain
 
 import (
-	"fmt"
-
-	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 )
@@ -90,28 +87,6 @@ func GetSigOpCost(tx *btcutil.Tx, isCoinBaseTx bool, utxoView *UtxoViewpoint, bi
 		numSigOps += (numP2SHSigOps * WitnessScaleFactor)
 	}
 
-	if segWit && !isCoinBaseTx {
-		msgTx := tx.MsgTx()
-		for txInIndex, txIn := range msgTx.TxIn {
-			// Ensure the referenced output is available and hasn't
-			// already been spent.
-			utxo := utxoView.LookupEntry(txIn.PreviousOutPoint)
-			if utxo == nil || utxo.IsSpent() {
-				str := fmt.Sprintf("output %v referenced from "+
-					"transaction %s:%d either does not "+
-					"exist or has already been spent",
-					txIn.PreviousOutPoint, tx.Hash(),
-					txInIndex)
-				return 0, ruleError(ErrMissingTxOut, str)
-			}
-
-			witness := txIn.Witness
-			sigScript := txIn.SignatureScript
-			pkScript := utxo.PkScript()
-			numSigOps += txscript.GetWitnessSigOpCount(sigScript, pkScript, witness)
-		}
-
-	}
 
 	return numSigOps, nil
 }
