@@ -590,7 +590,7 @@ func (msg *MsgTx) Deserialize(r io.Reader) error {
 	// At the current time, there is no difference between the wire encoding
 	// at protocol version 0 and the stable long-term storage format.  As
 	// a result, make use of BtcDecode.
-	return msg.BtcDecode(r, 0, WitnessEncoding)
+	return msg.BtcDecode(r, 0, BaseEncoding)
 }
 
 // DeserializeNoWitness decodes a transaction from r into the receiver, where
@@ -675,7 +675,7 @@ func (msg *MsgTx) Serialize(w io.Writer) error {
 	// indicates that the transaction's witnesses (if any) should be
 	// serialized according to the new serialization structure defined in
 	// BIP0144.
-	return msg.BtcEncode(w, 0, WitnessEncoding)
+	return msg.BtcEncode(w, 0, BaseEncoding)
 }
 
 // SerializeNoWitness encodes the transaction to w in an identical manner to
