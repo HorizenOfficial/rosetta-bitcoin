@@ -110,7 +110,7 @@ var (
 
 	// TestnetCurrency is the *types.Currency for testnet.
 	TestnetCurrency = &types.Currency{
-		Symbol:   "ZNT",
+		Symbol:   "ZEN",
 		Decimals: Decimals,
 	}
 
@@ -182,7 +182,7 @@ type Block struct {
 	Height            int64   `json:"height"`
 	PreviousBlockHash string  `json:"previousblockhash"`
 	Time              int64   `json:"time"`
-	Nonce             string   `json:"nonce"`
+	Nonce             string  `json:"nonce"`
 	MerkleRoot        string  `json:"merkleroot"`
 	Version           int32   `json:"version"`
 	Size              int64   `json:"size"`
@@ -209,7 +209,7 @@ func (b Block) Metadata() (map[string]interface{}, error) {
 // BlockMetadata is a collection of useful
 // metadata in a block.
 type BlockMetadata struct {
-	Nonce      string   `json:"nonce,omitempty"`
+	Nonce      string  `json:"nonce,omitempty"`
 	MerkleRoot string  `json:"merkleroot,omitempty"`
 	Version    int32   `json:"version,omitempty"`
 	Size       int64   `json:"size,omitempty"`
@@ -226,30 +226,30 @@ type Transaction struct {
 	Version  int32  `json:"version"`
 	Locktime int64  `json:"locktime"`
 
-	Inputs  []*Input  `json:"vin"`
-	Outputs []*Output `json:"vout"`
+	Inputs     []*Input     `json:"vin"`
+	Outputs    []*Output    `json:"vout"`
 	Joinsplits []*Joinsplit `json:"vjoinsplit"`
 }
 
 type Joinsplit struct {
-	VPub_old 		float64 	`json:"vpub_old"`
-	VPub_new 		float64 	`json:"vpub_new"`
-	Anchor 			string 	 	`json:"anchor"`
-	Nullifiers 		[]string 	`json:"nullifiers"`
-	Commitments 	[]string 	`json:"commitments"`
-	OneTimePubKey 	string 		`json:"onetimePubkey"`
-	RandomSeed 		string 		`json:"randomSeed"`
-	Macs 			[]string 	`json:"macs"`
-	Proof 			string 		`json:"proof"`
-	Ciphertexts 	[]string 	`json:"ciphertexts"`
+	VPub_old      float64  `json:"vpub_old"`
+	VPub_new      float64  `json:"vpub_new"`
+	Anchor        string   `json:"anchor"`
+	Nullifiers    []string `json:"nullifiers"`
+	Commitments   []string `json:"commitments"`
+	OneTimePubKey string   `json:"onetimePubkey"`
+	RandomSeed    string   `json:"randomSeed"`
+	Macs          []string `json:"macs"`
+	Proof         string   `json:"proof"`
+	Ciphertexts   []string `json:"ciphertexts"`
 }
 
 // Metadata returns the metadata for a transaction.
 func (t Transaction) Metadata() (map[string]interface{}, error) {
 	m := &TransactionMetadata{
-		Size:     t.Size,
-		Version:  t.Version,
-		Locktime: t.Locktime,
+		Size:      t.Size,
+		Version:   t.Version,
+		Locktime:  t.Locktime,
 		Joinsplit: t.Joinsplits,
 	}
 
@@ -259,18 +259,18 @@ func (t Transaction) Metadata() (map[string]interface{}, error) {
 // TransactionMetadata is a collection of useful
 // metadata in a transaction.
 type TransactionMetadata struct {
-	Size     int64 `json:"size,omitempty"`
-	Version  int32 `json:"version,omitempty"`
-	Locktime int64 `json:"locktime,omitempty"`
+	Size      int64        `json:"size,omitempty"`
+	Version   int32        `json:"version,omitempty"`
+	Locktime  int64        `json:"locktime,omitempty"`
 	Joinsplit []*Joinsplit `json:"vjoinsplit,omitempty"`
 }
 
 // Input is a raw input in a Bitcoin transaction.
 type Input struct {
-	TxHash      string     `json:"txid"`
-	Vout        int64      `json:"vout"`
-	ScriptSig   *ScriptSig `json:"scriptSig"`
-	Sequence    int64      `json:"sequence"`
+	TxHash    string     `json:"txid"`
+	Vout      int64      `json:"vout"`
+	ScriptSig *ScriptSig `json:"scriptSig"`
+	Sequence  int64      `json:"sequence"`
 
 	// Relevant when the input is the coinbase input
 	Coinbase string `json:"coinbase"`
@@ -279,9 +279,9 @@ type Input struct {
 // Metadata returns the metadata for an input.
 func (i Input) Metadata() (map[string]interface{}, error) {
 	m := &OperationMetadata{
-		ScriptSig:   i.ScriptSig,
-		Sequence:    i.Sequence,
-		Coinbase:    i.Coinbase,
+		ScriptSig: i.ScriptSig,
+		Sequence:  i.Sequence,
+		Coinbase:  i.Coinbase,
 	}
 
 	return types.MarshalMap(m)
@@ -310,8 +310,8 @@ type OperationMetadata struct {
 	Coinbase string `json:"coinbase,omitempty"`
 
 	// Input Metadata
-	ScriptSig   *ScriptSig `json:"scriptsig,omitempty"`
-	Sequence    int64      `json:"sequence,omitempty"`
+	ScriptSig *ScriptSig `json:"scriptsig,omitempty"`
+	Sequence  int64      `json:"sequence,omitempty"`
 
 	// Output Metadata
 	ScriptPubKey *ScriptPubKey `json:"scriptPubKey,omitempty"`
