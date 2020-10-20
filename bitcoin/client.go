@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -30,6 +29,7 @@ import (
 	bitcoinUtils "github.com/HorizenOfficial/rosetta-zen/utils"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
+	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -400,7 +400,6 @@ func (b *Client) GetBestBlock(
 
 	return response.Result.Blocks, nil
 }
-
 
 // getBlockHash returns the hash for a specified block identifier.
 // If the identifier includes a hash it will return that hash.
