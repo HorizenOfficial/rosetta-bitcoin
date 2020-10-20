@@ -15,6 +15,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/HorizenOfficial/rosetta-zen/btcd/btcec"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
@@ -293,7 +294,7 @@ func parseExpectedResult(expected string) ([]ErrorCode, error) {
 
 // createSpendTx generates a basic spending transaction given the passed
 // signature, witness and public key scripts.
-func createSpendingTx(witness [][]byte, sigScript, pkScript []byte,
+func createSpendingTx(sigScript, pkScript []byte,
 	outputValue int64) *wire.MsgTx {
 
 	coinbaseTx := wire.NewMsgTx(wire.TxVersion)
@@ -352,7 +353,6 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 		}
 
 		var (
-			witness  wire.TxWitness
 			inputAmt btcutil.Amount
 		)
 
@@ -361,17 +361,6 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 		witnessOffset := 0
 		if witnessData, ok := test[0].([]interface{}); ok {
 			witnessOffset++
-
-			// If this is a witness test, then the final element
-			// within the slice is the input amount, so we ignore
-			// all but the last element in order to parse the
-			// witness stack.
-			strWitnesses := witnessData[:len(witnessData)-1]
-			witness, err = parseWitnessStack(strWitnesses)
-			if err != nil {
-				t.Errorf("%s: can't parse witness; %v", name, err)
-				continue
-			}
 
 			inputAmt, err = btcutil.NewAmount(witnessData[len(witnessData)-1].(float64))
 			if err != nil {
@@ -441,10 +430,8 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 		// Generate a transaction pair such that one spends from the
 		// other and the provided signature and public key scripts are
 		// used, then create a new engine to execute the scripts.
-		tx := createSpendingTx(witness, scriptSig, scriptPubKey,
-			int64(inputAmt))
-		vm, err := NewEngine(scriptPubKey, tx, 0, flags, sigCache, nil,
-			int64(inputAmt))
+		tx := createSpendingTx(scriptSig, scriptPubKey, int64(inputAmt))
+		vm, err := NewEngine(scriptPubKey, tx, 0, flags, sigCache, nil, int64(inputAmt))
 		if err == nil {
 			err = vm.Execute()
 		}
@@ -820,56 +807,133 @@ testloop:
 	}
 }
 
-// TestCalcSignatureHash runs the Bitcoin Core signature hash calculation tests
-// in sighash.json.
-// https://github.com/bitcoin/bitcoin/blob/master/src/test/data/sighash.json
-func TestCalcSignatureHash(t *testing.T) {
-	file, err := ioutil.ReadFile("data/sighash.json")
+func TestZENCalcSignatureHash_SigHashAll(t *testing.T) {
+	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
+	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+
+	var tx wire.MsgTx
+	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
+	err := tx.Deserialize(bytes.NewReader(rawTx))
 	if err != nil {
-		t.Fatalf("TestCalcSignatureHash: %v\n", err)
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse transaction: %v", err)
 	}
 
-	var tests [][]interface{}
-	err = json.Unmarshal(file, &tests)
+	subScript, _ := hex.DecodeString(scriptHex)
+	parsedScript, err := parseScript(subScript)
 	if err != nil {
-		t.Fatalf("TestCalcSignatureHash couldn't Unmarshal: %v\n",
-			err)
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse sub-script: %v", err)
 	}
 
-	for i, test := range tests {
-		if i == 0 {
-			// Skip first line -- contains comments only.
-			continue
-		}
-		if len(test) != 5 {
-			t.Fatalf("TestCalcSignatureHash: Test #%d has "+
-				"wrong length.", i)
-		}
-		var tx wire.MsgTx
-		rawTx, _ := hex.DecodeString(test[0].(string))
-		err := tx.Deserialize(bytes.NewReader(rawTx))
-		if err != nil {
-			t.Errorf("TestCalcSignatureHash failed test #%d: "+
-				"Failed to parse transaction: %v", i, err)
-			continue
-		}
-
-		subScript, _ := hex.DecodeString(test[1].(string))
-		parsedScript, err := parseScript(subScript)
-		if err != nil {
-			t.Errorf("TestCalcSignatureHash failed test #%d: "+
-				"Failed to parse sub-script: %v", i, err)
-			continue
-		}
-
-		hashType := SigHashType(testVecF64ToUint32(test[3].(float64)))
-		hash := calcSignatureHash(parsedScript, hashType, &tx,
-			int(test[2].(float64)))
-
-		expectedHash, _ := chainhash.NewHashFromStr(test[4].(string))
-		if !bytes.Equal(hash, expectedHash[:]) {
-			t.Errorf("TestCalcSignatureHash failed test #%d: "+
-				"Signature hash mismatch.", i)
-		}
+	hash := calcSignatureHash(parsedScript, SigHashAll, &tx, 0)
+	if hex.EncodeToString(hash) != "7c7bfbdc8f8592bc3b618a3c61e9e58b562f6d668307602a3edc88cadf6d1113" {
+		t.Errorf("TestZENCalcSignatureHash failed test: wrong hash")
 	}
+}
+
+func TestZENCalcSignatureHash_SigHashSingle(t *testing.T) {
+	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
+	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+
+	var tx wire.MsgTx
+	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
+	err := tx.Deserialize(bytes.NewReader(rawTx))
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse transaction: %v", err)
+	}
+
+	subScript, _ := hex.DecodeString(scriptHex)
+	parsedScript, err := parseScript(subScript)
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse sub-script: %v", err)
+	}
+
+	hash := calcSignatureHash(parsedScript, SigHashSingle, &tx, 0)
+	if hex.EncodeToString(hash) != "1fbdbdbeb088c68a5780b883e54f3d923704a15ddc886a8c1eeb710992be56a0" {
+		t.Errorf("TestZENCalcSignatureHash failed test: wrong hash")
+	}
+}
+
+func TestZENCalcSignatureHash_SigHashNone(t *testing.T) {
+	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
+	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+
+	var tx wire.MsgTx
+	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
+	err := tx.Deserialize(bytes.NewReader(rawTx))
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse transaction: %v", err)
+	}
+
+	subScript, _ := hex.DecodeString(scriptHex)
+	parsedScript, err := parseScript(subScript)
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse sub-script: %v", err)
+	}
+
+	hash := calcSignatureHash(parsedScript, SigHashNone, &tx, 0)
+	if hex.EncodeToString(hash) != "de80af8f03f41ac8c5027514b8ce86cb64b67a3d08210cc3b55e84c5f7f07cb6" {
+		t.Errorf("TestZENCalcSignatureHash failed test: wrong hash")
+	}
+}
+
+/*
+func TestZENCalcSignatureHash_SigHashForMarco(t *testing.T) {
+	unsignedSerializedTx :=
+		"0100000001e2fcfaf6e7ef549f55fa695aa7c1fd0e9ce402629008b3a38578b7929bf97f500000000000ffffffff0160162c44000000003c76a9140eeb0915c30e5d03b27b19a6a3a6814ef62d4c0488ac20bb1acf2c1fc1228967a611c7db30632098f0c641855180b5fe23793b72eea50d00b400000000"
+
+	scriptHex := "76a914cafd80252588892a4c340bc26cff7ddf7b8a417088ac"
+
+	var tx wire.MsgTx
+	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
+	err := tx.Deserialize(bytes.NewReader(rawTx))
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse transaction: %v", err)
+	}
+
+	subScript, _ := hex.DecodeString(scriptHex)
+	parsedScript, err := parseScript(subScript)
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse sub-script: %v", err)
+	}
+
+	//s, _ := json.MarshalIndent(tx, "", "\t")
+	//fmt.Println("UNSIGNED: " + string(s))
+	//fmt.Println(hex.EncodeToString(tx.TxOut[0].PkScript))
+	//fmt.Println(hex.EncodeToString(tx.TxIn[0].PreviousOutPoint.Hash.CloneBytes()))
+	//hash := calcSignatureHash(parsedScript, SigHashAll, &tx, 0)
+
+}
+*/
+
+func TestZENRawTxInSignature_SigHashAll(t *testing.T) {
+	unsignedSerializedTx := "0100000001dc57f92c814871a404ae667003c00da6fcdbe5a1e16610fec4337d74db23fe4f0100000000ffffffff0100ca9a3b000000003e76a91484754e80eeb0a77a3895eacc233d93acc8a689ff88ac202362d1e7b9ffcde357d1c83e60875c7ddbd46b92c3031abb77ab0b7c8c768d0c024101b400000000"
+	scriptHex := "76a9145f3e58d7136483ac14c305c21f15267ac7c3233688ac20bb1acf2c1fc1228967a611c7db30632098f0c641855180b5fe23793b72eea50d00b4"
+	expectedSign := "3045022100f6b966be25f737f7116ae270b8f00f6f1f9330587f6d3831d0d7109b5fb97e1f02204f65396c964d4f8f5e1b283e500fa0bf03f7f7ef47cd49e3497046b27cd795ae01"
+
+	var tx wire.MsgTx
+	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
+	err := tx.Deserialize(bytes.NewReader(rawTx))
+	if err != nil {
+		t.Errorf("TestZENCalcSignatureHash failed test: "+
+			"Failed to parse transaction: %v", err)
+	}
+
+	subScript, _ := hex.DecodeString(scriptHex)
+	privKeyBytes, _ := hex.DecodeString("2791eaa5b6200f6654a947af9e64191644f1db55de87fdecd8ee4aa1074b7f8a")
+	privKey, _ := btcec.PrivKeyFromBytes(btcec.S256(), privKeyBytes)
+
+	sig, _ := RawTxInSignature(&tx, 0, subScript, SigHashAll, privKey)
+
+	if hex.EncodeToString(sig) != expectedSign {
+		t.Errorf("TestZENCalcSignatureHash failed test: wrong hash")
+	}
+
 }

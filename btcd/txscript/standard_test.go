@@ -6,13 +6,11 @@ package txscript
 
 import (
 	"bytes"
-	"encoding/hex"
 	"errors"
 	"reflect"
 	"testing"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 )
 
@@ -469,20 +467,7 @@ func TestCalcScriptInfo(t *testing.T) {
 		sigScript := mustParseShortForm(test.sigScript)
 		pkScript := mustParseShortForm(test.pkScript)
 
-		var witness wire.TxWitness
-
-		for _, witElement := range test.witness {
-			wit, err := hex.DecodeString(witElement)
-			if err != nil {
-				t.Fatalf("unable to decode witness "+
-					"element: %v", err)
-			}
-
-			witness = append(witness, wit)
-		}
-
-		si, err := CalcScriptInfo(sigScript, pkScript, witness,
-			test.bip16, test.segwit)
+		si, err := CalcScriptInfo(sigScript, pkScript)
 		if e := tstCheckScriptError(err, test.scriptInfoErr); e != nil {
 			t.Errorf("scriptinfo test %q: %v", test.name, e)
 			continue

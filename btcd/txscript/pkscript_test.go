@@ -3,8 +3,6 @@ package txscript
 import (
 	"bytes"
 	"testing"
-
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
 )
 
 // TestParsePkScript ensures that the supported script types can be parsed
@@ -126,7 +124,7 @@ func TestParsePkScript(t *testing.T) {
 }
 
 // TestComputePkScript ensures that we can correctly re-derive an output's
-// pkScript by looking at the input's signature script/witness attempting to
+// pkScript by looking at the input's signature script attempting to
 // spend it.
 func TestComputePkScript(t *testing.T) {
 	t.Parallel()
@@ -134,14 +132,12 @@ func TestComputePkScript(t *testing.T) {
 	tests := []struct {
 		name      string
 		sigScript []byte
-		witness   wire.TxWitness
 		class     ScriptClass
 		pkScript  []byte
 	}{
 		{
-			name:      "empty sigScript and witness",
+			name:      "empty sigScript",
 			sigScript: nil,
-			witness:   nil,
 			class:     NonStandardTy,
 			pkScript:  nil,
 		},
@@ -170,8 +166,7 @@ func TestComputePkScript(t *testing.T) {
 				0x1f, 0x1f, 0x7b, 0x73, 0x7d, 0x9a, 0x24, 0x49,
 				0x90,
 			},
-			witness: nil,
-			class:   PubKeyHashTy,
+			class: PubKeyHashTy,
 			pkScript: []byte{
 				// OP_DUP
 				0x76,
@@ -201,10 +196,7 @@ func TestComputePkScript(t *testing.T) {
 				0x86, 0xf4, 0xcb, 0xf9, 0x8e, 0xae, 0xd2, 0x21,
 				0xb3, 0x0b, 0xd9, 0xa0, 0xb9, 0x28,
 			},
-			// NP2PKH outputs include a witness, but it is not
-			// needed to reconstruct the pkScript.
-			witness: nil,
-			class:   ScriptHashTy,
+			class: ScriptHashTy,
 			pkScript: []byte{
 				// OP_HASH160
 				0xa9,
@@ -250,8 +242,7 @@ func TestComputePkScript(t *testing.T) {
 				0x3e, 0xfd, 0x9d, 0x41, 0x03, 0xb5, 0x59, 0xeb,
 				0x67, 0xcd, 0x52, 0xae,
 			},
-			witness: nil,
-			class:   ScriptHashTy,
+			class: ScriptHashTy,
 			pkScript: []byte{
 				// OP_HASH160
 				0xA9,
@@ -269,7 +260,6 @@ func TestComputePkScript(t *testing.T) {
 		{
 			name:      "invalid P2SH sigScript",
 			sigScript: []byte{0x6b, 0x65, 0x6b}, // kek
-			witness:   nil,
 			class:     NonStandardTy,
 			pkScript:  nil,
 		},
