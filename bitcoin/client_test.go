@@ -16,6 +16,7 @@ package bitcoin
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -192,167 +193,9 @@ var (
 			},
 		},
 	}
-
-	blockIdentifier100000 = &types.BlockIdentifier{
-		Hash:  "000000000003ba27aa200b1cecaad478d2b00432346c3f1f3986da1afd33e506",
-		Index: 100000,
-	}
-
-	block100000 = &Block{
-		Hash:              "000000000003ba27aa200b1cecaad478d2b00432346c3f1f3986da1afd33e506",
-		Height:            100000,
-		PreviousBlockHash: "000000000002d01c1fccc21636b607dfd930d31d01c3a62104612a1719011250",
-		Time:              1293623863,
-		Size:              957,
-		Version:           1,
-		MerkleRoot:        "f3e94742aca4b5ef85488dc37c06c3282295ffec960994b2c0d5ac2a25a95766",
-		Nonce:             "274148111",
-		Bits:              "1b04864c",
-		Difficulty:        14484.1623612254,
-		Txs: []*Transaction{
-			{
-				Hex:      "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff08044c86041b020602ffffffff0100f2052a010000004341041b0e8c2567c12536aa13357b79a073dc4444acb83c4ec7a0e2f99dd7457516c5817242da796924ca4e99947d087fedf9ce467cb9f7c6287078f801df276fdf84ac00000000", // nolint
-				Hash:     "8c14f0db3df150123e6f3dbbf30f8b955a8249b62ac1d1ff16284aefa3d06d87",
-				Size:     135,
-				Vsize:    135,
-				Version:  1,
-				Locktime: 0,
-				Inputs: []*Input{
-					{
-						Coinbase: "044c86041b020602",
-						Sequence: 4294967295,
-					},
-				},
-				Outputs: []*Output{
-					{
-						Value: 15.89351625,
-						Index: 0,
-						ScriptPubKey: &ScriptPubKey{
-							ASM:          "OP_HASH160 228f554bbf766d6f9cc828de1126e3d35d15e5fe OP_EQUAL",
-							Hex:          "a914228f554bbf766d6f9cc828de1126e3d35d15e5fe87",
-							RequiredSigs: 1,
-							Type:         "scripthash",
-							Addresses: []string{
-								"34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK",
-							},
-						},
-					},
-					{
-						Value: 0,
-						Index: 1,
-						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_RETURN aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
-							Hex:  "6a24aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
-							Type: "nulldata",
-						},
-					},
-				},
-			},
-			{
-				Hex:      "0100000001032e38e9c0a84c6046d687d10556dcacc41d275ec55fc00779ac88fdf357a187000000008c493046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748014104f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3ffffffff0200e32321000000001976a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac000fe208010000001976a914948c765a6914d43f2a7ac177da2c2f6b52de3d7c88ac00000000", // nolint
-				Hash:     "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4",
-				Size:     259,
-				Vsize:    259,
-				Version:  1,
-				Locktime: 0,
-				Inputs: []*Input{
-					{
-						TxHash: "87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03",
-						Vout:   0,
-						ScriptSig: &ScriptSig{
-							ASM: "3046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748[ALL] 04f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-							Hex: "493046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748014104f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-						},
-						Sequence: 4294967295,
-					},
-				},
-				Outputs: []*Output{
-					{
-						Value: 5.56,
-						Index: 0,
-						ScriptPubKey: &ScriptPubKey{
-							ASM:          "OP_DUP OP_HASH160 c398efa9c392ba6013c5e04ee729755ef7f58b32 OP_EQUALVERIFY OP_CHECKSIG",
-							Hex:          "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
-							RequiredSigs: 1,
-							Type:         "pubkeyhash",
-							Addresses: []string{
-								"1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-							},
-						},
-					},
-					{
-						Value: 44.44,
-						Index: 1,
-						ScriptPubKey: &ScriptPubKey{
-							ASM:          "OP_DUP OP_HASH160 948c765a6914d43f2a7ac177da2c2f6b52de3d7c OP_EQUALVERIFY OP_CHECKSIG",
-							Hex:          "76a914948c765a6914d43f2a7ac177da2c2f6b52de3d7c88ac",
-							RequiredSigs: 1,
-							Type:         "pubkeyhash",
-							Addresses: []string{
-								"1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
-							},
-						},
-					},
-				},
-			},
-			{
-				Hash:     "fake",
-				Hex:      "fake hex",
-				Version:  2,
-				Size:     421,
-				Vsize:    612,
-				Locktime: 10,
-				Inputs: []*Input{
-					{
-						TxHash: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5",
-						Vout:   0,
-						ScriptSig: &ScriptSig{
-							ASM: "00142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-							Hex: "1600142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-						},
-						Sequence: 4294967295,
-					},
-					{
-						TxHash: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5",
-						Vout:   1,
-						ScriptSig: &ScriptSig{
-							ASM: "00142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-							Hex: "1600142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-						},
-						Sequence: 4294967295,
-					},
-					{
-						TxHash: "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4",
-						Vout:   0,
-						ScriptSig: &ScriptSig{
-							ASM: "3046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748[ALL] 04f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-							Hex: "493046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748014104f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-						},
-						Sequence: 4294967295,
-					},
-				},
-				Outputs: []*Output{
-					{
-						Value: 200.56,
-						Index: 0,
-						ScriptPubKey: &ScriptPubKey{
-							ASM:          "OP_DUP OP_HASH160 c398efa9c392ba6013c5e04ee729755ef7f58b32 OP_EQUALVERIFY OP_CHECKSIG",
-							Hex:          "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
-							RequiredSigs: 1,
-							Type:         "pubkeyhash",
-							Addresses: []string{
-								"1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-								"1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
-							},
-						},
-					},
-				},
-			},
-		},
-	}
 )
 
-/*
+
 func TestNetworkStatus(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture
@@ -379,8 +222,8 @@ func TestNetworkStatus(t *testing.T) {
 				},
 			},
 			expectedStatus: &types.NetworkStatusResponse{
-				CurrentBlockIdentifier: blockIdentifier1000,
-				CurrentBlockTimestamp:  block1000.Time * 1000,
+				CurrentBlockIdentifier: blockIdentifier717983,
+				CurrentBlockTimestamp:  block717983.Time * 1000,
 				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
 				Peers: []*types.Peer{
 					{
@@ -502,7 +345,7 @@ func TestGetRawBlock(t *testing.T) {
 	}{
 		"lookup by hash": {
 			blockIdentifier: &types.PartialBlockIdentifier{
-				Hash: &blockIdentifier1000.Hash,
+				Hash: &blockIdentifier717983.Hash,
 			},
 			responses: []responseFixture{
 				{
@@ -511,30 +354,12 @@ func TestGetRawBlock(t *testing.T) {
 					url:    url,
 				},
 			},
-			expectedBlock: block1000,
-			expectedCoins: []string{},
-		},
-		"lookup by hash 2": {
-			blockIdentifier: &types.PartialBlockIdentifier{
-				Hash: &blockIdentifier100000.Hash,
-			},
-			responses: []responseFixture{
-				{
-					status: http.StatusOK,
-					body:   loadFixture("get_block_response_2.json"),
-					url:    url,
-				},
-			},
-			expectedBlock: block100000,
-			expectedCoins: []string{
-				"87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03:0",
-				"503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:0",
-				"503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:1",
-			},
+			expectedBlock: block717983,
+			expectedCoins: []string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
 		},
 		"lookup by hash (get block api error)": {
 			blockIdentifier: &types.PartialBlockIdentifier{
-				Hash: &blockIdentifier1000.Hash,
+				Hash: &blockIdentifier717983.Hash,
 			},
 			responses: []responseFixture{
 				{
@@ -547,7 +372,7 @@ func TestGetRawBlock(t *testing.T) {
 		},
 		"lookup by hash (get block internal error)": {
 			blockIdentifier: &types.PartialBlockIdentifier{
-				Hash: &blockIdentifier1000.Hash,
+				Hash: &blockIdentifier717983.Hash,
 			},
 			responses: []responseFixture{
 				{
@@ -561,7 +386,7 @@ func TestGetRawBlock(t *testing.T) {
 		},
 		"lookup by index": {
 			blockIdentifier: &types.PartialBlockIdentifier{
-				Index: &blockIdentifier1000.Index,
+				Index: &blockIdentifier717983.Index,
 			},
 			responses: []responseFixture{
 				{
@@ -575,12 +400,12 @@ func TestGetRawBlock(t *testing.T) {
 					url:    url,
 				},
 			},
-			expectedBlock: block1000,
-			expectedCoins: []string{},
+			expectedBlock: block717983,
+			expectedCoins: []string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
 		},
 		"lookup by index (out of range)": {
 			blockIdentifier: &types.PartialBlockIdentifier{
-				Index: &blockIdentifier1000.Index,
+				Index: &blockIdentifier717983.Index,
 			},
 			responses: []responseFixture{
 				{
@@ -604,8 +429,8 @@ func TestGetRawBlock(t *testing.T) {
 					url:    url,
 				},
 			},
-			expectedBlock: block1000,
-			expectedCoins: []string{},
+			expectedBlock: block717983,
+			expectedCoins:[]string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
 		},
 		"current block lookup (can't get current info)": {
 			responses: []responseFixture{
@@ -652,7 +477,7 @@ func TestGetRawBlock(t *testing.T) {
 		})
 	}
 }
-*/
+
 func int64Pointer(v int64) *int64 {
 	return &v
 }
@@ -1045,398 +870,6 @@ func TestParseBlock(t *testing.T) {
 				}),
 			},
 		},
-		/*
-		"block 100000": {
-			block: block100000,
-			coins: map[string]*storage.AccountCoin{
-				"87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03:0": {
-					Account: &types.AccountIdentifier{
-						Address: "1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb",
-					},
-					Coin: &types.Coin{
-						CoinIdentifier: &types.CoinIdentifier{
-							Identifier: "87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03:0",
-						},
-						Amount: &types.Amount{
-							Value:    "5000000000",
-							Currency: MainnetCurrency,
-						},
-					},
-				},
-				"503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:0": {
-					Account: &types.AccountIdentifier{
-						Address: "3FfQGY7jqsADC7uTVqF3vKQzeNPiBPTqt4",
-					},
-					Coin: &types.Coin{
-						CoinIdentifier: &types.CoinIdentifier{
-							Identifier: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:0",
-						},
-						Amount: &types.Amount{
-							Value:    "3467607",
-							Currency: MainnetCurrency,
-						},
-					},
-				},
-				"503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:1": {
-					Account: &types.AccountIdentifier{
-						Address: "1NdvAyRJLdK5EXs7DV3ebYb5wffdCZk1pD",
-					},
-					Coin: &types.Coin{
-						CoinIdentifier: &types.CoinIdentifier{
-							Identifier: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:1",
-						},
-						Amount: &types.Amount{
-							Value:    "0",
-							Currency: MainnetCurrency,
-						},
-					},
-				},
-			},
-			expectedBlock: &types.Block{
-				BlockIdentifier: blockIdentifier100000,
-				ParentBlockIdentifier: &types.BlockIdentifier{
-					Hash:  "000000000002d01c1fccc21636b607dfd930d31d01c3a62104612a1719011250",
-					Index: 99999,
-				},
-				Timestamp: 1293623863000,
-				Transactions: []*types.Transaction{
-					{
-						TransactionIdentifier: &types.TransactionIdentifier{
-							Hash: "8c14f0db3df150123e6f3dbbf30f8b955a8249b62ac1d1ff16284aefa3d06d87",
-						},
-						Operations: []*types.Operation{
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        0,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   CoinbaseOpType,
-								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
-									Coinbase: "044c86041b020602",
-									Sequence: 4294967295,
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        1,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   OutputOpType,
-								Status: SuccessStatus,
-								Account: &types.AccountIdentifier{
-									Address: "34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK",
-								},
-								Amount: &types.Amount{
-									Value:    "1589351625",
-									Currency: MainnetCurrency,
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinCreated,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "8c14f0db3df150123e6f3dbbf30f8b955a8249b62ac1d1ff16284aefa3d06d87:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptPubKey: &ScriptPubKey{
-										ASM:          "OP_HASH160 228f554bbf766d6f9cc828de1126e3d35d15e5fe OP_EQUAL",
-										Hex:          "a914228f554bbf766d6f9cc828de1126e3d35d15e5fe87",
-										RequiredSigs: 1,
-										Type:         "scripthash",
-										Addresses: []string{
-											"34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK",
-										},
-									},
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        2,
-									NetworkIndex: int64Pointer(1),
-								},
-								Type:   OutputOpType,
-								Status: SuccessStatus,
-								Account: &types.AccountIdentifier{
-									Address: "6a24aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
-								},
-								Amount: &types.Amount{
-									Value:    "0",
-									Currency: MainnetCurrency,
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_RETURN aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
-										Hex:  "6a24aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
-										Type: "nulldata",
-									},
-								}),
-							},
-						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
-							Size:    135,
-							Version: 1,
-							Vsize:   135,
-							Weight:  540,
-						}),
-					},
-					{
-						TransactionIdentifier: &types.TransactionIdentifier{
-							Hash: "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4",
-						},
-						Operations: []*types.Operation{
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        0,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   InputOpType,
-								Status: SuccessStatus,
-								Amount: &types.Amount{
-									Value:    "-5000000000",
-									Currency: MainnetCurrency,
-								},
-								Account: &types.AccountIdentifier{
-									Address: "1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb",
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinSpent,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptSig: &ScriptSig{
-										ASM: "3046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748[ALL] 04f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-										Hex: "493046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748014104f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-									},
-									Sequence: 4294967295,
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        1,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   OutputOpType,
-								Status: SuccessStatus,
-								Account: &types.AccountIdentifier{
-									Address: "1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-								},
-								Amount: &types.Amount{
-									Value:    "556000000",
-									Currency: MainnetCurrency,
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinCreated,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptPubKey: &ScriptPubKey{
-										ASM:          "OP_DUP OP_HASH160 c398efa9c392ba6013c5e04ee729755ef7f58b32 OP_EQUALVERIFY OP_CHECKSIG",
-										Hex:          "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
-										RequiredSigs: 1,
-										Type:         "pubkeyhash",
-										Addresses: []string{
-											"1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-										},
-									},
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        2,
-									NetworkIndex: int64Pointer(1),
-								},
-								Type:   OutputOpType,
-								Status: SuccessStatus,
-								Account: &types.AccountIdentifier{
-									Address: "1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
-								},
-								Amount: &types.Amount{
-									Value:    "4444000000",
-									Currency: MainnetCurrency,
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinCreated,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4:1",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptPubKey: &ScriptPubKey{
-										ASM:          "OP_DUP OP_HASH160 948c765a6914d43f2a7ac177da2c2f6b52de3d7c OP_EQUALVERIFY OP_CHECKSIG",
-										Hex:          "76a914948c765a6914d43f2a7ac177da2c2f6b52de3d7c88ac",
-										RequiredSigs: 1,
-										Type:         "pubkeyhash",
-										Addresses: []string{
-											"1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
-										},
-									},
-								}),
-							},
-						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
-							Size:    259,
-							Version: 1,
-							Vsize:   259,
-							Weight:  1036,
-						}),
-					},
-					{
-						TransactionIdentifier: &types.TransactionIdentifier{
-							Hash: "fake",
-						},
-						Operations: []*types.Operation{
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        0,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   InputOpType,
-								Status: SuccessStatus,
-								Amount: &types.Amount{
-									Value:    "-3467607",
-									Currency: MainnetCurrency,
-								},
-								Account: &types.AccountIdentifier{
-									Address: "3FfQGY7jqsADC7uTVqF3vKQzeNPiBPTqt4",
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinSpent,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptSig: &ScriptSig{
-										ASM: "00142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-										Hex: "1600142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-									},
-									TxInWitness: []string{
-										"304402205f39ccbab38b644acea0776d18cb63ce3e37428cbac06dc23b59c61607aef69102206b8610827e9cb853ea0ba38983662034bd3575cc1ab118fb66d6a98066fa0bed01", // nolint
-										"0304c01563d46e38264283b99bb352b46e69bf132431f102d4bd9a9d8dab075e7f",
-									},
-									Sequence: 4294967295,
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        1,
-									NetworkIndex: int64Pointer(1),
-								},
-								Type:   InputOpType,
-								Status: SuccessStatus,
-								Amount: &types.Amount{
-									Value:    "0",
-									Currency: MainnetCurrency,
-								},
-								Account: &types.AccountIdentifier{
-									Address: "1NdvAyRJLdK5EXs7DV3ebYb5wffdCZk1pD",
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinSpent,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "503e4e9824282eb06f1a328484e2b367b5f4f93a405d6e7b97261bafabfb53d5:1",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptSig: &ScriptSig{
-										ASM: "00142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-										Hex: "1600142b2296c588ec413cebd19c3cbc04ea830ead6e78",
-									},
-									Sequence: 4294967295,
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        2,
-									NetworkIndex: int64Pointer(2),
-								},
-								Type:   InputOpType,
-								Status: SuccessStatus,
-								Amount: &types.Amount{
-									Value:    "-556000000",
-									Currency: MainnetCurrency,
-								},
-								Account: &types.AccountIdentifier{
-									Address: "1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinSpent,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "fff2525b8931402dd09222c50775608f75787bd2b87e56995a7bdd30f79702c4:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptSig: &ScriptSig{
-										ASM: "3046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748[ALL] 04f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-										Hex: "493046022100c352d3dd993a981beba4a63ad15c209275ca9470abfcd57da93b58e4eb5dce82022100840792bc1f456062819f15d33ee7055cf7b5ee1af1ebcc6028d9cdb1c3af7748014104f46db5e9d61a9dc27b8d64ad23e7383a4e6ca164593c2527c038c0857eb67ee8e825dca65046b82c9331586c82e0fd1f633f25f87c161bc6f8a630121df2b3d3", // nolint
-									},
-									Sequence: 4294967295,
-								}),
-							},
-							{
-								OperationIdentifier: &types.OperationIdentifier{
-									Index:        3,
-									NetworkIndex: int64Pointer(0),
-								},
-								Type:   OutputOpType,
-								Status: SuccessStatus,
-								Account: &types.AccountIdentifier{
-									Address: "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
-								},
-								Amount: &types.Amount{
-									Value:    "20056000000",
-									Currency: MainnetCurrency,
-								},
-								CoinChange: &types.CoinChange{
-									CoinAction: types.CoinCreated,
-									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "fake:0",
-									},
-								},
-								Metadata: mustMarshalMap(&OperationMetadata{
-									ScriptPubKey: &ScriptPubKey{
-										ASM:          "OP_DUP OP_HASH160 c398efa9c392ba6013c5e04ee729755ef7f58b32 OP_EQUALVERIFY OP_CHECKSIG",
-										Hex:          "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
-										RequiredSigs: 1,
-										Type:         "pubkeyhash",
-										Addresses: []string{
-											"1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
-											"1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
-										},
-									},
-								}),
-							},
-						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
-							Size:     421,
-							Version:  2,
-							Vsize:    612,
-							Weight:   129992,
-							Locktime: 10,
-						}),
-					},
-				},
-				Metadata: mustMarshalMap(&BlockMetadata{
-					Size:       957,
-					Weight:     3828,
-					Version:    1,
-					MerkleRoot: "f3e94742aca4b5ef85488dc37c06c3282295ffec960994b2c0d5ac2a25a95766",
-					MedianTime: 1293622620,
-					Nonce:      274148111,
-					Bits:       "1b04864c",
-					Difficulty: 14484.1623612254,
-				}),
-			},
-		},
-		"missing transactions": {
-			block:         block100000,
-			coins:         map[string]*storage.AccountCoin{},
-			expectedError: errors.New("error finding previous tx"),
-		},*/
 	}
 
 	for name, test := range tests {
@@ -1474,27 +907,7 @@ func TestSuggestedFeeRate(t *testing.T) {
 				},
 			},
 			expectedRate: float64(0.00001),
-		},/*
-		"invalid range error": {
-			responses: []responseFixture{
-				{
-					status: http.StatusOK,
-					body:   loadFixture("invalid_fee_rate.json"),
-					url:    url,
-				},
-			},
-			expectedError: errors.New("error getting fee estimate"),
 		},
-		"500 error": {
-			responses: []responseFixture{
-				{
-					status: http.StatusInternalServerError,
-					body:   "{}",
-					url:    url,
-				},
-			},
-			expectedError: errors.New("invalid response: 500 Internal Server Error"),
-		},*/
 	}
 
 	for name, test := range tests {
@@ -1529,7 +942,7 @@ func TestSuggestedFeeRate(t *testing.T) {
 		})
 	}
 }
-/*
+
 func TestRawMempool(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture
@@ -1595,7 +1008,7 @@ func TestRawMempool(t *testing.T) {
 		})
 	}
 }
-*/
+
 
 // loadFixture takes a file name and returns the response fixture.
 func loadFixture(fileName string) string {
