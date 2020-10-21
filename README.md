@@ -97,10 +97,10 @@ with the command: `ulimit -n 100000`.
 ## Testing with rosetta-cli
 To validate `rosetta-zen`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
 and run one of the following commands:
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/bitcoin_testnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/bitcoin_testnet.json`
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/bitcoin_mainnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/bitcoin_mainnet.json`
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_testnet.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_testnet.json`
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_mainnet.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_mainnet.json`
 
 ## Development
 * `make deps` to install dependencies

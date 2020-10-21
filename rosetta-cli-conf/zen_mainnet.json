@@ -1,9 +1,9 @@
 {
  "network": {
-  "blockchain": "Bitcoin",
+  "blockchain": "Zen",
   "network": "Mainnet"
  },
- "data_directory": "bitcoin-mainnet-data",
+ "data_directory": "zen-mainnet-data",
  "http_timeout": 300,
  "max_retries": 5,
  "retry_elapsed_time": 0,
@@ -29,7 +29,7 @@
       "name": "find_account",
       "actions": [
        {
-        "input": "{\"symbol\":\"BTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"ZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -60,7 +60,7 @@
       "name": "create_account",
       "actions": [
        {
-        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "network"
        },
@@ -90,12 +90,12 @@
       "name": "transfer_dry_run",
       "actions": [
        {
-        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer_dry_run.network"
        },
        {
-        "input": "{\"symbol\":\"BTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"ZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -206,7 +206,7 @@
         "type": "assert"
        },
        {
-        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer.network"
        },
@@ -236,12 +236,12 @@
       "name": "transfer_dry_run",
       "actions": [
        {
-        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer_dry_run.network"
        },
        {
-        "input": "{\"symbol\":\"BTC\", \"decimals\":8}",
+        "input": "{\"symbol\":\"ZEN\", \"decimals\":8}",
         "type": "set_variable",
         "output_path": "currency"
        },
@@ -285,7 +285,7 @@
         "output_path": "transfer_dry_run.dry_run"
        },
        {
-        "input": "{\"address\": \"mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt\"}",
+        "input": "{\"address\": \"ztWcs2FKCK2R1H5LNuEBuDdHY8J2sJ1yEH7\"}",
         "type": "set_variable",
         "output_path": "recipient"
        },
@@ -328,7 +328,7 @@
         "type": "assert"
        },
        {
-        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Bitcoin\"}",
+        "input": "{\"network\":\"Mainnet\", \"blockchain\":\"Zen\"}",
         "type": "set_variable",
         "output_path": "transfer.network"
        },
@@ -373,7 +373,10 @@
   "balance_tracking_disabled": false,
   "coin_tracking_disabled": false,
   "end_conditions": {
-   "reconciliation_coverage": 0.95
+    "reconciliation_coverage": {
+      "coverage":0.95,
+      "from_tip": true
+    }
   },
   "results_output_file": ""
  }
