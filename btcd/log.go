@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
-	"github.com/btcsuite/btcd/addrmgr"
 	"github.com/btcsuite/btcd/connmgr"
 	"github.com/btcsuite/btcd/mempool"
 	"github.com/btcsuite/btcd/mining"
@@ -69,7 +68,6 @@ var (
 
 // Initialize package-global logger variables.
 func init() {
-	addrmgr.UseLogger(amgrLog)
 	connmgr.UseLogger(cmgrLog)
 	mining.UseLogger(minrLog)
 	cpuminer.UseLogger(minrLog)
