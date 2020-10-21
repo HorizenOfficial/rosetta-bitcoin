@@ -53,12 +53,12 @@ const (
 	defaultBlockMinWeight        = 0
 	defaultBlockMaxWeight        = 3000000
 	blockMaxSizeMin              = 1000
-	MaxBlockBaseSize             = 1000000
-	MaxBlockWeight               = 4000000
-	WitnessScaleFactor           = 4
-	blockMaxSizeMax              = MaxBlockBaseSize - 1000
+	maxBlockBaseSize             = 1000000
+	maxBlockWeight               = 4000000
+	witnessScaleFactor           = 4
+	blockMaxSizeMax              = maxBlockBaseSize - 1000
 	blockMaxWeightMin            = 4000
-	blockMaxWeightMax            = MaxBlockWeight - 4000
+	blockMaxWeightMax            = maxBlockWeight - 4000
 	defaultGenerate              = false
 	defaultMaxOrphanTransactions = 100
 	defaultMaxOrphanTxSize       = 100000
@@ -810,14 +810,14 @@ func loadConfig() (*config, []string, error) {
 	case cfg.BlockMaxSize == defaultBlockMaxSize &&
 		cfg.BlockMaxWeight != defaultBlockMaxWeight:
 
-		cfg.BlockMaxSize = MaxBlockBaseSize - 1000
+		cfg.BlockMaxSize = maxBlockBaseSize - 1000
 
 	// If the max block weight isn't set, but the block size is, then we'll
 	// scale the set weight accordingly based on the max block size value.
 	case cfg.BlockMaxSize != defaultBlockMaxSize &&
 		cfg.BlockMaxWeight == defaultBlockMaxWeight:
 
-		cfg.BlockMaxWeight = cfg.BlockMaxSize * WitnessScaleFactor
+		cfg.BlockMaxWeight = cfg.BlockMaxSize * witnessScaleFactor
 	}
 
 	// Look for illegal characters in the user agent comments.
@@ -1151,4 +1151,8 @@ func createDefaultConfigFile(destinationPath string) error {
 	}
 
 	return nil
+}
+
+func main() {
+
 }

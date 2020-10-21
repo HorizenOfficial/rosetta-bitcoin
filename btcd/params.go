@@ -39,14 +39,13 @@ var regressionNetParams = params{
 	rpcPort: "19033",
 }
 
-// testNet3Params contains parameters specific to the test network (version 3)
+// RegtestParams contains parameters specific to the test network (version 3)
 // (wire.TestNet3).  NOTE: The RPC port is intentionally different than the
 // reference implementation - see the mainNetParams comment for details.
 var RegtestParams = params{
 	Params:  &chaincfg.RegtestParams,
 	rpcPort: "19133",
 }
-
 
 // netName returns the name used when referring to a bitcoin network.  At the
 // time of writing, btcd currently places blocks for testnet version 3 in the
