@@ -20,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
@@ -54,9 +53,12 @@ const (
 	defaultBlockMinWeight        = 0
 	defaultBlockMaxWeight        = 3000000
 	blockMaxSizeMin              = 1000
-	blockMaxSizeMax              = blockchain.MaxBlockBaseSize - 1000
+	MaxBlockBaseSize             = 1000000
+	MaxBlockWeight               = 4000000
+	WitnessScaleFactor           = 4
+	blockMaxSizeMax              = MaxBlockBaseSize - 1000
 	blockMaxWeightMin            = 4000
-	blockMaxWeightMax            = blockchain.MaxBlockWeight - 4000
+	blockMaxWeightMax            = MaxBlockWeight - 4000
 	defaultGenerate              = false
 	defaultMaxOrphanTransactions = 100
 	defaultMaxOrphanTxSize       = 100000
@@ -808,14 +810,14 @@ func loadConfig() (*config, []string, error) {
 	case cfg.BlockMaxSize == defaultBlockMaxSize &&
 		cfg.BlockMaxWeight != defaultBlockMaxWeight:
 
-		cfg.BlockMaxSize = blockchain.MaxBlockBaseSize - 1000
+		cfg.BlockMaxSize = MaxBlockBaseSize - 1000
 
 	// If the max block weight isn't set, but the block size is, then we'll
 	// scale the set weight accordingly based on the max block size value.
 	case cfg.BlockMaxSize != defaultBlockMaxSize &&
 		cfg.BlockMaxWeight == defaultBlockMaxWeight:
 
-		cfg.BlockMaxWeight = cfg.BlockMaxSize * blockchain.WitnessScaleFactor
+		cfg.BlockMaxWeight = cfg.BlockMaxSize * WitnessScaleFactor
 	}
 
 	// Look for illegal characters in the user agent comments.

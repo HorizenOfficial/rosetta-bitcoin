@@ -10,8 +10,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/blockchain/indexers"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/btcsuite/btcd/addrmgr"
@@ -21,7 +19,6 @@ import (
 	"github.com/btcsuite/btcd/mining/cpuminer"
 	"github.com/btcsuite/btcd/netsync"
 	"github.com/btcsuite/btcd/peer"
-
 	"github.com/btcsuite/btclog"
 	"github.com/jrick/logrotate/rotator"
 )
@@ -76,8 +73,6 @@ func init() {
 	addrmgr.UseLogger(amgrLog)
 	connmgr.UseLogger(cmgrLog)
 	database.UseLogger(bcdbLog)
-	blockchain.UseLogger(chanLog)
-	indexers.UseLogger(indxLog)
 	mining.UseLogger(minrLog)
 	cpuminer.UseLogger(minrLog)
 	peer.UseLogger(peerLog)
