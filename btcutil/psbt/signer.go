@@ -9,10 +9,6 @@ package psbt
 // signatures using Updater.addPartialSignature, after first ensuring the Psbt
 // is in the correct state.
 
-import (
-	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
-)
-
 // SignOutcome is a enum-like value that expresses the outcome of a call to the
 // Sign method.
 type SignOutcome int
@@ -68,39 +64,10 @@ func (u *Updater) Sign(inIndex int, sig []byte, pubKey []byte,
 		}
 	}
 
-	// At this point, the PSBT must have the requisite witnessScript or
-	// redeemScript fields for signing to succeed.
-	//
-	// Case 1: if witnessScript is present, it must be of type witness;
-	// if not, signature insertion will of course fail.
 	switch {
-	case u.Upsbt.Inputs[inIndex].WitnessScript != nil:
-		if u.Upsbt.Inputs[inIndex].WitnessUtxo == nil {
-			err := nonWitnessToWitness(u.Upsbt, inIndex)
-			if err != nil {
-				return SignInvalid, err
-			}
-		}
-
-		err := u.addPartialSignature(inIndex, sig, pubKey)
-		if err != nil {
-			return SignInvalid, err
-		}
-
-	// Case 2: no witness script, only redeem script; can be legacy p2sh or
+	// Case 1: only redeem script; can be legacy p2sh or
 	// p2sh-wrapped p2wkh.
 	case u.Upsbt.Inputs[inIndex].RedeemScript != nil:
-		// We only need to decide if the input is witness, and we don't
-		// rely on the witnessutxo/nonwitnessutxo in the PSBT, instead
-		// we check the redeemScript content.
-		if txscript.IsWitnessProgram(redeemScript) {
-			if u.Upsbt.Inputs[inIndex].WitnessUtxo == nil {
-				err := nonWitnessToWitness(u.Upsbt, inIndex)
-				if err != nil {
-					return SignInvalid, err
-				}
-			}
-		}
 
 		// If it is not a valid witness program, we here assume that
 		// the provided WitnessUtxo/NonWitnessUtxo field was correct.
@@ -109,22 +76,10 @@ func (u *Updater) Sign(inIndex int, sig []byte, pubKey []byte,
 			return SignInvalid, err
 		}
 
-	// Case 3: Neither provided only works for native p2wkh, or non-segwit
+	// Case 2: Neither provided only works for native p2wkh, or non-segwit
 	// non-p2sh. To check if it's segwit, check the scriptPubKey of the
 	// output.
 	default:
-		if u.Upsbt.Inputs[inIndex].WitnessUtxo == nil {
-			outIndex := u.Upsbt.UnsignedTx.TxIn[inIndex].PreviousOutPoint.Index
-			script := u.Upsbt.Inputs[inIndex].NonWitnessUtxo.TxOut[outIndex].PkScript
-
-			if txscript.IsWitnessProgram(script) {
-				err := nonWitnessToWitness(u.Upsbt, inIndex)
-				if err != nil {
-					return SignInvalid, err
-				}
-			}
-		}
-
 		err := u.addPartialSignature(inIndex, sig, pubKey)
 		if err != nil {
 			return SignInvalid, err
@@ -132,24 +87,4 @@ func (u *Updater) Sign(inIndex int, sig []byte, pubKey []byte,
 	}
 
 	return SignSuccesful, nil
-}
-
-// nonWitnessToWitness extracts the TxOut from the existing NonWitnessUtxo
-// field in the given PSBT input and sets it as type witness by replacing the
-// NonWitnessUtxo field with a WitnessUtxo field. See
-// https://github.com/bitcoin/bitcoin/pull/14197.
-func nonWitnessToWitness(p *Packet, inIndex int) error {
-	outIndex := p.UnsignedTx.TxIn[inIndex].PreviousOutPoint.Index
-	txout := p.Inputs[inIndex].NonWitnessUtxo.TxOut[outIndex]
-
-	// TODO(guggero): For segwit v1, we'll want to remove the NonWitnessUtxo
-	// from the packet. For segwit v0 it is unsafe to only rely on the
-	// witness UTXO. See https://github.com/bitcoin/bitcoin/pull/19215.
-	// p.Inputs[inIndex].NonWitnessUtxo = nil
-
-	u := Updater{
-		Upsbt: p,
-	}
-
-	return u.AddInWitnessUtxo(txout, inIndex)
 }

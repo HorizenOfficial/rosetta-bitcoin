@@ -23,59 +23,6 @@ func isFinalized(p *Packet, inIndex int) bool {
 	return input.FinalScriptSig != nil || input.FinalScriptWitness != nil
 }
 
-// isFinalizableWitnessInput returns true if the target input is a witness UTXO
-// that can be finalized.
-func isFinalizableWitnessInput(pInput *PInput) bool {
-	pkScript := pInput.WitnessUtxo.PkScript
-
-	switch {
-	// If this is a native witness output, then we require both
-	// the witness script, but not a redeem script.
-	case txscript.IsWitnessProgram(pkScript):
-		if txscript.IsPayToWitnessScriptHash(pkScript) {
-			if pInput.WitnessScript == nil ||
-				pInput.RedeemScript != nil {
-				return false
-			}
-		} else {
-			// A P2WKH output on the other hand doesn't need
-			// neither a witnessScript or redeemScript.
-			if pInput.WitnessScript != nil ||
-				pInput.RedeemScript != nil {
-				return false
-			}
-		}
-
-	// For nested P2SH inputs, we verify that a witness script is known.
-	case txscript.IsPayToScriptHash(pkScript):
-		if pInput.RedeemScript == nil {
-			return false
-		}
-
-		// If this is a nested P2SH input, then it must also have a
-		// witness script, while we don't need one for P2WKH.
-		if txscript.IsPayToWitnessScriptHash(pInput.RedeemScript) {
-			if pInput.WitnessScript == nil {
-				return false
-			}
-		} else if txscript.IsPayToWitnessPubKeyHash(pInput.RedeemScript) {
-			if pInput.WitnessScript != nil {
-				return false
-			}
-		} else {
-			// unrecognized type
-			return false
-		}
-
-	// If this isn't a nested nested P2SH output or a native witness
-	// output, then we can't finalize this input as we don't understand it.
-	default:
-		return false
-	}
-
-	return true
-}
-
 // isFinalizableLegacyInput returns true of the passed input a legacy input
 // (non-witness) that can be finalized.
 func isFinalizableLegacyInput(p *Packet, pInput *PInput, inIndex int) bool {
@@ -115,13 +62,6 @@ func isFinalizable(p *Packet, inIndex int) bool {
 	// UTXOs present. Each UTXO type has a distinct set of requirements to
 	// be considered finalized.
 	switch {
-
-	// A witness input must be either native P2WSH or nested P2SH with all
-	// relevant sigScript or witness data populated.
-	case pInput.WitnessUtxo != nil:
-		if !isFinalizableWitnessInput(&pInput) {
-			return false
-		}
 
 	case pInput.NonWitnessUtxo != nil:
 		if !isFinalizableLegacyInput(p, &pInput, inIndex) {
@@ -385,25 +325,6 @@ func finalizeWitnessInput(p *Packet, inIndex int) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			// Otherwise, we must have a witnessScript field, so
-			// we'll generate a valid multi-sig witness.
-			//
-			// NOTE: We tacitly assume multisig.
-			//
-			// TODO(roasbeef): need to add custom finalize for
-			// non-multisig P2WSH outputs (HTLCs, delay outputs,
-			// etc).
-			if !cointainsWitnessScript {
-				return ErrNotFinalizable
-			}
-
-			serializedWitness, err = getMultisigScriptWitness(
-				pInput.WitnessScript, pubKeys, sigs,
-			)
-			if err != nil {
-				return err
-			}
 		}
 	} else {
 		// Otherwise, we assume that this is a p2wsh multi-sig output,
@@ -433,15 +354,6 @@ func finalizeWitnessInput(p *Packet, inIndex int) error {
 				return err
 			}
 
-		} else {
-			// Otherwise, we assume that this is a p2wsh multi-sig,
-			// so we generate the proper witness.
-			serializedWitness, err = getMultisigScriptWitness(
-				pInput.WitnessScript, pubKeys, sigs,
-			)
-			if err != nil {
-				return err
-			}
 		}
 	}
 

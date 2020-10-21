@@ -143,43 +143,6 @@ func extractKeyOrderFromScript(script []byte, expectedPubkeys [][]byte,
 	return sortedSigs, nil
 }
 
-// getMultisigScriptWitness creates a full psbt serialized Witness field for
-// the transaction, given the public keys and signatures to be appended. This
-// function will only accept witnessScripts of the type M of N multisig. This
-// is used for both p2wsh and nested p2wsh multisig cases.
-func getMultisigScriptWitness(witnessScript []byte, pubKeys [][]byte,
-	sigs [][]byte) ([]byte, error) {
-
-	// First using the script as a guide, we'll properly order the sigs
-	// according to how their corresponding pubkeys appear in the
-	// witnessScript.
-	orderedSigs, err := extractKeyOrderFromScript(
-		witnessScript, pubKeys, sigs,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Now that we know the proper order, we'll append each of the
-	// signatures into a new witness stack, then top it off with the
-	// witness script at the end, prepending the nil as we need the extra
-	// pop..
-	witnessElements := make(wire.TxWitness, 0, len(sigs)+2)
-	witnessElements = append(witnessElements, nil)
-	for _, os := range orderedSigs {
-		witnessElements = append(witnessElements, os)
-	}
-	witnessElements = append(witnessElements, witnessScript)
-
-	// Now that we have the full witness stack, we'll serialize it in the
-	// expected format, and return the final bytes.
-	var buf bytes.Buffer
-	if err = WriteTxWitness(&buf, witnessElements); err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
 // checkSigHashFlags compares the sighash flag byte on a signature with the
 // value expected according to any PsbtInSighashType field in this section of
 // the PSBT, and returns true if they match, false otherwise.
@@ -386,28 +349,23 @@ func VerifyInputOutputLen(packet *Packet, needInputs, needOutputs bool) error {
 
 // NewFromSignedTx is a utility function to create a packet from an
 // already-signed transaction. Returned are: an unsigned transaction
-// serialization, a list of scriptSigs, one per input, and a list of witnesses,
-// one per input.
-func NewFromSignedTx(tx *wire.MsgTx) (*Packet, [][]byte,
-	[]wire.TxWitness, error) {
+// serialization, a list of scriptSigs, one per input,
+func NewFromSignedTx(tx *wire.MsgTx) (*Packet, [][]byte, error) {
 
 	scriptSigs := make([][]byte, 0, len(tx.TxIn))
-	witnesses := make([]wire.TxWitness, 0, len(tx.TxIn))
 	tx2 := tx.Copy()
 
 	// Blank out signature info in inputs
 	for i, tin := range tx2.TxIn {
 		tin.SignatureScript = nil
 		scriptSigs = append(scriptSigs, tx.TxIn[i].SignatureScript)
-		tin.Witness = nil
-		witnesses = append(witnesses, tx.TxIn[i].Witness)
 	}
 
 	// Outputs always contain: (value, scriptPubkey) so don't need
 	// amending.  Now tx2 is tx with all signing data stripped out
 	unsignedPsbt, err := NewFromUnsignedTx(tx2)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return unsignedPsbt, scriptSigs, witnesses, nil
+	return unsignedPsbt, scriptSigs, nil
 }

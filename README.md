@@ -100,7 +100,7 @@ and run one of the following commands:
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_testnet.json`
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_testnet.json`
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_mainnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_mainnet.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/_mainnet.json`
 
 ## Development
 * `make deps` to install dependencies

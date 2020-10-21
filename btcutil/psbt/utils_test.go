@@ -314,7 +314,6 @@ func TestNewFromSignedTx(t *testing.T) {
 		TxIn: []*wire.TxIn{{
 			PreviousOutPoint: wire.OutPoint{},
 			SignatureScript:  []byte("script"),
-			Witness:          [][]byte{[]byte("witness")},
 			Sequence:         1234,
 		}},
 		TxOut: []*wire.TxOut{{
@@ -323,7 +322,7 @@ func TestNewFromSignedTx(t *testing.T) {
 		}},
 	}
 
-	packet, scripts, witnesses, err := NewFromSignedTx(orig)
+	packet, scripts, err := NewFromSignedTx(orig)
 	if err != nil {
 		t.Fatalf("could not create packet from signed TX: %v", err)
 	}
@@ -344,9 +343,5 @@ func TestNewFromSignedTx(t *testing.T) {
 	if len(scripts) != 1 || !bytes.Equal(scripts[0], []byte("script")) {
 		t.Fatalf("script not extracted correctly")
 	}
-	if len(witnesses) != 1 ||
-		!bytes.Equal(witnesses[0][0], []byte("witness")) {
 
-		t.Fatalf("witness not extracted correctly")
-	}
 }
