@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
 	"github.com/btcsuite/btcd/addrmgr"
 	"github.com/btcsuite/btcd/connmgr"
@@ -72,7 +71,6 @@ var (
 func init() {
 	addrmgr.UseLogger(amgrLog)
 	connmgr.UseLogger(cmgrLog)
-	database.UseLogger(bcdbLog)
 	mining.UseLogger(minrLog)
 	cpuminer.UseLogger(minrLog)
 	peer.UseLogger(peerLog)

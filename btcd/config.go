@@ -22,10 +22,9 @@ import (
 
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
 	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg/chainhash"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/database"
-	_ "github.com/HorizenOfficial/rosetta-zen/btcd/database/ffldb"
 	"github.com/HorizenOfficial/rosetta-zen/btcutil"
 	"github.com/btcsuite/btcd/connmgr"
+	"github.com/btcsuite/btcd/database"
 	"github.com/btcsuite/btcd/mempool"
 	"github.com/btcsuite/btcd/peer"
 	"github.com/btcsuite/go-socks/socks"
@@ -284,13 +283,7 @@ func parseAndSetDebugLevels(debugLevel string) error {
 
 // validDbType returns whether or not dbType is a supported database type.
 func validDbType(dbType string) bool {
-	for _, knownType := range knownDbTypes {
-		if dbType == knownType {
-			return true
-		}
-	}
-
-	return false
+	return true
 }
 
 // removeDuplicateAddresses returns a new slice with all duplicate entries in
