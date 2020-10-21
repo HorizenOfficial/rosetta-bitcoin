@@ -34,9 +34,9 @@ Running the following commands will create a Docker image called `rosetta-bitcoi
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
 ```text
-curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-bitcoin/master/install.sh | sh -s
+curl -sSfL https://raw.githubusercontent.com/HorizenOfficial/rosetta-zen/blob/mo/Data_API/install.sh | sh -s
 ```
-_Do not try to install rosetta-bitcoin using GitHub Packages!_
+_Do not try to install rosetta-zen using GitHub Packages!_
 
 #### From Source
 After cloning this repository, run:
