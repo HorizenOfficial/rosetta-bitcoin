@@ -63,9 +63,7 @@ RUN apt-get -qqy update \
 
 
 # VERSION: Bitcoin Core 0.20.1
-RUN git clone https://github.com/HorizenOfficial/zen.git \
-  && cd zen \
-  && git checkout  mo/getblock_verbose
+RUN git clone https://github.com/HorizenOfficial/zen.git
 
 RUN cd zen \
   && zcutil/build.sh -j2
@@ -119,7 +117,7 @@ RUN mkdir -p /app \
 WORKDIR /app
 
 # Copy binary from bitcoind-builder
-COPY --from=bitcoind-builder /app/zend /app/zend
+#COPY --from=bitcoind-builder /app/zend /app/zend
 
 # Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/
