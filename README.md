@@ -6,13 +6,7 @@
 <h3 align="center">
    Rosetta Zen
 </h3>
-<p align="center">
-  <a href="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master"><img src="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master.svg?style=shield" /></a>
-  <a href="https://coveralls.io/github/coinbase/rosetta-bitcoin"><img src="https://coveralls.io/repos/github/coinbase/rosetta-bitcoin/badge.svg" /></a>
-  <a href="https://goreportcard.com/report/github.com/coinbase/rosetta-bitcoin"><img src="https://goreportcard.com/badge/github.com/coinbase/rosetta-bitcoin" /></a>
-  <a href="https://github.com/coinbase/rosetta-bitcoin/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/coinbase/rosetta-bitcoin.svg" /></a>
-  <a href="https://pkg.go.dev/github.com/coinbase/rosetta-bitcoin?tab=overview"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=shield" /></a>
-</p>
+
 
 
 ## Overview
@@ -29,7 +23,7 @@ all Rosetta implementations must be deployable via Docker and support running vi
 DOCKER [HERE](https://www.docker.com/get-started).**
 
 ### Install
-Running the following commands will create a Docker image called `rosetta-bitcoin:latest`.
+Running the following commands will create a Docker image called `rosetta-zen:latest`.
 
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
@@ -47,7 +41,7 @@ make build-local
 ### Run
 Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
-a data directory at `<working directory>/bitcoin-data` and the Rosetta API accessible
+a data directory at `<working directory>/zen-data` and the Rosetta API accessible
 at port `8080`.
 
 #### Mainnet:Online
@@ -100,7 +94,7 @@ and run one of the following commands:
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_testnet.json`
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_testnet.json`
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/zen_mainnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/_mainnet.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/zen_mainnet.json`
 
 ## Development
 * `make deps` to install dependencies
