@@ -29,7 +29,6 @@ import (
 	bitcoinUtils "github.com/HorizenOfficial/rosetta-zen/utils"
 
 	"github.com/HorizenOfficial/rosetta-zen/zenutil"
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -299,7 +298,7 @@ func (b *Client) SuggestedFeeRate(
 		return -1, fmt.Errorf("%w: error getting fee estimate", err)
 	}*/
 
-	return bitcoin.MinFeeRate, nil
+	return MinFeeRate, nil
 }
 
 // PruneBlockchain prunes up to the provided height.

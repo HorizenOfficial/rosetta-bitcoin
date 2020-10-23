@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	bitcoindLogger       = "zend"
-	bitcoindStdErrLogger = "zend stderr"
+	zendLogger       = "zend"
+	zendStdErrLogger = "zend stderr"
 )
 
 func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
@@ -51,8 +51,8 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 			message = messages[1]
 		}
 
-		// Print debug log if from bitcoindLogger
-		if identifier == bitcoindLogger {
+		// Print debug log if from zendLogger
+		if identifier == zendLogger {
 			logger.Debugw(message)
 			continue
 		}
@@ -61,9 +61,9 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	}
 }
 
-// StartBitcoind starts a bitcoind daemon in another goroutine
+// StartZEND starts a zend daemon in another goroutine
 // and logs the results to the console.
-func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) error {
+func StartZEND(ctx context.Context, configPath string, g *errgroup.Group) error {
 	logger := utils.ExtractLogger(ctx, "zend")
 	cmd := exec.Command(
 		"/app/zend",
@@ -81,21 +81,21 @@ func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) er
 	}
 
 	g.Go(func() error {
-		return logPipe(ctx, stdout, bitcoindLogger)
+		return logPipe(ctx, stdout, zendLogger)
 	})
 
 	g.Go(func() error {
-		return logPipe(ctx, stderr, bitcoindStdErrLogger)
+		return logPipe(ctx, stderr, zendStdErrLogger)
 	})
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%w: unable to start bitcoind", err)
+		return fmt.Errorf("%w: unable to start zend", err)
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
 
-		logger.Warnw("sending interrupt to bitcoind")
+		logger.Warnw("sending interrupt to zend")
 		return cmd.Process.Signal(os.Interrupt)
 	})
 
