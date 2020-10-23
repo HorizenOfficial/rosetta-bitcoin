@@ -6,13 +6,10 @@ package chaincfg
 
 import (
 	"errors"
-	"math"
-	"math/big"
-	"strings"
-	"time"
-
 	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg/chainhash"
 	"github.com/HorizenOfficial/rosetta-zen/zend/wire"
+	"math/big"
+	"strings"
 )
 
 // These variables are the chain proof-of-work limit parameters for each default
@@ -125,14 +122,6 @@ type Params struct {
 	// GenesisHash is the starting block hash.
 	GenesisHash *chainhash.Hash
 
-	// PowLimit defines the highest allowed proof of work value for a block
-	// as a uint256.
-	PowLimit *big.Int
-
-	// PowLimitBits defines the highest allowed proof of work value for a
-	// block in compact form.
-	PowLimitBits uint32
-
 	// These fields define the block heights at which the specified softfork
 	// BIP became active.
 	BIP0034Height int32
@@ -142,40 +131,6 @@ type Params struct {
 	// CoinbaseMaturity is the number of blocks required before newly mined
 	// coins (coinbase transactions) can be spent.
 	CoinbaseMaturity uint16
-
-	// SubsidyReductionInterval is the interval of blocks before the subsidy
-	// is reduced.
-	SubsidyReductionInterval int32
-
-	// TargetTimespan is the desired amount of time that should elapse
-	// before the block difficulty requirement is examined to determine how
-	// it should be changed in order to maintain the desired block
-	// generation rate.
-	TargetTimespan time.Duration
-
-	// TargetTimePerBlock is the desired amount of time to generate each
-	// block.
-	TargetTimePerBlock time.Duration
-
-	// RetargetAdjustmentFactor is the adjustment factor used to limit
-	// the minimum and maximum amount of adjustment that can occur between
-	// difficulty retargets.
-	RetargetAdjustmentFactor int64
-
-	// ReduceMinDifficulty defines whether the network should reduce the
-	// minimum required difficulty after a long enough period of time has
-	// passed without finding a block.  This is really only useful for test
-	// networks and should not be set on a main network.
-	ReduceMinDifficulty bool
-
-	// MinDiffReductionTime is the amount of time after which the minimum
-	// required difficulty should be reduced when a block hasn't been found.
-	//
-	// NOTE: This only applies if ReduceMinDifficulty is true.
-	MinDiffReductionTime time.Duration
-
-	// GenerateSupported specifies whether or not CPU mining is allowed.
-	GenerateSupported bool
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints []Checkpoint
@@ -195,14 +150,7 @@ type Params struct {
 	// on.
 	RuleChangeActivationThreshold uint32
 	MinerConfirmationWindow       uint32
-	Deployments                   [DefinedDeployments]ConsensusDeployment
 
-	// Mempool parameters
-	RelayNonStdTxs bool
-
-	// Human-readable part for Bech32 encoded segwit addresses, as defined
-	// in BIP 173.
-	Bech32HRPSegwit string
 
 	// Address encoding magics
 	PubKeyHashAddrID        uint16 // First 2 bytes of a P2PKH address
@@ -212,10 +160,6 @@ type Params struct {
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID [4]byte
 	HDPublicKeyID  [4]byte
-
-	// BIP44 coin type used in the hierarchical deterministic path for
-	// address generation.
-	HDCoinType uint32
 }
 
 // MainNetParams defines the network parameters for the main Bitcoin network.
@@ -234,19 +178,10 @@ var MainNetParams = Params{
 	// Chain parameters
 	GenesisBlock: &genesisBlock,
 	GenesisHash:  &genesisHash,
-	PowLimit:     mainPowLimit, //TODO
-	PowLimitBits: 0x1d00ffff,   //TODO
 	BIP0034Height:            0,
 	BIP0065Height:            0,
 	BIP0066Height:            0,
 	CoinbaseMaturity:         100,
-	SubsidyReductionInterval: 840000,
-	TargetTimespan:           time.Hour * 24 * 14, // 14 days TODO
-	TargetTimePerBlock:       time.Minute * 2 + time.Minute/2,    // 2.5 minutes
-	RetargetAdjustmentFactor: 4,                   // 25% less, 400% more TODO
-	ReduceMinDifficulty:      false, //TODO
-	MinDiffReductionTime:     0, //TODO
-	GenerateSupported:        false,
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -270,30 +205,6 @@ var MainNetParams = Params{
 	//   target proof of work timespan / target proof of work spacing
 	RuleChangeActivationThreshold: 1916, // 95% of MinerConfirmationWindow
 	MinerConfirmationWindow:       2016, //
-	Deployments: [DefinedDeployments]ConsensusDeployment{ //TODO
-		DeploymentTestDummy: {
-			BitNumber:  28,
-			StartTime:  1199145601, // January 1, 2008 UTC
-			ExpireTime: 1230767999, // December 31, 2008 UTC
-		},
-		DeploymentCSV: {
-			BitNumber:  0,
-			StartTime:  1462060800, // May 1st, 2016
-			ExpireTime: 1493596800, // May 1st, 2017
-		},
-		DeploymentSegwit: {
-			BitNumber:  1,
-			StartTime:  1479168000, // November 15, 2016 UTC
-			ExpireTime: 1510704000, // November 15, 2017 UTC.
-		},
-	},
-
-	// Mempool parameters
-	RelayNonStdTxs: false,
-
-	// Human-readable part for Bech32 encoded segwit addresses, as defined in
-	// BIP 173.
-	Bech32HRPSegwit: "bc", // always bc for main net //TODO
 
 	// Address encoding magics
 	PubKeyHashAddrID:        0x2089, // starts with 1
@@ -303,10 +214,6 @@ var MainNetParams = Params{
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x88, 0xad, 0xe4}, // starts with xprv
 	HDPublicKeyID:  [4]byte{0x04, 0x88, 0xb2, 0x1e}, // starts with xpub
-
-	// BIP44 coin type used in the hierarchical deterministic path for
-	// address generation.
-	HDCoinType: 0,
 }
 
 // RegressionNetParams defines the network parameters for the regression test
@@ -326,19 +233,10 @@ var RegressionNetParams = Params{
 	// Chain parameters
 	GenesisBlock:     &testNetGenesisBlock,
 	GenesisHash:      &testnetGenesisHash,
-	PowLimit:         regressionPowLimit, //TOOD
-	PowLimitBits:     0x207fffff,         //TODO
 	CoinbaseMaturity: 100,
 	BIP0034Height:            0,
 	BIP0065Height:            0,      // Used by regression tests
 	BIP0066Height:            0,      // Used by regression tests
-	SubsidyReductionInterval: 840000,
-	TargetTimespan:           time.Hour * 24 * 14, // 14 days //TODO
-	TargetTimePerBlock:       time.Minute * 2 + time.Minute/2,    // 2.5 minutes
-	RetargetAdjustmentFactor: 4,                   // 25% less, 400% more //TODO
-	ReduceMinDifficulty:      true, //TODO
-	MinDiffReductionTime:     time.Minute * 20, // TargetTimePerBlock * 2 //TODO
-	GenerateSupported:        true,
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -357,30 +255,6 @@ var RegressionNetParams = Params{
 	//   target proof of work timespan / target proof of work spacing
 	RuleChangeActivationThreshold: 1512, // 75%  of MinerConfirmationWindow
 	MinerConfirmationWindow:       2016,
-	Deployments: [DefinedDeployments]ConsensusDeployment{ //TODO
-		DeploymentTestDummy: {
-			BitNumber:  28,
-			StartTime:  0,             // Always available for vote
-			ExpireTime: math.MaxInt64, // Never expires
-		},
-		DeploymentCSV: {
-			BitNumber:  0,
-			StartTime:  0,             // Always available for vote
-			ExpireTime: math.MaxInt64, // Never expires
-		},
-		DeploymentSegwit: {
-			BitNumber:  1,
-			StartTime:  0,             // Always available for vote
-			ExpireTime: math.MaxInt64, // Never expires.
-		},
-	},
-
-	// Mempool parameters
-	RelayNonStdTxs: false, //TODO
-
-	// Human-readable part for Bech32 encoded segwit addresses, as defined in
-	// BIP 173.
-	Bech32HRPSegwit: "bcrt", // always bcrt for reg test net
 
 	// Address encoding magics
 	PubKeyHashAddrID: 0x2098, // starts with m or n
@@ -390,10 +264,6 @@ var RegressionNetParams = Params{
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x35, 0x83, 0x94}, // starts with tprv
 	HDPublicKeyID:  [4]byte{0x04, 0x35, 0x87, 0xcf}, // starts with tpub
-
-	// BIP44 coin type used in the hierarchical deterministic path for
-	// address generation.
-	HDCoinType: 1,
 }
 
 // TestNet3Params defines the network parameters for the test Bitcoin network
@@ -408,19 +278,10 @@ var RegtestParams = Params{
 	// Chain parameters
 	GenesisBlock: &regTestGenesisBlock,
 	GenesisHash:  &regtestGenesisHash,
-	PowLimit:     testNet3PowLimit, //TODO
-	PowLimitBits: 0x1d00ffff,       //TODO
 	BIP0034Height:            0,
 	BIP0065Height:            0,
 	BIP0066Height:            0,
 	CoinbaseMaturity:         100,
-	SubsidyReductionInterval: 210000, //TODO
-	TargetTimespan:           time.Hour * 24 * 14, // 14 days //TODO
-	TargetTimePerBlock:       time.Minute * 2 + time.Minute/2,    // 2.5 minutes
-	RetargetAdjustmentFactor: 4,                   // 25% less, 400% more //TODO
-	ReduceMinDifficulty:      false, //TODO
-	MinDiffReductionTime:     time.Minute * 20, // TargetTimePerBlock * 2 //TODO
-	GenerateSupported:        true,
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -433,30 +294,6 @@ var RegtestParams = Params{
 	//   target proof of work timespan / target proof of work spacing
 	RuleChangeActivationThreshold: 108, // 75% of MinerConfirmationWindow
 	MinerConfirmationWindow:       144,
-	Deployments: [DefinedDeployments]ConsensusDeployment{ //TODO
-		DeploymentTestDummy: {
-			BitNumber:  28,
-			StartTime:  1199145601, // January 1, 2008 UTC
-			ExpireTime: 1230767999, // December 31, 2008 UTC
-		},
-		DeploymentCSV: {
-			BitNumber:  0,
-			StartTime:  1456790400, // March 1st, 2016
-			ExpireTime: 1493596800, // May 1st, 2017
-		},
-		DeploymentSegwit: {
-			BitNumber:  1,
-			StartTime:  1462060800, // May 1, 2016 UTC
-			ExpireTime: 1493596800, // May 1, 2017 UTC.
-		},
-	},
-
-	// Mempool parameters
-	RelayNonStdTxs: true, //TODO
-
-	// Human-readable part for Bech32 encoded segwit addresses, as defined in
-	// BIP 173.
-	Bech32HRPSegwit: "bcrt", // always tb for test net
 
 	// Address encoding magics
 	PubKeyHashAddrID:        0x2098, // starts with m or n
@@ -466,10 +303,6 @@ var RegtestParams = Params{
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x35, 0x83, 0x94}, // starts with tprv
 	HDPublicKeyID:  [4]byte{0x04, 0x35, 0x87, 0xcf}, // starts with tpub
-
-	// BIP44 coin type used in the hierarchical deterministic path for
-	// address generation.
-	HDCoinType: 1, //TODO
 }
 
 var (
@@ -525,7 +358,6 @@ func Register(params *Params) error {
 
 	// A valid Bech32 encoded segwit address always has as prefix the
 	// human-readable part for the given net followed by '1'.
-	bech32SegwitPrefixes[params.Bech32HRPSegwit+"1"] = struct{}{}
 	return nil
 }
 

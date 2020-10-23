@@ -22,14 +22,12 @@ type CustomParamStruct struct {
 	Net              wire.BitcoinNet
 	PubKeyHashAddrID uint16
 	ScriptHashAddrID uint16
-	Bech32HRPSegwit  string
 }
 
 var CustomParams = CustomParamStruct{
 	Net:              0xdbb6c0fb, // litecoin mainnet HD version bytes
 	PubKeyHashAddrID: 0x2089,       // starts with L
 	ScriptHashAddrID: 0x2096,       // starts with M
-	Bech32HRPSegwit:  "ltc",      // starts with ltc
 }
 
 // We use this function to be able to test functionality in DecodeAddress for
@@ -38,7 +36,6 @@ func applyCustomParams(params chaincfg.Params, customParams CustomParamStruct) c
 	params.Net = customParams.Net
 	params.PubKeyHashAddrID = customParams.PubKeyHashAddrID
 	params.ScriptHashAddrID = customParams.ScriptHashAddrID
-	params.Bech32HRPSegwit = customParams.Bech32HRPSegwit
 	return params
 }
 

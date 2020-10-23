@@ -331,12 +331,7 @@ func (msg *MsgTx) TxHash() chainhash.Hash {
 	return chainhash.DoubleHashH(buf.Bytes())
 }
 
-// WitnessHash generates the hash of the transaction serialized according to
-// the new witness serialization defined in BIP0141 and BIP0144. The final
-// output is used within the Segregated Witness commitment of all the witnesses
-// within a block. If a transaction has no witness data, then the witness hash,
-// is the same as its txid.
-func (msg *MsgTx) WitnessHash() chainhash.Hash {
+func (msg *MsgTx) TransactionHash() chainhash.Hash {
 	return msg.TxHash()
 }
 

@@ -24,8 +24,6 @@ const TxIndexUnknown = -1
 type Tx struct {
 	msgTx         *wire.MsgTx     // Underlying MsgTx
 	txHash        *chainhash.Hash // Cached transaction hash
-	txHashWitness *chainhash.Hash // Cached transaction witness hash
-	txHasWitness  *bool           // If the transaction has witness data
 	txIndex       int             // Position within a block or TxIndexUnknown
 }
 
@@ -50,20 +48,6 @@ func (t *Tx) Hash() *chainhash.Hash {
 	return &hash
 }
 
-// WitnessHash returns the witness hash (wtxid) of the transaction.  This is
-// equivalent to calling WitnessHash on the underlying wire.MsgTx, however it
-// caches the result so subsequent calls are more efficient.
-func (t *Tx) WitnessHash() *chainhash.Hash {
-	// Return the cached hash if it has already been generated.
-	if t.txHashWitness != nil {
-		return t.txHashWitness
-	}
-
-	// Cache the hash and return it.
-	hash := t.msgTx.WitnessHash()
-	t.txHashWitness = &hash
-	return &hash
-}
 
 // Index returns the saved index of the transaction within a block.  This value
 // will be TxIndexUnknown if it hasn't already explicitly been set.

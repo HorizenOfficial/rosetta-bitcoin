@@ -109,9 +109,10 @@ func startOnlineDependencies(
 		return i.Sync(ctx)
 	})
 
-	g.Go(func() error {
-		return i.Prune(ctx)
-	})
+	//zend does not support manual pruning
+	//g.Go(func() error {
+	//	return i.Prune(ctx)
+	//})
 
 	return client, i, nil
 }

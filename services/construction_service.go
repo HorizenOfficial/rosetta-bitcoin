@@ -342,7 +342,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		inputAddresses[i] = address
 		inputAmounts[i] = matches[0].Amounts[i].String()
 
-		if (class == txscript.NonStandardTy) {
+		if (class != txscript.PubKeyHashReplayOutTy) {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
@@ -452,7 +452,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		fullsig := normalizeSignature(request.Signatures[i].Bytes)
 		pkData := request.Signatures[i].PublicKey.Bytes
 
-		if (class == txscript.NonStandardTy) {
+		if (class != txscript.PubKeyHashReplayOutTy) {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),

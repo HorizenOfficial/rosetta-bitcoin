@@ -87,6 +87,96 @@ enabling it._
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
 
+## Architecture
+`rosetta-zen` uses the `syncer`, `storage`, `parser`, and `server` package
+from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
+of a new Zen-specific implementation of packages of similar functionality. Below
+you can find a high-level overview of how everything fits together:
+```text
+                               +------------------------------------------------------------------+
+                               |                                                                  |
+                               |                 +--------------------------------------+         |
+                               |                 |                                      |         |
+                               |                 |                 indexer              |         |
+                               |                 |                                      |         |
+                               |                 | +--------+                           |         |
+                               +-------------------+ pruner <----------+                |         |
+                               |                 | +--------+          |                |         |
+                         +-----v----+            |                     |                |         |
+                         |   zend   |            |              +------+--------+       |         |
+                         +-----+----+            |     +--------> block_storage <----+  |         |
+                               |                 |     |        +---------------+    |  |         |
+                               |                 | +---+----+                        |  |         |
+                               +-------------------> syncer |                        |  |         |
+                                                 | +---+----+                        |  |         |
+                                                 |     |        +--------------+     |  |         |
+                                                 |     +--------> coin_storage |     |  |         |
+                                                 |              +------^-------+     |  |         |
+                                                 |                     |             |  |         |
+                                                 +--------------------------------------+         |
+                                                                       |             |            |
++-------------------------------------------------------------------------------------------+     |
+|                                                                      |             |      |     |
+|         +------------------------------------------------------------+             |      |     |
+|         |                                                                          |      |     |
+|         |                     +---------------------+-----------------------+------+      |     |
+|         |                     |                     |                       |             |     |
+| +-------+---------+   +-------+---------+   +-------+-------+   +-----------+----------+  |     |
+| | account_service |   | network_service |   | block_service |   | construction_service +--------+
+| +-----------------+   +-----------------+   +---------------+   +----------------------+  |
+|                                                                                           |
+|                                         server                                            |
+|                                                                                           |
++-------------------------------------------------------------------------------------------+
+```
+
+### Optimizations
+* Automatically prune bitcoind while indexing blocks
+* Reduce sync time with concurrent block indexing
+* Use [Zstandard compression](https://github.com/facebook/zstd) to reduce the size of data stored on disk
+without needing to write a manual byte-level encoding
+
+#### Concurrent Block Syncing
+To speed up indexing, `rosetta-zen` uses concurrent block processing
+with a "wait free" design (using channels instead of sleeps to signal
+which threads are unblocked). This allows `rosetta-zen` to fetch
+multiple inputs from disk while it waits for inputs that appeared
+in recently processed blocks to save to disk.
+```text
+                                                   +----------+
+                                                   |   zend   |
+                                                   +-----+----+
+                                                         |
+                                                         |
+          +---------+ fetch block data / unpopulated txs |
+          | block 1 <------------------------------------+
+          +---------+                                    |
+       +-->   tx 1  |                                    |
+       |  +---------+                                    |
+       |  |   tx 2  |                                    |
+       |  +----+----+                                    |
+       |       |                                         |
+       |       |           +---------+                   |
+       |       |           | block 2 <-------------------+
+       |       |           +---------+                   |
+       |       +----------->   tx 3  +--+                |
+       |                   +---------+  |                |
+       +------------------->   tx 4  |  |                |
+       |                   +---------+  |                |
+       |                                |                |
+       | retrieve previously synced     |   +---------+  |
+       | inputs needed for future       |   | block 3 <--+
+       | blocks while waiting for       |   +---------+
+       | populated blocks to save to    +--->   tx 5  |
+       | disk                               +---------+
+       +------------------------------------>   tx 6  |
+       |                                    +---------+
+       |
+       |
++------+--------+
+|  coin_storage |
++---------------+
+```
 
 ## Testing with rosetta-cli
 To validate `rosetta-zen`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
@@ -107,4 +197,5 @@ and run one of the following commands:
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
-© 2020 Horizen
+© 2020 Coinbase
+© 2020 Zen Blockchain Foundation

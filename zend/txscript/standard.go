@@ -56,6 +56,7 @@ const (
 	ScriptHashTy                             // Pay to script hash.
 	ScriptHashReplayOutTy                    // Pay to script hash replay protection.
 	MultiSigTy                               // Multi signature.
+	MultiSigReplayTy                         // Multi signature with replay protection.
 	NullDataTy                               // Empty data-only (provably prunable).
 	WitnessV0PubKeyHashTy                    // Pay witness pubkey hash.
 )
@@ -151,6 +152,36 @@ func isMultiSig(pops []parsedOpcode) bool {
 	return true
 }
 
+func isMultiSigReplay(pops []parsedOpcode) bool {
+	l := len(pops)
+	if l < 7 {
+		return false
+	}
+	if !isSmallInt(pops[0].opcode) {
+		return false
+	}
+	if !isSmallInt(pops[l-5].opcode) {
+		return false
+	}
+	if pops[l-1].opcode.value != OP_CHECKBLOCKATHEIGHT {
+		return false
+	}
+
+	// Verify the number of pubkeys specified matches the actual number
+	// of pubkeys provided.
+	if l-2-1-3 != asSmallInt(pops[l-5].opcode) {
+		return false
+	}
+
+	for _, pop := range pops[1 : l-5] {
+		// Valid pubkeys are either 33 or 65 bytes.
+		if len(pop.data) != 33 && len(pop.data) != 65 {
+			return false
+		}
+	}
+	return true
+}
+
 // isNullData returns true if the passed script is a null data transaction,
 // false otherwise.
 func isNullData(pops []parsedOpcode) bool {
@@ -184,6 +215,8 @@ func typeOfScript(pops []parsedOpcode) ScriptClass {
 		return ScriptHashReplayOutTy
 	} else if isMultiSig(pops) {
 		return MultiSigTy
+	} else if isMultiSigReplay(pops) {
+		return MultiSigReplayTy
 	} else if isNullData(pops) {
 		return NullDataTy
 	}
