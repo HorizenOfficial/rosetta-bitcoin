@@ -24,11 +24,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	"github.com/HorizenOfficial/rosetta-zen/indexer"
 	"github.com/HorizenOfficial/rosetta-zen/services"
 	"github.com/HorizenOfficial/rosetta-zen/utils"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
@@ -91,7 +91,7 @@ func startOnlineDependencies(
 	)
 
 	g.Go(func() error {
-		return zen.StartBitcoind(ctx, cfg.ConfigPath, g)
+		return zen.StartZEND(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -162,7 +162,7 @@ func main() {
 		zen.OperationTypes,
 		false,
 		[]*types.NetworkIdentifier{cfg.Network},
-                nil,
+		nil,
 	)
 	if err != nil {
 		logger.Fatalw("unable to create new server asserter", "error", err)
