@@ -161,6 +161,7 @@ func main() {
 		zen.OperationTypes,
 		false,
 		[]*types.NetworkIdentifier{cfg.Network},
+                nil,
 	)
 	if err != nil {
 		logger.Fatalw("unable to create new server asserter", "error", err)
