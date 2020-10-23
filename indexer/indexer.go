@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	"github.com/HorizenOfficial/rosetta-zen/services"
 	"github.com/HorizenOfficial/rosetta-zen/utils"
@@ -69,10 +69,10 @@ var (
 type Client interface {
 	NetworkStatus(context.Context) (*types.NetworkStatusResponse, error)
 	PruneBlockchain(context.Context, int64) (int64, error)
-	GetRawBlock(context.Context, *types.PartialBlockIdentifier) (*bitcoin.Block, []string, error)
+	GetRawBlock(context.Context, *types.PartialBlockIdentifier) (*zen.Block, []string, error)
 	ParseBlock(
 		context.Context,
-		*bitcoin.Block,
+		*zen.Block,
 		map[string]*storage.AccountCoin,
 	) (*types.Block, error)
 }
@@ -157,8 +157,8 @@ func Initialize(
 	asserter, err := asserter.NewClientWithOptions(
 		config.Network,
 		config.GenesisBlockIdentifier,
-		bitcoin.OperationTypes,
-		bitcoin.OperationStatuses,
+		zen.OperationTypes,
+		zen.OperationStatuses,
 		services.Errors,
 	)
 	if err != nil {
@@ -384,7 +384,7 @@ func (i *Indexer) NetworkStatus(
 
 func (i *Indexer) findCoin(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 	coinIdentifier string,
 ) (*types.Coin, *types.AccountIdentifier, error) {
 	for ctx.Err() == nil {
@@ -446,7 +446,7 @@ func (i *Indexer) findCoin(
 
 		// Put Transaction in WaitTable if doesn't already exist (could be
 		// multiple listeners)
-		transactionHash := bitcoin.TransactionHash(coinIdentifier)
+		transactionHash := zen.TransactionHash(coinIdentifier)
 		val, ok := i.waiter.Get(transactionHash, false)
 		if !ok {
 			val = &waitTableEntry{
@@ -469,7 +469,7 @@ func (i *Indexer) findCoin(
 
 func (i *Indexer) checkHeaderMatch(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 ) error {
 	headBlock, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
 	if err != nil && !errors.Is(err, storage.ErrHeadBlockNotFound) {
@@ -489,7 +489,7 @@ func (i *Indexer) checkHeaderMatch(
 
 func (i *Indexer) findCoins(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 	coins []string,
 ) (map[string]*storage.AccountCoin, error) {
 	if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
@@ -528,7 +528,7 @@ func (i *Indexer) findCoins(
 	shouldAbort := false
 	for _, coinIdentifier := range remainingCoins {
 		// Wait on Channel
-		txHash := bitcoin.TransactionHash(coinIdentifier)
+		txHash := zen.TransactionHash(coinIdentifier)
 		entry, ok := i.waiter.Get(txHash, true)
 		if !ok {
 			return nil, fmt.Errorf("transaction %s not in waiter", txHash)
@@ -590,7 +590,7 @@ func (i *Indexer) Block(
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.Block, error) {
 	// get raw block
-	var btcBlock *bitcoin.Block
+	var btcBlock *zen.Block
 	var coins []string
 	var err error
 
@@ -638,14 +638,14 @@ func (i *Indexer) Block(
 func (i *Indexer) GetScriptPubKeys(
 	ctx context.Context,
 	coins []*types.Coin,
-) ([]*bitcoin.ScriptPubKey, error) {
+) ([]*zen.ScriptPubKey, error) {
 	databaseTransaction := i.database.NewDatabaseTransaction(ctx, false)
 	defer databaseTransaction.Discard(ctx)
 
-	scripts := make([]*bitcoin.ScriptPubKey, len(coins))
+	scripts := make([]*zen.ScriptPubKey, len(coins))
 	for j, coin := range coins {
 		coinIdentifier := coin.CoinIdentifier
-		transactionHash, networkIndex, err := bitcoin.ParseCoinIdentifier(coinIdentifier)
+		transactionHash, networkIndex, err := zen.ParseCoinIdentifier(coinIdentifier)
 		if err != nil {
 			return nil, fmt.Errorf("%w: unable to parse coin identifier", err)
 		}
@@ -664,7 +664,7 @@ func (i *Indexer) GetScriptPubKeys(
 		}
 
 		for _, op := range transaction.Operations {
-			if op.Type != bitcoin.OutputOpType {
+			if op.Type != zen.OutputOpType {
 				continue
 			}
 
@@ -672,7 +672,7 @@ func (i *Indexer) GetScriptPubKeys(
 				continue
 			}
 
-			var opMetadata bitcoin.OperationMetadata
+			var opMetadata zen.OperationMetadata
 			if err := types.UnmarshalMap(op.Metadata, &opMetadata); err != nil {
 				return nil, fmt.Errorf(
 					"%w: unable to unmarshal operation metadata %+v",

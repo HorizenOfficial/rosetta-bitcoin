@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
 
@@ -44,7 +44,7 @@ func TestAccountBalance_Offline(t *testing.T) {
 func TestAccountBalance_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: bitcoin.MainnetCurrency,
+		Currency: zen.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -97,7 +97,7 @@ func TestAccountBalance_Online(t *testing.T) {
 		Balances: []*types.Amount{
 			{
 				Value:    "25",
-				Currency: bitcoin.MainnetCurrency,
+				Currency: zen.MainnetCurrency,
 			},
 		},
 	}, bal)

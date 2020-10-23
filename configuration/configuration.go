@@ -22,9 +22,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/chaincfg"
+	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
@@ -159,12 +159,12 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 	switch networkValue {
 	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.MainnetNetwork,
+			Blockchain: zen.Blockchain,
+			Network:    zen.MainnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.MainnetGenesisBlockIdentifier
-		config.Params = bitcoin.MainnetParams
-		config.Currency = bitcoin.MainnetCurrency
+		config.GenesisBlockIdentifier = zen.MainnetGenesisBlockIdentifier
+		config.Params = zen.MainnetParams
+		config.Currency = zen.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
 		config.Compressors = []*storage.CompressorEntry{
@@ -175,12 +175,12 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		}
 	case Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.TestnetNetwork,
+			Blockchain: zen.Blockchain,
+			Network:    zen.TestnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
-		config.Params = bitcoin.TestnetParams
-		config.Currency = bitcoin.TestnetCurrency
+		config.GenesisBlockIdentifier = zen.TestnetGenesisBlockIdentifier
+		config.Params = zen.TestnetParams
+		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
 		config.Compressors = []*storage.CompressorEntry{

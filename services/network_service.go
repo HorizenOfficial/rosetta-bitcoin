@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
@@ -92,8 +92,8 @@ func (s *NetworkAPIService) NetworkOptions(
 			MiddlewareVersion: &MiddlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: bitcoin.OperationStatuses,
-			OperationTypes:    bitcoin.OperationTypes,
+			OperationStatuses: zen.OperationStatuses,
+			OperationTypes:    zen.OperationTypes,
 			Errors:            Errors,
 		},
 	}, nil

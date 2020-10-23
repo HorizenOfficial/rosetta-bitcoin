@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -66,14 +66,14 @@ type Indexer interface {
 	GetScriptPubKeys(
 		context.Context,
 		[]*types.Coin,
-	) ([]*bitcoin.ScriptPubKey, error)
+	) ([]*zen.ScriptPubKey, error)
 }
 
 type unsignedTransaction struct {
-	Transaction    string                  `json:"transaction"`
-	ScriptPubKeys  []*bitcoin.ScriptPubKey `json:"scriptPubKeys"`
-	InputAmounts   []string                `json:"input_amounts"`
-	InputAddresses []string                `json:"input_addresses"`
+	Transaction    string              `json:"transaction"`
+	ScriptPubKeys  []*zen.ScriptPubKey `json:"scriptPubKeys"`
+	InputAmounts   []string            `json:"input_amounts"`
+	InputAddresses []string            `json:"input_addresses"`
 }
 
 type preprocessOptions struct {
@@ -83,9 +83,9 @@ type preprocessOptions struct {
 }
 
 type constructionMetadata struct {
-	ScriptPubKeys []*bitcoin.ScriptPubKey `json:"script_pub_keys"`
-	ReplayBlockHeight int64 `json:"replay_block_height"`
-	ReplayBlockHash string `json:"replay_block_hash"`
+	ScriptPubKeys []*zen.ScriptPubKey `json:"script_pub_keys"`
+	ReplayBlockHeight int64           `json:"replay_block_height"`
+	ReplayBlockHash string            `json:"replay_block_hash"`
 
 }
 
@@ -97,5 +97,5 @@ type signedTransaction struct {
 // ParseOperationMetadata is returned from
 // ConstructionParse.
 type ParseOperationMetadata struct {
-	ScriptPubKey *bitcoin.ScriptPubKey `json:"scriptPubKey"`
+	ScriptPubKey *zen.ScriptPubKey `json:"scriptPubKey"`
 }

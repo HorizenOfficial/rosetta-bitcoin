@@ -24,13 +24,13 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
-	"github.com/HorizenOfficial/rosetta-zen/btcd/btcec"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/txscript"
-	"github.com/HorizenOfficial/rosetta-zen/btcd/wire"
-	"github.com/HorizenOfficial/rosetta-zen/btcutil"
+	"github.com/HorizenOfficial/rosetta-zen/zend/btcec"
+	"github.com/HorizenOfficial/rosetta-zen/zend/txscript"
+	"github.com/HorizenOfficial/rosetta-zen/zend/wire"
+	"github.com/HorizenOfficial/rosetta-zen/zenutil"
 	"github.com/coinbase/rosetta-sdk-go/parser"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -71,8 +71,8 @@ func (s *ConstructionAPIService) ConstructionDerive(
 	ctx context.Context,
 	request *types.ConstructionDeriveRequest,
 ) (*types.ConstructionDeriveResponse, *types.Error) {
-	addr, err := btcutil.NewAddressPubKeyHash(
-		btcutil.Hash160(request.PublicKey.Bytes),
+	addr, err := zenutil.NewAddressPubKeyHash(
+		zenutil.Hash160(request.PublicKey.Bytes),
 		s.config.Params,
 	)
 	if err != nil {
@@ -88,22 +88,22 @@ func (s *ConstructionAPIService) ConstructionDerive(
 
 // estimateSize returns the estimated size of a transaction in vBytes.
 func (s *ConstructionAPIService) estimateSize(operations []*types.Operation) float64 {
-	size := bitcoin.TransactionOverhead
+	size := zen.TransactionOverhead
 	for _, operation := range operations {
 		switch operation.Type {
-		case bitcoin.InputOpType:
-			size += bitcoin.InputSize
-		case bitcoin.OutputOpType:
-			size += bitcoin.OutputOverhead
-			addr, err := btcutil.DecodeAddress(operation.Account.Address, s.config.Params)
+		case zen.InputOpType:
+			size += zen.InputSize
+		case zen.OutputOpType:
+			size += zen.OutputOverhead
+			addr, err := zenutil.DecodeAddress(operation.Account.Address, s.config.Params)
 			if err != nil {
-				size += bitcoin.P2PKHScriptPubkeySize
+				size += zen.P2PKHScriptPubkeySize
 				continue
 			}
 
 			script, err := txscript.PayToAddrScript(addr)
 			if err != nil {
-				size += bitcoin.P2PKHScriptPubkeySize
+				size += zen.P2PKHScriptPubkeySize
 				continue
 			}
 
@@ -123,7 +123,7 @@ func (s *ConstructionAPIService) ConstructionPreprocess(
 	descriptions := &parser.Descriptions{
 		OperationDescriptions: []*parser.OperationDescription{
 			{
-				Type: bitcoin.InputOpType,
+				Type: zen.InputOpType,
 				Account: &parser.AccountDescription{
 					Exists: true,
 				},
@@ -192,12 +192,12 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	if options.FeeMultiplier != nil {
 		feePerKB *= *options.FeeMultiplier
 	}
-	if feePerKB < bitcoin.MinFeeRate {
-		feePerKB = bitcoin.MinFeeRate
+	if feePerKB < zen.MinFeeRate {
+		feePerKB = zen.MinFeeRate
 	}
 
 	// Calculated the estimated fee in Satoshis
-	satoshisPerB := (feePerKB * float64(bitcoin.SatoshisInBitcoin)) / bytesInKb
+	satoshisPerB := (feePerKB * float64(zen.SatoshisInBitcoin)) / bytesInKb
 	estimatedFee := satoshisPerB * options.EstimatedSize
 	suggestedFee := &types.Amount{
 		Value:    fmt.Sprintf("%d", int64(estimatedFee)),
@@ -235,7 +235,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	descriptions := &parser.Descriptions{
 		OperationDescriptions: []*parser.OperationDescription{
 			{
-				Type: bitcoin.InputOpType,
+				Type: zen.InputOpType,
 				Account: &parser.AccountDescription{
 					Exists: true,
 				},
@@ -248,7 +248,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 				CoinAction:   types.CoinSpent,
 			},
 			{
-				Type: bitcoin.OutputOpType,
+				Type: zen.OutputOpType,
 				Account: &parser.AccountDescription{
 					Exists: true,
 				},
@@ -278,7 +278,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 			return nil, wrapErr(ErrUnclearIntent, errors.New("CoinChange cannot be nil"))
 		}
 
-		transactionHash, index, err := bitcoin.ParseCoinIdentifier(input.CoinChange.CoinIdentifier)
+		transactionHash, index, err := zen.ParseCoinIdentifier(input.CoinChange.CoinIdentifier)
 		if err != nil {
 			return nil, wrapErr(ErrInvalidCoin, err)
 		}
@@ -294,7 +294,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 	}
 
 	for i, output := range matches[1].Operations {
-		addr, err := btcutil.DecodeAddress(output.Account.Address, s.config.Params)
+		addr, err := zenutil.DecodeAddress(output.Account.Address, s.config.Params)
 		if err != nil {
 			return nil, wrapErr(ErrUnableToDecodeAddress, fmt.Errorf(
 				"%w unable to decode address %s",
@@ -331,7 +331,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		if err != nil {
 			return nil, wrapErr(ErrUnableToDecodeScriptPubKey, err)
 		}
-		class, _, err := bitcoin.ParseSingleAddress(s.config.Params, script)
+		class, _, err := zen.ParseSingleAddress(s.config.Params, script)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -441,7 +441,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 			return nil, wrapErr(ErrUnableToDecodeScriptPubKey, err)
 		}
 
-		class, _, err := bitcoin.ParseSingleAddress(s.config.Params, decodedScript)
+		class, _, err := zen.ParseSingleAddress(s.config.Params, decodedScript)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -513,7 +513,7 @@ func (s *ConstructionAPIService) ConstructionHash(
 		)
 	}
 
-	tx, err := btcutil.NewTxFromBytes(bytesTx)
+	tx, err := zenutil.NewTxFromBytes(bytesTx)
 	if err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
@@ -571,7 +571,7 @@ func (s *ConstructionAPIService) parseUnsignedTransaction(
 				Index:        int64(len(ops)),
 				NetworkIndex: &networkIndex,
 			},
-			Type: bitcoin.InputOpType,
+			Type: zen.InputOpType,
 			Account: &types.AccountIdentifier{
 				Address: unsigned.InputAddresses[i],
 			},
@@ -594,7 +594,7 @@ func (s *ConstructionAPIService) parseUnsignedTransaction(
 
 	for i, output := range tx.TxOut {
 		networkIndex := int64(i)
-		_, addr, err := bitcoin.ParseSingleAddress(s.config.Params, output.PkScript)
+		_, addr, err := zen.ParseSingleAddress(s.config.Params, output.PkScript)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -607,7 +607,7 @@ func (s *ConstructionAPIService) parseUnsignedTransaction(
 				Index:        int64(len(ops)),
 				NetworkIndex: &networkIndex,
 			},
-			Type: bitcoin.OutputOpType,
+			Type: zen.OutputOpType,
 			Account: &types.AccountIdentifier{
 				Address: addr.String(),
 			},
@@ -669,7 +669,7 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 				fmt.Errorf("%w: unable to compute pk script", err),
 			)
 		}
-		_, addr, err := bitcoin.ParseSingleAddress(s.config.Params, pkScript.Script())
+		_, addr, err := zen.ParseSingleAddress(s.config.Params, pkScript.Script())
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -686,7 +686,7 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 				Index:        int64(len(ops)),
 				NetworkIndex: &networkIndex,
 			},
-			Type: bitcoin.InputOpType,
+			Type: zen.InputOpType,
 			Account: &types.AccountIdentifier{
 				Address: addr.EncodeAddress(),
 			},
@@ -709,7 +709,7 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 
 	for i, output := range tx.TxOut {
 		networkIndex := int64(i)
-		_, addr, err := bitcoin.ParseSingleAddress(s.config.Params, output.PkScript)
+		_, addr, err := zen.ParseSingleAddress(s.config.Params, output.PkScript)
 		if err != nil {
 			return nil, wrapErr(
 				ErrUnableToDecodeAddress,
@@ -722,7 +722,7 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 				Index:        int64(len(ops)),
 				NetworkIndex: &networkIndex,
 			},
-			Type: bitcoin.OutputOpType,
+			Type: zen.OutputOpType,
 			Account: &types.AccountIdentifier{
 				Address: addr.String(),
 			},

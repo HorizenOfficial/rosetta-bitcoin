@@ -19,7 +19,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
 
@@ -47,15 +47,15 @@ func forceMarshalMap(t *testing.T, i interface{}) map[string]interface{} {
 
 func TestConstructionService(t *testing.T) {
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    bitcoin.TestnetNetwork,
-		Blockchain: bitcoin.Blockchain,
+		Network:    zen.TestnetNetwork,
+		Blockchain: zen.Blockchain,
 	}
 
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
 		Network:  networkIdentifier,
-		Params:   bitcoin.TestnetParams,
-		Currency: bitcoin.TestnetCurrency,
+		Params:   zen.TestnetParams,
+		Currency: zen.TestnetCurrency,
 	}
 
 	mockIndexer := &mocks.Indexer{}
@@ -88,13 +88,13 @@ func TestConstructionService(t *testing.T) {
 			OperationIdentifier: &types.OperationIdentifier{
 				Index: 0,
 			},
-			Type: bitcoin.InputOpType,
+			Type: zen.InputOpType,
 			Account: &types.AccountIdentifier{
 				Address: "ztmfGwLDqR9bApbXi9Nzb4JuGbhS9Biwn4M",
 			},
 			Amount: &types.Amount{
 				Value:    "-1143750000",
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 			CoinChange: &types.CoinChange{
 				CoinIdentifier: &types.CoinIdentifier{
@@ -107,13 +107,13 @@ func TestConstructionService(t *testing.T) {
 			OperationIdentifier: &types.OperationIdentifier{
 				Index: 1,
 			},
-			Type: bitcoin.OutputOpType,
+			Type: zen.OutputOpType,
 			Account: &types.AccountIdentifier{
 				Address: "ztUWqnHtPBV1kuDS5gcmWi5yGthzCpzWS2G",
 			},
 			Amount: &types.Amount{
 				Value:    "1143740000",
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 		},
 	}
@@ -135,7 +135,7 @@ func TestConstructionService(t *testing.T) {
 				},
 				Amount: &types.Amount{
 					Value:    "-1143750000",
-					Currency: bitcoin.TestnetCurrency,
+					Currency: zen.TestnetCurrency,
 				},
 			},
 		},
@@ -148,7 +148,7 @@ func TestConstructionService(t *testing.T) {
 
 	// Test Metadata
 	metadata := &constructionMetadata{
-		ScriptPubKeys: []*bitcoin.ScriptPubKey{
+		ScriptPubKeys: []*zen.ScriptPubKey{
 			{
 				ASM:          "OP_DUP OP_HASH160 cafd80252588892a4c340bc26cff7ddf7b8a4170 OP_EQUALVERIFY OP_CHECKSIG",
 				Hex:          "76a914cafd80252588892a4c340bc26cff7ddf7b8a417088ac",
@@ -177,7 +177,7 @@ func TestConstructionService(t *testing.T) {
 		ctx,
 		defaultConfirmationTarget,
 	).Return(
-		bitcoin.MinFeeRate*10,
+		zen.MinFeeRate*10,
 		nil,
 	).Once()
 	mockClient.On(
@@ -200,7 +200,7 @@ func TestConstructionService(t *testing.T) {
 		SuggestedFee: []*types.Amount{
 			{
 				Value:    "855", // 1,420 * 0.75
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 		},
 	}, metadataResponse)
@@ -219,7 +219,7 @@ func TestConstructionService(t *testing.T) {
 		ctx,
 		defaultConfirmationTarget,
 	).Return(
-		bitcoin.MinFeeRate,
+		zen.MinFeeRate,
 		nil,
 	).Once()
 	metadataResponse, err = servicer.ConstructionMetadata(ctx, &types.ConstructionMetadataRequest{
@@ -232,7 +232,7 @@ func TestConstructionService(t *testing.T) {
 		SuggestedFee: []*types.Amount{
 			{
 				Value:    "114", // we don't go below minimum fee rate
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 		},
 	}, metadataResponse)
@@ -250,13 +250,13 @@ func TestConstructionService(t *testing.T) {
 				Index:        0,
 				NetworkIndex: &val0,
 			},
-			Type: bitcoin.InputOpType,
+			Type: zen.InputOpType,
 			Account: &types.AccountIdentifier{
 				Address: "ztmfGwLDqR9bApbXi9Nzb4JuGbhS9Biwn4M",
 			},
 			Amount: &types.Amount{
 				Value:    "-1143750000",
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 			CoinChange: &types.CoinChange{
 				CoinIdentifier: &types.CoinIdentifier{
@@ -270,13 +270,13 @@ func TestConstructionService(t *testing.T) {
 				Index:        1,
 				NetworkIndex: &val0,
 			},
-			Type: bitcoin.OutputOpType,
+			Type: zen.OutputOpType,
 			Account: &types.AccountIdentifier{
 				Address: "ztUWqnHtPBV1kuDS5gcmWi5yGthzCpzWS2G",
 			},
 			Amount: &types.Amount{
 				Value:    "1143740000",
-				Currency: bitcoin.TestnetCurrency,
+				Currency: zen.TestnetCurrency,
 			},
 		},
 	}

@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
 
@@ -35,15 +35,15 @@ var (
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: bitcoin.OperationStatuses,
-			OperationTypes:    bitcoin.OperationTypes,
+			OperationStatuses: zen.OperationStatuses,
+			OperationTypes:    zen.OperationTypes,
 			Errors:            Errors,
 		},
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    bitcoin.MainnetNetwork,
-		Blockchain: bitcoin.Blockchain,
+		Network:    zen.MainnetNetwork,
+		Blockchain: zen.Blockchain,
 	}
 )
 
@@ -93,7 +93,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	}, networkList.NetworkIdentifiers)
 
 	rawStatus := &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 	}
 	blockResponse := &types.BlockResponse{
 		Block: &types.Block{
@@ -115,7 +115,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	networkStatus, err := servicer.NetworkStatus(ctx, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 		CurrentBlockIdentifier: blockResponse.Block.BlockIdentifier,
 	}, networkStatus)
 

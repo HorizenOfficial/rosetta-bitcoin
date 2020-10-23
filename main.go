@@ -24,7 +24,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	"github.com/HorizenOfficial/rosetta-zen/indexer"
 	"github.com/HorizenOfficial/rosetta-zen/services"
@@ -83,15 +83,15 @@ func startOnlineDependencies(
 	cancel context.CancelFunc,
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
-) (*bitcoin.Client, *indexer.Indexer, error) {
-	client := bitcoin.NewClient(
-		bitcoin.LocalhostURL(cfg.RPCPort),
+) (*zen.Client, *indexer.Indexer, error) {
+	client := zen.NewClient(
+		zen.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
 		cfg.Currency,
 	)
 
 	g.Go(func() error {
-		return bitcoin.StartBitcoind(ctx, cfg.ConfigPath, g)
+		return zen.StartBitcoind(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -147,7 +147,7 @@ func main() {
 	})
 
 	var i *indexer.Indexer
-	var client *bitcoin.Client
+	var client *zen.Client
 	if cfg.Mode == configuration.Online {
 		client, i, err = startOnlineDependencies(ctx, cancel, cfg, g)
 		if err != nil {
@@ -158,7 +158,7 @@ func main() {
 	// The asserter automatically rejects incorrectly formatted
 	// requests.
 	asserter, err := asserter.NewServer(
-		bitcoin.OperationTypes,
+		zen.OperationTypes,
 		false,
 		[]*types.NetworkIdentifier{cfg.Network},
 	)
