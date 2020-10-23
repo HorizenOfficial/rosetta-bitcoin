@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	"github.com/coinbase/rosetta-sdk-go/types"
