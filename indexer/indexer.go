@@ -668,6 +668,10 @@ func (i *Indexer) GetScriptPubKeys(
 				continue
 			}
 
+			if op.Status == zen.SkippedStatus {
+				continue
+			}
+
 			if *op.OperationIdentifier.NetworkIndex != int64(networkIndex) {
 				continue
 			}

@@ -560,7 +560,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
-								Status: SuccessStatus,
+								Status: SkippedStatus,
 								Metadata: mustMarshalMap(&OperationMetadata{
 									Coinbase: "039ff40a0102",
 									Sequence: 4294967295,
@@ -572,7 +572,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: SkippedStatus,
 								Account: &types.AccountIdentifier{
 									Address: "ztawr1vEZ6pZRtLqNy2C9u7EK7JN2gP8W6z", // nolint
 								},
@@ -604,7 +604,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(1),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: SkippedStatus,
 								Account: &types.AccountIdentifier{
 									Address: "zrFzxutppvxEdjyu4QNjogBMjtC1py9Hp1S", // nolint
 								},
@@ -636,7 +636,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(2),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: SkippedStatus,
 								Account: &types.AccountIdentifier{
 									Address: "zrS7QUB2eDbbKvyP43VJys3t7RpojW8GdxH", // nolint
 								},
@@ -668,7 +668,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(3),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: SkippedStatus,
 								Account: &types.AccountIdentifier{
 									Address: "zrFr5HVm7woVq3oFzkMEdJdbfBchfPAPDsP", // nolint
 								},

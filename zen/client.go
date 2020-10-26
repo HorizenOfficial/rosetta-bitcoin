@@ -484,24 +484,6 @@ func (b *Client) GetHashFromIndex(
 	return response.Result, nil
 }
 
-// skipTransactionOperations is used to skip operations on transactions that
-// contain duplicate UTXOs (which are no longer possible after BIP-30). This
-// function mirrors the behavior of a similar commit in bitcoin-core.
-//
-// Source: https://github.com/bitcoin/bitcoin/commit/ab91bf39b7c11e9c86bb2043c24f0f377f1cf514
-func skipTransactionOperations(blockNumber int64, blockHash string, transactionHash string) bool {
-	if blockNumber == 91842 && blockHash == "00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec" &&
-		transactionHash == "d5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599" {
-		return true
-	}
-
-	if blockNumber == 91880 && blockHash == "00000000000743f190a18c5577a3c2d2a1f610ae9601ac046a38084ccb7cd721" &&
-		transactionHash == "e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468" {
-		return true
-	}
-
-	return false
-}
 
 // parseTransactions returns the transactions for a specified `Block`
 func (b *Client) parseTransactions(
@@ -523,11 +505,9 @@ func (b *Client) parseTransactions(
 			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
 		}
 
-		if skipTransactionOperations(block.Height, block.Hash, transaction.Hash) {
-			logger.Warnw(
-				"skipping transaction",
-				"block index", block.Height,
-				"block hash", block.Hash,
+		if index == 0 {
+			logger.Debug(
+				"skipping coinbase transaction",
 				"transaction hash", transaction.Hash,
 			)
 
