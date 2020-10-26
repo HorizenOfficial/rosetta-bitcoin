@@ -21,7 +21,6 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
 	"github.com/HorizenOfficial/rosetta-zen/zen"
-
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 )

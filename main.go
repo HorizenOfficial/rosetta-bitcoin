@@ -51,6 +51,11 @@ const (
 	// idleTimeout is the maximum amount of time to wait for the
 	// next request when keep-alives are enabled.
 	idleTimeout = 30 * time.Second
+
+
+	// maxHeapUsage is the size of the heap in MB before we manually
+	// trigger garbage collection.
+	maxHeapUsage = 1000 // ~8.5 GB)
 )
 
 var (
