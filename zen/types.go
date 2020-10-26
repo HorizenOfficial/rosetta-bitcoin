@@ -114,6 +114,14 @@ var (
 		Decimals: Decimals,
 	}
 
+	// RegtestGenesisBlockIdentifier is the genesis block for regtest.
+	RegtestGenesisBlockIdentifier = &types.BlockIdentifier{
+		Hash: "0da5ee723b7923feb580518541c6f098206330dbc711a6678922c11f2ccf1abb",
+	}
+
+	// RegtestParams are the params for regtest.
+	RegtestParams = &chaincfg.RegtestParams
+
 	// OperationTypes are all supported operation.Types.
 	OperationTypes = []string{
 		InputOpType,

@@ -26,8 +26,6 @@ import (
 	"strconv"
 	"time"
 
-	bitcoinUtils "github.com/HorizenOfficial/rosetta-zen/utils"
-
 	"github.com/HorizenOfficial/rosetta-zen/zenutil"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -491,68 +489,59 @@ func (b *Client) parseTransactions(
 	block *Block,
 	coins map[string]*storage.AccountCoin,
 ) ([]*types.Transaction, error) {
-	logger := bitcoinUtils.ExtractLogger(ctx, "client")
 
 	if block == nil {
 		return nil, errors.New("error parsing nil block")
 	}
-
 	txs := make([]*types.Transaction, len(block.Txs))
-
 	for index, transaction := range block.Txs {
-		txOps, err := b.parseTxOperations(transaction, index, coins)
-		if err != nil {
-			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
-		}
-
-		if index == 0 {
-			logger.Debug(
-				"skipping coinbase transaction",
-				"transaction hash", transaction.Hash,
-			)
-
-			for _, op := range txOps {
-				op.Status = SkippedStatus
-			}
-		}
-
-		metadata, err := transaction.Metadata()
-		if err != nil {
-			return nil, fmt.Errorf("%w: unable to get metadata for transaction", err)
-		}
-
-		tx := &types.Transaction{
-			TransactionIdentifier: &types.TransactionIdentifier{
-				Hash: transaction.Hash,
-			},
-			Operations: txOps,
-			Metadata:   metadata,
-		}
-
-		txs[index] = tx
-
-		// In some cases, a transaction will spent an output
-		// from the same block.
-		for _, op := range tx.Operations {
-			if op.CoinChange == nil {
-				continue
+		if (index != 0) || (b.genesisBlockIdentifier.Hash != "0007104ccda289427919efc39dc9e4d499804b7bebc22df55f8b834301260602" && b.genesisBlockIdentifier.Hash != "03e1c4bb705c871bf9bfda3e74b7f8f86bff267993c215a89d5795e3708e5e1f") {
+			txOps, err := b.parseTxOperations(transaction, index, coins)
+			if err != nil {
+				return nil, fmt.Errorf("%w: error parsing transaction operations", err)
 			}
 
-			if op.CoinChange.CoinAction != types.CoinCreated {
-				continue
+			metadata, err := transaction.Metadata()
+			if err != nil {
+				return nil, fmt.Errorf("%w: unable to get metadata for transaction", err)
 			}
 
-			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
-				Coin: &types.Coin{
-					CoinIdentifier: op.CoinChange.CoinIdentifier,
-					Amount:         op.Amount,
+			tx := &types.Transaction{
+				TransactionIdentifier: &types.TransactionIdentifier{
+					Hash: transaction.Hash,
 				},
-				Account: op.Account,
+				Operations: txOps,
+				Metadata:   metadata,
+			}
+
+			txs[index] = tx
+
+			// In some cases, a transaction will spent an output
+			// from the same block.
+			for _, op := range tx.Operations {
+				if op.CoinChange == nil {
+					continue
+				}
+
+				if op.CoinChange.CoinAction != types.CoinCreated {
+					continue
+				}
+
+				coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+					Coin: &types.Coin{
+						CoinIdentifier: op.CoinChange.CoinIdentifier,
+						Amount:         op.Amount,
+					},
+					Account: op.Account,
+				}
 			}
 		}
 	}
-
-	return txs, nil
+	if b.genesisBlockIdentifier.Hash == "0007104ccda289427919efc39dc9e4d499804b7bebc22df55f8b834301260602" || b.genesisBlockIdentifier.Hash == "03e1c4bb705c871bf9bfda3e74b7f8f86bff267993c215a89d5795e3708e5e1f" {
+		return txs[1:len(block.Txs)], nil
+	}else {
+		return txs, nil
+	}
 }
 
 // parseTransactions returns the transaction operations for a specified transaction.

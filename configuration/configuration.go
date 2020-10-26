@@ -42,11 +42,14 @@ const (
 	// to make outbound connections.
 	Offline Mode = "OFFLINE"
 
-	// Mainnet is the Bitcoin Mainnet.
+	// Mainnet is the Zen Mainnet.
 	Mainnet string = "MAINNET"
 
-	// Testnet is Bitcoin Testnet3.
+	// Testnet is Zen Testnet.
 	Testnet string = "TESTNET"
+
+	// Regtest is Zen Regtest.
+	Regtest string = "REGTEST"
 
 	// mainnetConfigPath is the path of the Bitcoin
 	// configuration file for mainnet.
@@ -56,13 +59,19 @@ const (
 	// configuration file for testnet.
 	testnetConfigPath = "/app/zen-testnet.conf"
 
+	// regtestConfigPath is the path of the Zen
+	// configuration file for regtest.
+	regtestConfigPath = "/app/zen-regtest.conf"
+
 	// Zstandard compression dictionaries
 	transactionNamespace         = "transaction"
 	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
 	mainnetTransactionDictionary = "/app/mainnet-transaction.zstd"
+	regtestTransactionDictionary = "/app/regtest-transaction.zstd"
 
 	mainnetRPCPort = 8231
 	testnetRPCPort = 18231
+	regtestRPCPort = 18231
 
 	// min prune depth is 288:
 	// https://github.com/bitcoin/bitcoin/blob/ad2952d17a2af419a04256b10b53c7377f826a27/src/validation.h#L84
@@ -183,6 +192,22 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
+		config.Compressors = []*storage.CompressorEntry{
+			{
+				Namespace:      transactionNamespace,
+				DictionaryPath: testnetTransactionDictionary,
+			},
+		}
+	case Regtest:
+		config.Network = &types.NetworkIdentifier{
+			Blockchain: zen.Blockchain,
+			Network:    zen.TestnetNetwork,
+		}
+		config.GenesisBlockIdentifier = zen.RegtestGenesisBlockIdentifier
+		config.Params = zen.RegtestParams
+		config.Currency = zen.TestnetCurrency
+		config.ConfigPath = regtestConfigPath
+		config.RPCPort = regtestRPCPort
 		config.Compressors = []*storage.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
