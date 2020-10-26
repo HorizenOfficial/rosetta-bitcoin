@@ -347,24 +347,24 @@ func (f *fieldVal) Normalize() *fieldVal {
 	}
 	t0 = t0 + m*977
 	t1 = (t0 >> fieldBase) + t1 + (m << 6)
-	t0 = t0 & fieldBaseMask
+	t0 &= fieldBaseMask
 	t2 = (t1 >> fieldBase) + t2
-	t1 = t1 & fieldBaseMask
+	t1 &= fieldBaseMask
 	t3 = (t2 >> fieldBase) + t3
-	t2 = t2 & fieldBaseMask
+	t2 &= fieldBaseMask
 	t4 = (t3 >> fieldBase) + t4
-	t3 = t3 & fieldBaseMask
+	t3 &= fieldBaseMask
 	t5 = (t4 >> fieldBase) + t5
-	t4 = t4 & fieldBaseMask
+	t4 &= fieldBaseMask
 	t6 = (t5 >> fieldBase) + t6
-	t5 = t5 & fieldBaseMask
+	t5 &= fieldBaseMask
 	t7 = (t6 >> fieldBase) + t7
-	t6 = t6 & fieldBaseMask
+	t6 &= fieldBaseMask
 	t8 = (t7 >> fieldBase) + t8
-	t7 = t7 & fieldBaseMask
+	t7 &= fieldBaseMask
 	t9 = (t8 >> fieldBase) + t9
-	t8 = t8 & fieldBaseMask
-	t9 = t9 & fieldMSBMask // Remove potential multiple of 2^256.
+	t8 &= fieldBaseMask
+	t9 &= fieldMSBMask // Remove potential multiple of 2^256.
 
 	// Finally, set the normalized and reduced words.
 	f.n[0] = t0

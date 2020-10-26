@@ -868,37 +868,6 @@ func TestZENCalcSignatureHash_SigHashNone(t *testing.T) {
 	}
 }
 
-/*
-func TestZENCalcSignatureHash_SigHashForMarco(t *testing.T) {
-	unsignedSerializedTx :=
-		"0100000001e2fcfaf6e7ef549f55fa695aa7c1fd0e9ce402629008b3a38578b7929bf97f500000000000ffffffff0160162c44000000003c76a9140eeb0915c30e5d03b27b19a6a3a6814ef62d4c0488ac20bb1acf2c1fc1228967a611c7db30632098f0c641855180b5fe23793b72eea50d00b400000000"
-
-	scriptHex := "76a914cafd80252588892a4c340bc26cff7ddf7b8a417088ac"
-
-	var tx wire.MsgTx
-	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
-	err := tx.Deserialize(bytes.NewReader(rawTx))
-	if err != nil {
-		t.Errorf("TestZENCalcSignatureHash failed test: "+
-			"Failed to parse transaction: %v", err)
-	}
-
-	subScript, _ := hex.DecodeString(scriptHex)
-	parsedScript, err := parseScript(subScript)
-	if err != nil {
-		t.Errorf("TestZENCalcSignatureHash failed test: "+
-			"Failed to parse sub-script: %v", err)
-	}
-
-	//s, _ := json.MarshalIndent(tx, "", "\t")
-	//fmt.Println("UNSIGNED: " + string(s))
-	//fmt.Println(hex.EncodeToString(tx.TxOut[0].PkScript))
-	//fmt.Println(hex.EncodeToString(tx.TxIn[0].PreviousOutPoint.Hash.CloneBytes()))
-	//hash := calcSignatureHash(parsedScript, SigHashAll, &tx, 0)
-
-}
-*/
-
 func TestZENRawTxInSignature_SigHashAll(t *testing.T) {
 	unsignedSerializedTx := "0100000001dc57f92c814871a404ae667003c00da6fcdbe5a1e16610fec4337d74db23fe4f0100000000ffffffff0100ca9a3b000000003e76a91484754e80eeb0a77a3895eacc233d93acc8a689ff88ac202362d1e7b9ffcde357d1c83e60875c7ddbd46b92c3031abb77ab0b7c8c768d0c024101b400000000" // nolint
 	scriptHex := "76a9145f3e58d7136483ac14c305c21f15267ac7c3233688ac20bb1acf2c1fc1228967a611c7db30632098f0c641855180b5fe23793b72eea50d00b4"                                                                                                                                        // nolint

@@ -75,9 +75,6 @@ const (
 	// https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html
 	requestMethodSendRawTransaction requestMethod = "sendrawtransaction"
 
-	// https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html
-	requestMethodEstimateSmartFee requestMethod = "estimatefee"
-
 	// https://developer.bitcoin.org/reference/rpc/getrawmempool.html
 	requestMethodRawMempool requestMethod = "getrawmempool"
 
@@ -483,7 +480,6 @@ func (b *Client) GetHashFromIndex(
 
 	return response.Result, nil
 }
-
 
 // parseTransactions returns the transactions for a specified `Block`
 func (b *Client) parseTransactions(

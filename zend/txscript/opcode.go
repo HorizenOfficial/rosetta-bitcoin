@@ -34,7 +34,8 @@ type opcode struct {
 // in bitcoin core and in most if not all other references and software related
 // to handling BTC scripts.
 const (
-	OP_0                   = 0x00 // 0
+	// 0
+	OP_0                   = 0x00 // nolint
 	OP_FALSE               = 0x00 // 0 - AKA OP_0
 	OP_DATA_1              = 0x01 // 1
 	OP_DATA_2              = 0x02 // 2
@@ -116,17 +117,17 @@ const (
 	OP_PUSHDATA4           = 0x4e // 78
 	OP_1NEGATE             = 0x4f // 79
 	OP_RESERVED            = 0x50 // 80
-	OP_1                   = 0x51 // 81 - AKA OP_TRUE
-	OP_TRUE                = 0x51 // 81
-	OP_2                   = 0x52 // 82
-	OP_3                   = 0x53 // 83
-	OP_4                   = 0x54 // 84
-	OP_5                   = 0x55 // 85
-	OP_6                   = 0x56 // 86
-	OP_7                   = 0x57 // 87
-	OP_8                   = 0x58 // 88
-	OP_9                   = 0x59 // 89
-	OP_10                  = 0x5a // 90
+	OP_1                   = 0x51 // nolint // 81 - AKA OP_TRUE
+	OP_TRUE                = 0x51 // nolint // 81
+	OP_2                   = 0x52 // nolint // 82
+	OP_3                   = 0x53 // nolint // 83
+	OP_4                   = 0x54 // nolint // 84
+	OP_5                   = 0x55 // nolint // 85
+	OP_6                   = 0x56 // nolint // 86
+	OP_7                   = 0x57 // nolint // 87
+	OP_8                   = 0x58 // nolint // 88
+	OP_9                   = 0x59 // nolint // 89
+	OP_10                  = 0x5a // nolint // 90
 	OP_11                  = 0x5b // 91
 	OP_12                  = 0x5c // 92
 	OP_13                  = 0x5d // 93

@@ -346,6 +346,7 @@ func TestExtractPkScriptAddrs(t *testing.T) {
 		class, addrs, reqSigs, err := ExtractPkScriptAddrs(
 			test.script, &chaincfg.MainNetParams)
 		if err != nil {
+			t.Error("error in ExtractPkScriptAddrs")
 		}
 
 		if !reflect.DeepEqual(addrs, test.addrs) {

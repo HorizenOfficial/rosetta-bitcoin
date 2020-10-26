@@ -101,7 +101,7 @@ func (s *ConstructionAPIService) estimateSize(operations []*types.Operation) flo
 				continue
 			}
 			hashReplay, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000000")
-			script, err := txscript.PayToAddrReplayOutScript(addr, hashReplay,100)
+			script, err := txscript.PayToAddrReplayOutScript(addr, hashReplay, 100)
 			if err != nil {
 				size += zen.P2PKHReplayScriptPubkeySize
 				continue
@@ -214,9 +214,16 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	if err != nil {
 		return nil, wrapErr(ErrCouldNotGetBestBlock, err)
 	}
-	hashReplay, err := s.client.GetHashFromIndex(ctx, bestblockHash-100)
+	const BLOCKMINUS = 100
+	hashReplay, err := s.client.GetHashFromIndex(ctx, bestblockHash-BLOCKMINUS)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+	}
 
-	metadata, err := types.MarshalMap(&constructionMetadata{ScriptPubKeys: scripts, ReplayBlockHeight: bestblockHash - 100, ReplayBlockHash: hashReplay})
+	metadata, err := types.MarshalMap(&constructionMetadata{
+		ScriptPubKeys:     scripts,
+		ReplayBlockHeight: bestblockHash - BLOCKMINUS,
+		ReplayBlockHash:   hashReplay})
 	if err != nil {
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
@@ -305,6 +312,9 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		}
 
 		hashReplayToByte, err := hex.DecodeString(metadata.ReplayBlockHash)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+		}
 		pkScript, err := txscript.PayToAddrReplayOutScript(addr, hashReplayToByte, metadata.ReplayBlockHeight)
 		if err != nil {
 			return nil, wrapErr(
@@ -365,7 +375,6 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 			Bytes:         hash,
 			SignatureType: types.Ecdsa,
 		}
-
 	}
 
 	buf := bytes.NewBuffer(make([]byte, 0, tx.SerializeSize()))

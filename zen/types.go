@@ -458,29 +458,6 @@ func (s sendRawTransactionResponse) Err() error {
 	)
 }
 
-type suggestedFeeRate struct {
-	FeeRate float64 `json:"feerate"`
-}
-
-// suggestedFeeRateResponse is the response body for `estimatesmartfee` requests
-type suggestedFeeRateResponse struct {
-	Result *suggestedFeeRate `json:"result"`
-	Error  *responseError    `json:"error"`
-}
-
-func (s suggestedFeeRateResponse) Err() error {
-	if s.Error == nil {
-		return nil
-	}
-
-	return fmt.Errorf(
-		"%w: error JSON RPC response, code: %d, message: %s",
-		ErrJSONRPCError,
-		s.Error.Code,
-		s.Error.Message,
-	)
-}
-
 // rawMempoolResponse is the response body for `getrawmempool` requests.
 type rawMempoolResponse struct {
 	Result []string       `json:"result"`
