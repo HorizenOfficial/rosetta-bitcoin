@@ -232,8 +232,8 @@ type Transaction struct {
 }
 
 type Joinsplit struct {
-	VPub_old      float64  `json:"vpub_old"`
-	VPub_new      float64  `json:"vpub_new"`
+	VPubOld       float64  `json:"vpub_old"`
+	VPubNew       float64  `json:"vpub_new"`
 	Anchor        string   `json:"anchor"`
 	Nullifiers    []string `json:"nullifiers"`
 	Commitments   []string `json:"commitments"`
