@@ -77,10 +77,10 @@ var (
 						Value: 7.5001,
 						Index: 0,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
-							Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
+							ASM:          "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
+							Hex:          "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",                                    // nolint
 							RequiredSigs: 1,
-							Type: "pubkeyhash",
+							Type:         "pubkeyhash",
 							Addresses: []string{
 								"ztawr1vEZ6pZRtLqNy2C9u7EK7JN2gP8W6z",
 							},
@@ -90,10 +90,10 @@ var (
 						Value: 2.5,
 						Index: 1,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
-							Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
+							ASM:          "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
+							Hex:          "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",               // nolint
 							RequiredSigs: 1,
-							Type: "scripthash",
+							Type:         "scripthash",
 							Addresses: []string{
 								"zrFzxutppvxEdjyu4QNjogBMjtC1py9Hp1S",
 							},
@@ -103,10 +103,10 @@ var (
 						Value: 1.25,
 						Index: 2,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
-							Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
+							ASM:          "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
+							Hex:          "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",               // nolint
 							RequiredSigs: 1,
-							Type: "scripthash",
+							Type:         "scripthash",
 							Addresses: []string{
 								"zrS7QUB2eDbbKvyP43VJys3t7RpojW8GdxH",
 							},
@@ -116,10 +116,10 @@ var (
 						Value: 1.25,
 						Index: 3,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
-							Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
+							ASM:          "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
+							Hex:          "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",               // nolint
 							RequiredSigs: 1,
-							Type: "scripthash",
+							Type:         "scripthash",
 							Addresses: []string{
 								"zrFr5HVm7woVq3oFzkMEdJdbfBchfPAPDsP",
 							},
@@ -133,33 +133,33 @@ var (
 				Size:     595,
 				Version:  1,
 				Locktime: 0,
-				Inputs:   []*Input{
+				Inputs: []*Input{
 					{
 						TxHash: "9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a",
-						Vout:      0,
+						Vout:   0,
 						ScriptSig: &ScriptSig{
-							ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
-							Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
+							ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
+							Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 						},
-						Sequence:  4294967295,
+						Sequence: 4294967295,
 					},
 					{
 						TxHash: "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737",
-						Vout:      0,
+						Vout:   0,
 						ScriptSig: &ScriptSig{
-							ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
-							Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
+							ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
+							Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 						},
-						Sequence:  4294967295,
+						Sequence: 4294967295,
 					},
 					{
 						TxHash: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc",
-						Vout:      1,
+						Vout:   1,
 						ScriptSig: &ScriptSig{
-							ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
-							Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",
+							ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
+							Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 						},
-						Sequence:  4294967295,
+						Sequence: 4294967295,
 					},
 				}, // all we care about in this test is the outputs
 				Outputs: []*Output{
@@ -167,8 +167,8 @@ var (
 						Value: 5,
 						Index: 0,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:          "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
-							Hex:          "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
+							ASM:          "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT", // nolint
+							Hex:          "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",                                                      // nolint
 							RequiredSigs: 1,
 							Type:         "pubkeyhashreplay",
 							Addresses: []string{
@@ -180,10 +180,10 @@ var (
 						Value: 68.5999,
 						Index: 1,
 						ScriptPubKey: &ScriptPubKey{
-							ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
-							Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
+							ASM:          "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT", // nolint
+							Hex:          "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",                                                      // nolint
 							RequiredSigs: 1,
-							Type: "pubkeyhashreplay",
+							Type:         "pubkeyhashreplay",
 							Addresses: []string{
 								"ztrEXsPLywPcxE3Sn9qdWV6tYkBH4HnYwin",
 							},
@@ -194,7 +194,6 @@ var (
 		},
 	}
 )
-
 
 func TestNetworkStatus(t *testing.T) {
 	tests := map[string]struct {
@@ -430,7 +429,7 @@ func TestGetRawBlock(t *testing.T) {
 				},
 			},
 			expectedBlock: block717983,
-			expectedCoins:[]string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
+			expectedCoins: []string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
 		},
 		"current block lookup (can't get current info)": {
 			responses: []responseFixture{
@@ -588,10 +587,10 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
-										Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
+										ASM:          "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
+										Hex:          "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",                                    // nolint
 										RequiredSigs: 1,
-										Type: "pubkeyhash",
+										Type:         "pubkeyhash",
 										Addresses: []string{
 											"ztawr1vEZ6pZRtLqNy2C9u7EK7JN2gP8W6z",
 										},
@@ -620,10 +619,10 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
-										Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
+										ASM:          "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
+										Hex:          "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",               // nolint
 										RequiredSigs: 1,
-										Type: "scripthash",
+										Type:         "scripthash",
 										Addresses: []string{
 											"zrFzxutppvxEdjyu4QNjogBMjtC1py9Hp1S",
 										},
@@ -652,10 +651,10 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
-										Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
+										ASM:          "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
+										Hex:          "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",               // nolint
 										RequiredSigs: 1,
-										Type: "scripthash",
+										Type:         "scripthash",
 										Addresses: []string{
 											"zrS7QUB2eDbbKvyP43VJys3t7RpojW8GdxH",
 										},
@@ -684,10 +683,10 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
-										Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
+										ASM:          "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
+										Hex:          "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",               // nolint
 										RequiredSigs: 1,
-										Type: "scripthash",
+										Type:         "scripthash",
 										Addresses: []string{
 											"zrFr5HVm7woVq3oFzkMEdJdbfBchfPAPDsP",
 										},
@@ -727,7 +726,7 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
-										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
+										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
 										Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 									},
 									Sequence: 4294967295,
@@ -755,7 +754,7 @@ func TestParseBlock(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
-										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
+										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
 										Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 									},
 									Sequence: 4294967295,
@@ -778,12 +777,12 @@ func TestParseBlock(t *testing.T) {
 								CoinChange: &types.CoinChange{
 									CoinAction: types.CoinSpent,
 									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1",
+										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1", // nolint
 									},
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
-										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
+										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce",    // nolint
 										Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 									},
 									Sequence: 4294967295,
@@ -806,15 +805,15 @@ func TestParseBlock(t *testing.T) {
 								CoinChange: &types.CoinChange{
 									CoinAction: types.CoinCreated,
 									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0",
+										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0", // nolint
 									},
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
-										Hex:  "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
+										ASM:          "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT", // nolint
+										Hex:          "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",                                                      // nolint
 										RequiredSigs: 1,
-										Type: "pubkeyhashreplay",
+										Type:         "pubkeyhashreplay",
 										Addresses: []string{
 											"ztjySYJL8g9i6wc2YTusbDpPZSpPM5xuTua",
 										},
@@ -838,15 +837,15 @@ func TestParseBlock(t *testing.T) {
 								CoinChange: &types.CoinChange{
 									CoinAction: types.CoinCreated,
 									CoinIdentifier: &types.CoinIdentifier{
-										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1",
+										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1", // nolint
 									},
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
-										Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
+										ASM:          "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT", // nolint
+										Hex:          "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",                                                      // nolint
 										RequiredSigs: 1,
-										Type: "pubkeyhashreplay",
+										Type:         "pubkeyhashreplay",
 										Addresses: []string{
 											"ztrEXsPLywPcxE3Sn9qdWV6tYkBH4HnYwin",
 										},
@@ -863,8 +862,8 @@ func TestParseBlock(t *testing.T) {
 				Metadata: mustMarshalMap(&BlockMetadata{
 					Size:       2271,
 					Version:    3,
-					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279",
-					Nonce:      "00002e570d64b4b3ea1c30dec68b2dff255eb3148656f06f5e018ae739a400eb",
+					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279", // nolint
+					Nonce:      "00002e570d64b4b3ea1c30dec68b2dff255eb3148656f06f5e018ae739a400eb", // nolint
 					Bits:       "1f754920",
 					Difficulty: 17.46160923,
 				}),
@@ -889,7 +888,6 @@ func TestParseBlock(t *testing.T) {
 		})
 	}
 }
-
 
 func TestSuggestedFeeRate(t *testing.T) {
 	tests := map[string]struct {
@@ -1008,7 +1006,6 @@ func TestRawMempool(t *testing.T) {
 		})
 	}
 }
-
 
 // loadFixture takes a file name and returns the response fixture.
 func loadFixture(fileName string) string {

@@ -12,7 +12,6 @@ interface. The functions are only exported while the tests are being run.
 package zenutil
 
 import (
-	"github.com/HorizenOfficial/rosetta-zen/zend/btcec"
 	"github.com/HorizenOfficial/rosetta-zen/zenutil/base58"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -49,19 +48,6 @@ func TstAddressScriptHash(hash [ripemd160.Size]byte,
 	return &AddressScriptHash{
 		hash:  hash,
 		netID: netID,
-	}
-}
-
-// TstAddressPubKey makes an AddressPubKey, setting the unexported fields with
-// the parameters.
-func TstAddressPubKey(serializedPubKey []byte, pubKeyFormat PubKeyFormat,
-	netID uint16) *AddressPubKey {
-
-	pubKey, _ := btcec.ParsePubKey(serializedPubKey, btcec.S256())
-	return &AddressPubKey{
-		pubKeyFormat: pubKeyFormat,
-		pubKey:       (*btcec.PublicKey)(pubKey),
-		pubKeyHashID: netID,
 	}
 }
 
