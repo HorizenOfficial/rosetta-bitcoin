@@ -495,53 +495,49 @@ func (b *Client) parseTransactions(
 	}
 	txs := make([]*types.Transaction, len(block.Txs))
 	for index, transaction := range block.Txs {
-		if (index != 0) || (b.genesisBlockIdentifier.Hash != MainnetGenesisBlockIdentifier.Hash) {
-			txOps, err := b.parseTxOperations(transaction, index, coins)
-			if err != nil {
-				return nil, fmt.Errorf("%w: error parsing transaction operations", err)
+		txOps, err := b.parseTxOperations(transaction, index, coins)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
+		}
+
+		metadata, err := transaction.Metadata()
+		if err != nil {
+			return nil, fmt.Errorf("%w: unable to get metadata for transaction", err)
+		}
+
+		tx := &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: transaction.Hash,
+			},
+			Operations: txOps,
+			Metadata:   metadata,
+		}
+
+		txs[index] = tx
+
+		// In some cases, a transaction will spent an output
+		// from the same block.
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
 			}
 
-			metadata, err := transaction.Metadata()
-			if err != nil {
-				return nil, fmt.Errorf("%w: unable to get metadata for transaction", err)
+			if op.CoinChange.CoinAction != types.CoinCreated {
+				continue
 			}
 
-			tx := &types.Transaction{
-				TransactionIdentifier: &types.TransactionIdentifier{
-					Hash: transaction.Hash,
+			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+				Coin: &types.Coin{
+					CoinIdentifier: op.CoinChange.CoinIdentifier,
+					Amount:         op.Amount,
 				},
-				Operations: txOps,
-				Metadata:   metadata,
-			}
-
-			txs[index] = tx
-
-			// In some cases, a transaction will spent an output
-			// from the same block.
-			for _, op := range tx.Operations {
-				if op.CoinChange == nil {
-					continue
-				}
-
-				if op.CoinChange.CoinAction != types.CoinCreated {
-					continue
-				}
-
-				coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
-					Coin: &types.Coin{
-						CoinIdentifier: op.CoinChange.CoinIdentifier,
-						Amount:         op.Amount,
-					},
-					Account: op.Account,
-				}
+				Account: op.Account,
 			}
 		}
 	}
-	if b.genesisBlockIdentifier.Hash == MainnetGenesisBlockIdentifier.Hash {
-		return txs[1:len(block.Txs)], nil
-	}else {
-		return txs, nil
-	}
+
+	return txs, nil
+
 }
 
 // parseTransactions returns the transaction operations for a specified transaction.
