@@ -51,11 +51,11 @@ const (
 	// Regtest is Zen Regtest.
 	Regtest string = "REGTEST"
 
-	// mainnetConfigPath is the path of the Bitcoin
+	// mainnetConfigPath is the path of the Horizen
 	// configuration file for mainnet.
 	mainnetConfigPath = "/app/zen-mainnet.conf"
 
-	// testnetConfigPath is the path of the Bitcoin
+	// testnetConfigPath is the path of the Horizen
 	// configuration file for testnet.
 	testnetConfigPath = "/app/zen-testnet.conf"
 
@@ -88,7 +88,7 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	bitcoindPath = "bitcoind"
+	zendPath = ".zen"
 	indexerPath  = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
@@ -129,7 +129,7 @@ type Configuration struct {
 	ConfigPath             string
 	Pruning                *PruningConfiguration
 	IndexerPath            string
-	BitcoindPath           string
+	ZendPath               string
 	Compressors            []*storage.CompressorEntry
 }
 
@@ -152,9 +152,9 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 			return nil, fmt.Errorf("%w: unable to create indexer path", err)
 		}
 
-		config.BitcoindPath = path.Join(baseDirectory, bitcoindPath)
-		if err := ensurePathExists(config.BitcoindPath); err != nil {
-			return nil, fmt.Errorf("%w: unable to create bitcoind path", err)
+		config.ZendPath = path.Join(baseDirectory, zendPath)
+		if err := ensurePathExists(config.ZendPath); err != nil {
+			return nil, fmt.Errorf("%w: unable to create zen data directory path", err)
 		}
 	case Offline:
 		config.Mode = Offline

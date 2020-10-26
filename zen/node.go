@@ -67,7 +67,7 @@ func StartZEND(ctx context.Context, configPath string, g *errgroup.Group) error 
 	logger := utils.ExtractLogger(ctx, "zend")
 	cmd := exec.Command(
 		"/app/zend",
-		fmt.Sprintf("--conf=%s", configPath),
+		fmt.Sprintf("-conf=%s", configPath),
 	) // #nosec G204
 
 	stdout, err := cmd.StdoutPipe()

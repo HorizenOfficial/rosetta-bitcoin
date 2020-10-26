@@ -23,8 +23,8 @@ import (
 
 const (
 	// NodeVersion is the version of
-	// bitcoin core we are using.
-	NodeVersion = "0.20.1"
+	// zend core we are using.
+	NodeVersion = "2.0.22"
 
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.
@@ -37,7 +37,7 @@ const (
 
 var (
 	// MiddlewareVersion is the version
-	// of rosetta-bitcoin. We set this as a
+	// of rosetta-zen. We set this as a
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
