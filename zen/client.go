@@ -495,7 +495,7 @@ func (b *Client) parseTransactions(
 	}
 	txs := make([]*types.Transaction, len(block.Txs))
 	for index, transaction := range block.Txs {
-		if (index != 0) || (b.genesisBlockIdentifier.Hash != "0007104ccda289427919efc39dc9e4d499804b7bebc22df55f8b834301260602" && b.genesisBlockIdentifier.Hash != "03e1c4bb705c871bf9bfda3e74b7f8f86bff267993c215a89d5795e3708e5e1f") {
+		if (index != 0) || (b.genesisBlockIdentifier.Hash != MainnetGenesisBlockIdentifier.Hash && b.genesisBlockIdentifier.Hash != TestnetGenesisBlockIdentifier.Hash) {
 			txOps, err := b.parseTxOperations(transaction, index, coins)
 			if err != nil {
 				return nil, fmt.Errorf("%w: error parsing transaction operations", err)
@@ -537,7 +537,7 @@ func (b *Client) parseTransactions(
 			}
 		}
 	}
-	if b.genesisBlockIdentifier.Hash == "0007104ccda289427919efc39dc9e4d499804b7bebc22df55f8b834301260602" || b.genesisBlockIdentifier.Hash == "03e1c4bb705c871bf9bfda3e74b7f8f86bff267993c215a89d5795e3708e5e1f" {
+	if b.genesisBlockIdentifier.Hash == MainnetGenesisBlockIdentifier.Hash || b.genesisBlockIdentifier.Hash == TestnetGenesisBlockIdentifier.Hash {
 		return txs[1:len(block.Txs)], nil
 	}else {
 		return txs, nil
