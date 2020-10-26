@@ -10,8 +10,8 @@
 
 
 ## Overview
-`rosetta-zen` provides an implementation of the Rosetta API for
-Hotizen network in Golang. If you haven't heard of the Rosetta API, you can find more
+`rosetta-zen` provides an implementation of the Rosetta API for the
+Horizen network in Golang. If you haven't heard of the Rosetta API, you can find more
 information [here](https://rosetta-api.org).
 
 ## Usage
@@ -42,11 +42,15 @@ make build-local
 Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
 a data directory at `<working directory>/zen-data` and the Rosetta API accessible
-at port `8080`.
+at port `8080`. Please make sure that `<working directory>/zen-data` has `nobody:nogroup` ownership.
+You can also use a named volume which will be created with the correct ownership using: `-v "zen-data:/data`.
 
 #### Mainnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-zen:latest
+# create <working directory>/zen-data with correct ownership
+docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
+# start rosetta-zen
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-online`._
 
@@ -58,7 +62,10 @@ _If you cloned the repository, you can run `make run-mainnet-offline`._
 
 #### Testnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-zen:latest
+# create <working directory>/zen-data with correct ownership
+docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
+# start rosetta-zen
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-online`._
 
@@ -139,7 +146,6 @@ you can find a high-level overview of how everything fits together:
 ```
 
 ### Optimizations
-* Automatically prune bitcoind while indexing blocks
 * Reduce sync time with concurrent block indexing
 * Use [Zstandard compression](https://github.com/facebook/zstd) to reduce the size of data stored on disk
 without needing to write a manual byte-level encoding
