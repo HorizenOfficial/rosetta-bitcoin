@@ -180,6 +180,7 @@ func Initialize(
 		zen.OperationTypes,
 		zen.OperationStatuses,
 		services.Errors,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable to initialize asserter", err)
