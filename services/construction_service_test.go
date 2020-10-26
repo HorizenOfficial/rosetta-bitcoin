@@ -117,13 +117,11 @@ func TestConstructionService(t *testing.T) {
 			},
 		},
 	}
-	feeMultiplier := float64(0.75)
 	preprocessResponse, err := servicer.ConstructionPreprocess(
 		ctx,
 		&types.ConstructionPreprocessRequest{
 			NetworkIdentifier:      networkIdentifier,
 			Operations:             ops,
-			SuggestedFeeMultiplier: &feeMultiplier,
 		},
 	)
 	assert.Nil(t, err)
@@ -139,8 +137,7 @@ func TestConstructionService(t *testing.T) {
 				},
 			},
 		},
-		EstimatedSize: 114,
-		FeeMultiplier: &feeMultiplier,
+		EstimatedSize: 227,
 	}
 	assert.Equal(t, &types.ConstructionPreprocessResponse{
 		Options: forceMarshalMap(t, options),
@@ -199,7 +196,7 @@ func TestConstructionService(t *testing.T) {
 		Metadata: forceMarshalMap(t, metadata),
 		SuggestedFee: []*types.Amount{
 			{
-				Value:    "855", // 1,420 * 0.75
+				Value:    "2270", // 1,420 * 0.75
 				Currency: zen.TestnetCurrency,
 			},
 		},
@@ -231,7 +228,7 @@ func TestConstructionService(t *testing.T) {
 		Metadata: forceMarshalMap(t, metadata),
 		SuggestedFee: []*types.Amount{
 			{
-				Value:    "114", // we don't go below minimum fee rate
+				Value:    "227", // we don't go below minimum fee rate
 				Currency: zen.TestnetCurrency,
 			},
 		},

@@ -97,13 +97,13 @@ func (s *ConstructionAPIService) estimateSize(operations []*types.Operation) flo
 			size += zen.OutputOverhead
 			addr, err := zenutil.DecodeAddress(operation.Account.Address, s.config.Params)
 			if err != nil {
-				size += zen.P2PKHScriptPubkeySize
+				size += zen.P2PKHReplayScriptPubkeySize
 				continue
 			}
-
-			script, err := txscript.PayToAddrScript(addr)
+			hashReplay, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000000")
+			script, err := txscript.PayToAddrReplayOutScript(addr, hashReplay,100)
 			if err != nil {
-				size += zen.P2PKHScriptPubkeySize
+				size += zen.P2PKHReplayScriptPubkeySize
 				continue
 			}
 
