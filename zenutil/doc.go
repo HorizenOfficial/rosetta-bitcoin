@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /*
-Package btcutil provides bitcoin-specific convenience functions and types.
+Package zenutil provides bitcoin-specific convenience functions and types.
 
 Block Overview
 

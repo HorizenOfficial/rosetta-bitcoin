@@ -231,6 +231,7 @@ type Transaction struct {
 	Joinsplits []*Joinsplit `json:"vjoinsplit"`
 }
 
+// Joinsplit is a raw Joinsplit transaction representation.
 type Joinsplit struct {
 	VPubOld       float64  `json:"vpub_old"`
 	VPubNew       float64  `json:"vpub_new"`
