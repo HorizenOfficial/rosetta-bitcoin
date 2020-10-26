@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/HorizenOfficial/rosetta-zen/zenutil"
-	//"github.com/davecgh/go-spew/spew"
 )
 
 // TestNewTLSCertPair ensures the NewTLSCertPair function works as expected.

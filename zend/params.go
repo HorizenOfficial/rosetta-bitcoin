@@ -8,10 +8,6 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg"
 )
 
-// activeNetParams is a pointer to the parameters specific to the
-// currently active bitcoin network.
-var activeNetParams = &mainNetParams
-
 // params is used to group parameters for various networks such as the main
 // network and test networks.
 type params struct {
@@ -28,23 +24,6 @@ type params struct {
 var mainNetParams = params{
 	Params:  &chaincfg.MainNetParams,
 	rpcPort: "9033",
-}
-
-// regressionNetParams contains parameters specific to the regression test
-// network (wire.TestNet).  NOTE: The RPC port is intentionally different
-// than the reference implementation - see the mainNetParams comment for
-// details.
-var regressionNetParams = params{
-	Params:  &chaincfg.RegressionNetParams,
-	rpcPort: "19033",
-}
-
-// RegtestParams contains parameters specific to the test network (version 3)
-// (wire.TestNet3).  NOTE: The RPC port is intentionally different than the
-// reference implementation - see the mainNetParams comment for details.
-var RegtestParams = params{
-	Params:  &chaincfg.RegtestParams,
-	rpcPort: "19133",
 }
 
 // netName returns the name used when referring to a bitcoin network.  At the

@@ -58,22 +58,6 @@ func parseHex(tok string) ([]byte, error) {
 	return hex.DecodeString(tok[2:])
 }
 
-// parseWitnessStack parses a json array of witness items encoded as hex into a
-// slice of witness elements.
-func parseWitnessStack(elements []interface{}) ([][]byte, error) {
-	witness := make([][]byte, len(elements))
-	for i, e := range elements {
-		witElement, err := hex.DecodeString(e.(string))
-		if err != nil {
-			return nil, err
-		}
-
-		witness[i] = witElement
-	}
-
-	return witness, nil
-}
-
 // shortFormOps holds a map of opcode names to values for use in short form
 // parsing.  It is declared here so it only needs to be created once.
 var shortFormOps map[string]byte
@@ -807,9 +791,11 @@ testloop:
 	}
 }
 
+const SCRIPTHEX = "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+
 func TestZENCalcSignatureHash_SigHashAll(t *testing.T) {
 	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
-	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+	scriptHex := SCRIPTHEX
 
 	var tx wire.MsgTx
 	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
@@ -834,7 +820,7 @@ func TestZENCalcSignatureHash_SigHashAll(t *testing.T) {
 
 func TestZENCalcSignatureHash_SigHashSingle(t *testing.T) {
 	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
-	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+	scriptHex := SCRIPTHEX
 
 	var tx wire.MsgTx
 	rawTx, _ := hex.DecodeString(unsignedSerializedTx)
@@ -859,7 +845,7 @@ func TestZENCalcSignatureHash_SigHashSingle(t *testing.T) {
 
 func TestZENCalcSignatureHash_SigHashNone(t *testing.T) {
 	unsignedSerializedTx := "0100000001383dedb49935f49f5ef93b6b007d468c2a337cfe6f5dc0af62a151a4192198590000000000ffffffff0140420f00000000003f76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac205230ff2fd4a08b46c9708138ba45d4ed480aed088402d81dce274ecf01000000030b2b02b400000000"
-	scriptHex := "76a914da46f44467949ac9321b16402c32bbeede5e3e5f88ac20c243be1a6b3d319e40e89b159235a320a1cd50d35c2e52bc79e94b990100000003d92c02b4"
+	scriptHex := SCRIPTHEX
 
 	var tx wire.MsgTx
 	rawTx, _ := hex.DecodeString(unsignedSerializedTx)

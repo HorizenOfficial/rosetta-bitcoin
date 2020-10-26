@@ -39,9 +39,11 @@ func TestBase58Check(t *testing.T) {
 		res, version, err := base58.CheckDecode(test.out)
 		if err != nil {
 			t.Errorf("CheckDecode test #%d failed with err: %v", x, err)
-		} else if version != test.version {
+		}
+		if version != test.version {
 			t.Errorf("CheckDecode test #%d failed: got version: %d want: %d", x, version, test.version)
-		} else if string(res) != test.in {
+		}
+		if string(res) != test.in {
 			t.Errorf("CheckDecode test #%d failed: got: %s want: %s", x, res, test.in)
 		}
 	}
@@ -56,7 +58,7 @@ func TestBase58Check(t *testing.T) {
 	// bytes are missing).
 	testString := "x"
 	for len := 0; len < 3; len++ {
-		testString = testString + "x"
+		testString += "x"
 		_, _, err = base58.CheckDecode(testString)
 		if err != base58.ErrInvalidFormat {
 			t.Error("Checkdecode test failed, expected ErrInvalidFormat")

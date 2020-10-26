@@ -6,10 +6,11 @@ package chaincfg
 
 import (
 	"errors"
-	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg/chainhash"
-	"github.com/HorizenOfficial/rosetta-zen/zend/wire"
 	"math/big"
 	"strings"
+
+	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg/chainhash"
+	"github.com/HorizenOfficial/rosetta-zen/zend/wire"
 )
 
 // These variables are the chain proof-of-work limit parameters for each default
@@ -18,22 +19,6 @@ var (
 	// bigOne is 1 represented as a big.Int.  It is defined here to avoid
 	// the overhead of creating it multiple times.
 	bigOne = big.NewInt(1)
-	// mainPowLimit is the highest proof of work value a Bitcoin block can
-	// have for the main network.  It is the value 2^224 - 1.
-	mainPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
-
-	// regressionPowLimit is the highest proof of work value a Bitcoin block
-	// can have for the regression test network.  It is the value 2^255 - 1.
-	regressionPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 255), bigOne)
-
-	// testNet3PowLimit is the highest proof of work value a Bitcoin block
-	// can have for the test network (version 3).  It is the value
-	// 2^224 - 1.
-	testNet3PowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
-
-	// simNetPowLimit is the highest proof of work value a Bitcoin block
-	// can have for the simulation test network.  It is the value 2^255 - 1.
-	simNetPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 255), bigOne)
 )
 
 // Checkpoint identifies a known good point in the block chain.  Using
@@ -151,11 +136,10 @@ type Params struct {
 	RuleChangeActivationThreshold uint32
 	MinerConfirmationWindow       uint32
 
-
 	// Address encoding magics
-	PubKeyHashAddrID        uint16 // First 2 bytes of a P2PKH address
-	ScriptHashAddrID        uint16 // First 2 bytes of a P2SH address
-	PrivateKeyID            byte // First byte of a WIF private key
+	PubKeyHashAddrID uint16 // First 2 bytes of a P2PKH address
+	ScriptHashAddrID uint16 // First 2 bytes of a P2SH address
+	PrivateKeyID     byte   // First byte of a WIF private key
 
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID [4]byte
@@ -176,12 +160,12 @@ var MainNetParams = Params{
 	},
 
 	// Chain parameters
-	GenesisBlock: &genesisBlock,
-	GenesisHash:  &genesisHash,
-	BIP0034Height:            0,
-	BIP0065Height:            0,
-	BIP0066Height:            0,
-	CoinbaseMaturity:         100,
+	GenesisBlock:     &genesisBlock,
+	GenesisHash:      &genesisHash,
+	BIP0034Height:    0,
+	BIP0065Height:    0,
+	BIP0066Height:    0,
+	CoinbaseMaturity: 100,
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -207,9 +191,9 @@ var MainNetParams = Params{
 	MinerConfirmationWindow:       2016, //
 
 	// Address encoding magics
-	PubKeyHashAddrID:        0x2089, // starts with 1
-	ScriptHashAddrID:        0x2096, // starts with 3
-	PrivateKeyID:            0x80, // starts with 5 (uncompressed) or K (compressed)
+	PubKeyHashAddrID: 0x2089, // starts with 1
+	ScriptHashAddrID: 0x2096, // starts with 3
+	PrivateKeyID:     0x80,   // starts with 5 (uncompressed) or K (compressed)
 
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x88, 0xad, 0xe4}, // starts with xprv
@@ -234,9 +218,9 @@ var RegressionNetParams = Params{
 	GenesisBlock:     &testNetGenesisBlock,
 	GenesisHash:      &testnetGenesisHash,
 	CoinbaseMaturity: 100,
-	BIP0034Height:            0,
-	BIP0065Height:            0,      // Used by regression tests
-	BIP0066Height:            0,      // Used by regression tests
+	BIP0034Height:    0,
+	BIP0065Height:    0, // Used by regression tests
+	BIP0066Height:    0, // Used by regression tests
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -259,14 +243,14 @@ var RegressionNetParams = Params{
 	// Address encoding magics
 	PubKeyHashAddrID: 0x2098, // starts with m or n
 	ScriptHashAddrID: 0x2092, // starts with 2
-	PrivateKeyID:     0xef, // starts with 9 (uncompressed) or c (compressed)
+	PrivateKeyID:     0xef,   // starts with 9 (uncompressed) or c (compressed)
 
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x35, 0x83, 0x94}, // starts with tprv
 	HDPublicKeyID:  [4]byte{0x04, 0x35, 0x87, 0xcf}, // starts with tpub
 }
 
-// TestNet3Params defines the network parameters for the test Bitcoin network
+// RegtestParams defines the network parameters for the test Bitcoin network
 // (version 3).  Not to be confused with the regression test network, this
 // network is sometimes simply called "testnet".
 var RegtestParams = Params{
@@ -276,12 +260,12 @@ var RegtestParams = Params{
 	DNSSeeds:    []DNSSeed{},
 
 	// Chain parameters
-	GenesisBlock: &regTestGenesisBlock,
-	GenesisHash:  &regtestGenesisHash,
-	BIP0034Height:            0,
-	BIP0065Height:            0,
-	BIP0066Height:            0,
-	CoinbaseMaturity:         100,
+	GenesisBlock:     &regTestGenesisBlock,
+	GenesisHash:      &regtestGenesisHash,
+	BIP0034Height:    0,
+	BIP0065Height:    0,
+	BIP0066Height:    0,
+	CoinbaseMaturity: 100,
 
 	// Checkpoints ordered from oldest to newest.
 	Checkpoints: []Checkpoint{
@@ -296,9 +280,9 @@ var RegtestParams = Params{
 	MinerConfirmationWindow:       144,
 
 	// Address encoding magics
-	PubKeyHashAddrID:        0x2098, // starts with m or n
-	ScriptHashAddrID:        0x2092, // starts with 2
-	PrivateKeyID:            0xef, // starts with 9 (uncompressed) or c (compressed)
+	PubKeyHashAddrID: 0x2098, // starts with m or n
+	ScriptHashAddrID: 0x2092, // starts with 2
+	PrivateKeyID:     0xef,   // starts with 9 (uncompressed) or c (compressed)
 
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x04, 0x35, 0x83, 0x94}, // starts with tprv

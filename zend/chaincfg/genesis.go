@@ -77,14 +77,24 @@ var genesisMerkleRoot = chainhash.Hash([chainhash.HashSize]byte{ // Make go vet 
 // public transaction ledger for the main network.
 var genesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
-		Version:    1,
-		PrevBlock:  chainhash.Hash{},                                                  // 0000000000000000000000000000000000000000000000000000000000000000
-		MerkleRoot: genesisMerkleRoot,                                                  // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
-		Timestamp:  time.Unix(0x581EA6F5,0),                                            // 2009-01-03 18:15:05 +0000 UTC
-		Bits:       0x1f07ffff,                                                         // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
-		Nonce:      0x000000000000000000000000000000000000000000000000000000000000021d, // 2083236893
+		Version: 1,
+
+		// 0000000000000000000000000000000000000000000000000000000000000000
+		PrevBlock: chainhash.Hash{},
+
+		// 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
+		MerkleRoot: genesisMerkleRoot,
+
+		// 2009-01-03 18:15:05 +0000 UTC
+		Timestamp: time.Unix(0x581EA6F5, 0),
+
+		// 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
+		Bits: 0x1f07ffff,
+
+		// 2083236893
+		Nonce: 0x000000000000000000000000000000000000000000000000000000000000021d,
 	},
-	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, //TODO
+	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, // TODO
 }
 
 // regTestGenesisHash is the hash of the first block in the block chain for the
@@ -106,13 +116,13 @@ var regTestGenesisMerkleRoot = genesisMerkleRoot
 var regTestGenesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
 		Version:    1,
-		PrevBlock:  chainhash.Hash{},        // 0000000000000000000000000000000000000000000000000000000000000000
+		PrevBlock:  chainhash.Hash{},         // 0000000000000000000000000000000000000000000000000000000000000000
 		MerkleRoot: regTestGenesisMerkleRoot, // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
 		Timestamp:  time.Unix(1494548150, 0), // 2011-02-02 23:16:42 +0000 UTC
 		Bits:       0x200f0f0f,               // 545259519 [7fffff0000000000000000000000000000000000000000000000000000000000]
 		Nonce:      0x000000000000000000000000000000000000000000000000000000000000003d,
 	},
-	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, //TODO
+	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, // TODO
 }
 
 // testNet3GenesisHash is the hash of the first block in the block chain for the
@@ -134,11 +144,11 @@ var testNetGenesisMerkleRoot = genesisMerkleRoot
 var testNetGenesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
 		Version:    1,
-		PrevBlock:  chainhash.Hash{},                                                  // 0000000000000000000000000000000000000000000000000000000000000000
+		PrevBlock:  chainhash.Hash{},                                                   // 0000000000000000000000000000000000000000000000000000000000000000
 		MerkleRoot: testNetGenesisMerkleRoot,                                           // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
 		Timestamp:  time.Unix(1479443947, 0),                                           // 2011-02-02 23:16:42 +0000 UTC
 		Bits:       0x2007ffff,                                                         // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
 		Nonce:      0x0000000000000000000000000000000000000000000000000000000000000013, // 414098458
 	},
-	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, //TODO
+	Transactions: []*wire.MsgTx{&genesisCoinbaseTx}, // TODO
 }

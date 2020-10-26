@@ -29,28 +29,28 @@ func ExampleNewAmount() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(amountOne) //Output 1
+	fmt.Println(amountOne) // Output 1
 
 	amountFraction, err := zenutil.NewAmount(0.01234567)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(amountFraction) //Output 2
+	fmt.Println(amountFraction) // Output 2
 
 	amountZero, err := zenutil.NewAmount(0)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(amountZero) //Output 3
+	fmt.Println(amountZero) // Output 3
 
 	amountNaN, err := zenutil.NewAmount(math.NaN())
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(amountNaN) //Output 4
+	fmt.Println(amountNaN) // Output 4
 
 	// Output: 1 ZEN
 	// 0.01234567 ZEN

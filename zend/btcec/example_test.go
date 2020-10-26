@@ -12,6 +12,8 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg/chainhash"
 )
 
+const TESTMESSAGE = "test message"
+
 // This example demonstrates signing a message with a secp256k1 private key that
 // is first parsed form raw bytes and serializing the generated signature.
 func Example_signMessage() {
@@ -25,7 +27,7 @@ func Example_signMessage() {
 	privKey, pubKey := btcec.PrivKeyFromBytes(btcec.S256(), pkBytes)
 
 	// Sign a message using the private key.
-	message := "test message"
+	message := TESTMESSAGE
 	messageHash := chainhash.DoubleHashB([]byte(message))
 	signature, err := privKey.Sign(messageHash)
 	if err != nil {
@@ -78,7 +80,7 @@ func Example_verifySignature() {
 	}
 
 	// Verify the signature for the message using the public key.
-	message := "test message"
+	message := TESTMESSAGE
 	messageHash := chainhash.DoubleHashB([]byte(message))
 	verified := signature.Verify(messageHash, pubKey)
 	fmt.Println("Signature Verified?", verified)
@@ -105,7 +107,7 @@ func Example_encryptMessage() {
 	}
 
 	// Encrypt a message decryptable by the private key corresponding to pubKey
-	message := "test message"
+	message := TESTMESSAGE
 	ciphertext, err := btcec.Encrypt(pubKey, []byte(message))
 	if err != nil {
 		fmt.Println(err)
