@@ -61,7 +61,7 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 
 	addIP := func(ipAddr net.IP) {
 		for _, ip := range ipAddresses {
-			if bytes.Equal(ip, ipAddr) {
+			if bytes.Equal(ip, ipAddr) { // nolint
 				return
 			}
 		}
@@ -105,12 +105,12 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 			Organization: []string{organization},
 			CommonName:   host,
 		},
-		NotBefore: now.Add(-time.Hour * 24),
+		NotBefore: now.Add(-time.Hour * 24), // nolint:gomnd
 		NotAfter:  validUntil,
 
 		KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature |
 			x509.KeyUsageCertSign,
-		IsCA: true, // so can sign self.
+		IsCA:                  true, // so can sign self.
 		BasicConstraintsValid: true,
 
 		DNSNames:    dnsNames,

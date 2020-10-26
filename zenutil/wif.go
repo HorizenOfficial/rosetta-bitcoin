@@ -90,12 +90,12 @@ func DecodeWIF(wif string) (*WIF, error) {
 	// Length of base58 decoded WIF must be 32 bytes + an optional 1 byte
 	// (0x01) if compressed, plus 1 byte for netID + 4 bytes of checksum.
 	switch decodedLen {
-	case 1 + btcec.PrivKeyBytesLen + 1 + 4:
+	case 1 + btcec.PrivKeyBytesLen + 1 + 4: // nolint:gomnd
 		if decoded[33] != compressMagic {
 			return nil, ErrMalformedPrivateKey
 		}
 		compress = true
-	case 1 + btcec.PrivKeyBytesLen + 4:
+	case 1 + btcec.PrivKeyBytesLen + 4: // nolint:gomnd
 		compress = false
 	default:
 		return nil, ErrMalformedPrivateKey
@@ -129,7 +129,7 @@ func (w *WIF) String() string {
 	// is one byte for the network, 32 bytes of private key, possibly one
 	// extra byte if the pubkey is to be compressed, and finally four
 	// bytes of checksum.
-	encodeLen := 1 + btcec.PrivKeyBytesLen + 4
+	encodeLen := 1 + btcec.PrivKeyBytesLen + 4 // nolint:gomnd
 	if w.CompressPubKey {
 		encodeLen++
 	}

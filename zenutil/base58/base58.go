@@ -10,8 +10,8 @@ import (
 
 //go:generate go run genalphabet.go
 
-var bigRadix = big.NewInt(58)
-var bigZero = big.NewInt(0)
+var bigRadix = big.NewInt(58) // nolint:gomnd
+var bigZero = big.NewInt(0)   // nolint:gomnd
 
 // Decode decodes a modified base58 string to a byte slice.
 func Decode(b string) []byte {
@@ -21,7 +21,7 @@ func Decode(b string) []byte {
 	scratch := new(big.Int)
 	for i := len(b) - 1; i >= 0; i-- {
 		tmp := b58[b[i]]
-		if tmp == 255 {
+		if tmp == 255 { // nolint:gomnd
 			return []byte("")
 		}
 		scratch.SetInt64(int64(tmp))
@@ -50,7 +50,7 @@ func Encode(b []byte) string {
 	x := new(big.Int)
 	x.SetBytes(b)
 
-	answer := make([]byte, 0, len(b)*136/100)
+	answer := make([]byte, 0, len(b)*136/100) // nolint:gomnd
 	for x.Cmp(bigZero) > 0 {
 		mod := new(big.Int)
 		x.DivMod(x, bigRadix, mod)

@@ -59,9 +59,9 @@ type Amount int64
 // relying on integer truncation to round the value to the nearest Amount.
 func round(f float64) Amount {
 	if f < 0 {
-		return Amount(f - 0.5)
+		return Amount(f - 0.5) // nolint:gomnd
 	}
-	return Amount(f + 0.5)
+	return Amount(f + 0.5) // nolint:gomnd
 }
 
 // NewAmount creates an Amount from a floating point value representing
@@ -91,7 +91,7 @@ func NewAmount(f float64) (Amount, error) {
 // ToUnit converts a monetary amount counted in bitcoin base units to a
 // floating point value representing an amount of bitcoin.
 func (a Amount) ToUnit(u AmountUnit) float64 {
-	return float64(a) / math.Pow10(int(u+8))
+	return float64(a) / math.Pow10(int(u+8)) // nolint:gomnd
 }
 
 // ToZEN is the equivalent of calling ToUnit with AmountZEN.
@@ -105,7 +105,7 @@ func (a Amount) ToZEN() float64 {
 // the units with SI notation, or "Zentoshi" for the base unit.
 func (a Amount) Format(u AmountUnit) string {
 	units := " " + u.String()
-	return strconv.FormatFloat(a.ToUnit(u), 'f', -int(u+8), 64) + units
+	return strconv.FormatFloat(a.ToUnit(u), 'f', -int(u+8), 64) + units // nolint:gomnd
 }
 
 // String is the equivalent of calling Format with AmountZEN.

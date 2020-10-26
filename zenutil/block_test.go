@@ -18,7 +18,7 @@ import (
 )
 
 // TestBlock tests the API for Block.
-func TestBlock(t *testing.T) {
+func TestBlock(t *testing.T) { // nolint:gocognit
 	b := zenutil.NewBlock(&Block100000)
 
 	// Ensure we get the same data back out.

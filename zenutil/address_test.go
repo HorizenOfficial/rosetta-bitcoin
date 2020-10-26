@@ -41,7 +41,7 @@ func applyCustomParams(params chaincfg.Params, customParams CustomParamStruct) c
 
 var customParams = applyCustomParams(chaincfg.MainNetParams, CustomParams)
 
-func TestAddresses(t *testing.T) {
+func TestAddresses(t *testing.T) { // nolint:gocognit
 	tests := []struct {
 		name    string
 		addr    string

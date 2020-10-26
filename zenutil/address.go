@@ -291,9 +291,9 @@ func NewAddressPubKey(serializedPubKey []byte, net *chaincfg.Params) (*AddressPu
 	// the leading byte to get the format.
 	pkFormat := PKFUncompressed
 	switch serializedPubKey[0] {
-	case 0x02, 0x03:
+	case 0x02, 0x03: // nolint:gomnd
 		pkFormat = PKFCompressed
-	case 0x06, 0x07:
+	case 0x06, 0x07: // nolint:gomnd
 		pkFormat = PKFHybrid
 	}
 

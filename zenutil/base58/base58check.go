@@ -27,14 +27,14 @@ func checksum(input []byte) (cksum [4]byte) {
 
 // CheckEncode prepends a version byte and appends a four byte checksum.
 func CheckEncode(input []byte, version uint16) string {
-	b := make([]byte, 0, 2+len(input)+4)
+	b := make([]byte, 0, 2+len(input)+4) // nolint:gomnd
 	var versionByte = make([]byte, 2)
-	binary.BigEndian.PutUint16(versionByte,version)
+	binary.BigEndian.PutUint16(versionByte, version)
 	b = append(b, versionByte[0])
 	b = append(b, versionByte[1])
-	b = append(b, input[:]...)
+	b = append(b, input[:]...) // nolint
 	cksum := checksum(b)
-	b = append(b, cksum[:]...)
+	b = append(b, cksum[:]...) // nolint
 	return Encode(b)
 }
 
@@ -44,7 +44,7 @@ func CheckDecode(input string) (result []byte, version uint16, err error) {
 	b := make([]byte, 0, 2)
 	b = append(b, decoded[0])
 	b = append(b, decoded[1])
-	if len(decoded) < 5 {
+	if len(decoded) < 5 { // nolint:gomnd
 		return nil, 0, ErrInvalidFormat
 	}
 	version = binary.BigEndian.Uint16(b)
