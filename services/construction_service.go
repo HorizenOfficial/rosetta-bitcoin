@@ -24,8 +24,8 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/HorizenOfficial/rosetta-zen/zend/btcec"
 	"github.com/HorizenOfficial/rosetta-zen/zend/txscript"
@@ -214,9 +214,9 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	if err != nil {
 		return nil, wrapErr(ErrCouldNotGetBestBlock, err)
 	}
-	hashReplay, err := s.client.GetHashFromIndex(ctx,bestblockHash-100)
+	hashReplay, err := s.client.GetHashFromIndex(ctx, bestblockHash-100)
 
-	metadata, err := types.MarshalMap(&constructionMetadata{ScriptPubKeys: scripts, ReplayBlockHeight: bestblockHash-100, ReplayBlockHash: hashReplay})
+	metadata, err := types.MarshalMap(&constructionMetadata{ScriptPubKeys: scripts, ReplayBlockHeight: bestblockHash - 100, ReplayBlockHash: hashReplay})
 	if err != nil {
 		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 	}
@@ -342,7 +342,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		inputAddresses[i] = address
 		inputAmounts[i] = matches[0].Amounts[i].String()
 
-		if (class != txscript.PubKeyHashReplayOutTy) {
+		if class != txscript.PubKeyHashReplayOutTy {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
@@ -452,7 +452,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		fullsig := normalizeSignature(request.Signatures[i].Bytes)
 		pkData := request.Signatures[i].PublicKey.Bytes
 
-		if (class != txscript.PubKeyHashReplayOutTy) {
+		if class != txscript.PubKeyHashReplayOutTy {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
@@ -460,8 +460,8 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		}
 
 		tx.TxIn[i].SignatureScript, err = txscript.NewScriptBuilder().AddData(fullsig).AddData(pkData).Script()
-		if (err!=nil) {
-			return nil, wrapErr(ErrUnableToParseIntermediateResult, fmt.Errorf("%w calculate input signature!", err))
+		if err != nil {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, fmt.Errorf("%w calculate input signature", err))
 		}
 	}
 

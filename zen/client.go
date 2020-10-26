@@ -387,7 +387,7 @@ func (b *Client) getBlockchainInfo(
 	return response.Result, nil
 }
 
-// getBlockchainInfo performs the `getblockchaininfo` JSON-RPC request
+// GetBestBlock performs the `getblockchaininfo` JSON-RPC request
 func (b *Client) GetBestBlock(
 	ctx context.Context,
 ) (int64, error) {
@@ -460,7 +460,7 @@ func (b *Client) parseBlockData(block *Block) (*types.Block, error) {
 	}, nil
 }
 
-// getHashFromIndex performs the `getblockhash` JSON-RPC request for the specified
+// GetHashFromIndex performs the `getblockhash` JSON-RPC request for the specified
 // block index, and returns the hash.
 // https://bitcoin.org/en/developer-reference#getblockhash
 func (b *Client) GetHashFromIndex(
