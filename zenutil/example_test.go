@@ -8,7 +8,6 @@ import (
 )
 
 func ExampleAmount() {
-
 	a := zenutil.Amount(0)
 	fmt.Println("Zero Zentoshi:", a)
 

@@ -33,7 +33,6 @@ func TstAppDataDir(goos, appName string, roaming bool) string {
 // unexported fields with the parameters hash and netID.
 func TstAddressPubKeyHash(hash [ripemd160.Size]byte,
 	netID uint16) *AddressPubKeyHash {
-
 	return &AddressPubKeyHash{
 		hash:  hash,
 		netID: netID,
@@ -44,7 +43,6 @@ func TstAddressPubKeyHash(hash [ripemd160.Size]byte,
 // unexported fields with the parameters hash and netID.
 func TstAddressScriptHash(hash [ripemd160.Size]byte,
 	netID uint16) *AddressScriptHash {
-
 	return &AddressScriptHash{
 		hash:  hash,
 		netID: netID,

@@ -5,7 +5,7 @@
 package zenutil
 
 const (
-	//ZentoshiPerZencent is the number of zentoshi in one zencoin cent.
+	// ZentoshiPerZencent is the number of zentoshi in one zencoin cent.
 	ZentoshiPerZencent = 1e6
 
 	// ZentoshiPerZen is the number of zentoshi in one zen (1 ZEN).
