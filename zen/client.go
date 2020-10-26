@@ -495,7 +495,7 @@ func (b *Client) parseTransactions(
 	}
 	txs := make([]*types.Transaction, len(block.Txs))
 	for index, transaction := range block.Txs {
-		if (index != 0) || (b.genesisBlockIdentifier.Hash != MainnetGenesisBlockIdentifier.Hash && b.genesisBlockIdentifier.Hash != TestnetGenesisBlockIdentifier.Hash) {
+		if (index != 0) || (b.genesisBlockIdentifier.Hash != MainnetGenesisBlockIdentifier.Hash) {
 			txOps, err := b.parseTxOperations(transaction, index, coins)
 			if err != nil {
 				return nil, fmt.Errorf("%w: error parsing transaction operations", err)
@@ -537,7 +537,7 @@ func (b *Client) parseTransactions(
 			}
 		}
 	}
-	if b.genesisBlockIdentifier.Hash == MainnetGenesisBlockIdentifier.Hash || b.genesisBlockIdentifier.Hash == TestnetGenesisBlockIdentifier.Hash {
+	if b.genesisBlockIdentifier.Hash == MainnetGenesisBlockIdentifier.Hash {
 		return txs[1:len(block.Txs)], nil
 	}else {
 		return txs, nil
