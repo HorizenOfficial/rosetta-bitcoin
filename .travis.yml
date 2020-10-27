@@ -1,0 +1,69 @@
+os: linux
+dist: bionic
+language: go
+go:
+  - "1.15.3"
+services:
+  - docker
+addons:
+  apt:
+    packages:
+      - pigz
+
+env:
+  global:
+    - GO111MODULE=on
+    - ALLOW_FAIL=false
+
+# TODO remove || true
+install: make deps || true
+
+# TODO fix failures
+jobs:
+  allow_failures:
+    env:
+      - ALLOW_FAIL=true
+  include:
+    - stage: Tests
+      script: make test
+    - stage: Tests
+      env:
+        - ALLOW_FAIL=true
+      script:
+        - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.31.0
+        - make lint
+    - stage: Tests
+      env:
+        - ALLOW_FAIL=true
+      script: make check-license
+    - stage: Tests
+      env:
+        - ALLOW_FAIL=true
+      script: make check-format
+    - stage: Tests
+      env:
+        - ALLOW_FAIL=true
+      script: make coverage
+    - stage: Tests
+      env:
+        - ALLOW_FAIL=true
+      script: make salus
+    - stage: Build
+      script:
+        - source ci/setup_env.sh
+        - if [ ! -z "${version}" ]; then make build-release; else make build-local; fi
+
+deploy:
+  edge: true
+  provider: releases
+  draft: false
+  overwrite: true
+  token: "${GITHUB_TOKEN}"
+  release_notes: "Release ${version}"
+  file_glob: false
+  file:
+    - "./rosetta-zen-${version}.tar.gz"
+  cleanup: false
+  on:
+    tags: true
+    condition: '! -z "${version}"'
