@@ -591,6 +591,7 @@ func (b *Client) parseTxOperations(
 			tx.Hash,
 			int64(len(txOps)),
 			int64(networkIndex),
+			txIndex,
 		)
 		if err != nil {
 			return nil, fmt.Errorf(
@@ -614,8 +615,13 @@ func (b *Client) parseOutputTransactionOperation(
 	txHash string,
 	index int64,
 	networkIndex int64,
+	txIndex int,
 ) (*types.Operation, error) {
-	amount, err := b.parseAmount(output.Value)
+	value := output.Value
+	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash { //if is coinbase output set amount to 0
+		value = 0
+	}
+	amount, err := b.parseAmount(value)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"%w: error parsing output value, hash: %s, index: %d",
