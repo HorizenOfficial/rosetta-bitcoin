@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 ## Build zend
 FROM ubuntu:18.04 as zend-builder
 
@@ -22,7 +21,11 @@ MAINTAINER cronic@horizen.io
 SHELL ["/bin/bash", "-c"]
 
 # Latest release zen 2.0.22
-ARG ZEN_COMITTISH=2a5e4bc40180bbcb72a0fdc003a52b6812301d98
+ARG ZEN_COMMITTISH=v2.0.22
+ARG IS_RELEASE=false
+# cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
+# Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
+ARG MAINTAINER_KEYS="219F55740BBF7A1CE368BA45FB7053CE4991B669 7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6"
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
@@ -30,11 +33,26 @@ RUN set -euxo pipefail \
     && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y --no-install-recommends dist-upgrade \
     && apt-get -y --no-install-recommends install autoconf automake \
-      bsdmainutils build-essential ca-certificates cmake curl fakeroot \
-      git g++-multilib libc6-dev libgomp1 libtool m4 ncurses-dev \
+      bsdmainutils build-essential ca-certificates cmake curl dirmngr fakeroot \
+      git g++-multilib gnupg2 libc6-dev libgomp1 libtool m4 ncurses-dev \
       pkg-config zlib1g-dev \
     && git clone https://github.com/HorizenOfficial/zen.git \
-    && cd /zen && git checkout "${ZEN_COMITTISH}" \
+    && cd /zen && git checkout "${ZEN_COMMITTISH}" \
+    && if [ "$IS_RELEASE" = "true" ]; then \
+      ( gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver hkp://ha.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver pgp.mit.edu --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver keyserver.pgp.com --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver pgp.key-server.io --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS ) \
+      && if git verify-tag -v "${ZEN_COMMITTISH}"; then \
+        echo "Valid signed tag"; \
+      else \
+        echo "Not a valid signed tag"; \
+        exit 1; \
+      fi \
+      && ( gpgconf --kill dirmngr || true ) \
+      && ( gpgconf --kill gpg-agent || true ); \
+    fi \
     && export MAKEFLAGS="-j $(($(nproc)+1))" && ./zcutil/build.sh $MAKEFLAGS
 
 

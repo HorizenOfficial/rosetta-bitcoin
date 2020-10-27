@@ -28,7 +28,7 @@ build-local:
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build --pull --no-cache -t rosetta-zen:$(version) .;
+	docker build --pull --no-cache --build-arg IS_RELEASE=true -t rosetta-zen:$(version) .;
 	docker save rosetta-zen:$(version) | ${GZIP_CMD} > rosetta-zen-$(version).tar.gz;
 
 run-mainnet-online:
