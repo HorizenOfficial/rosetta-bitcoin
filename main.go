@@ -155,7 +155,7 @@ func main() {
 	// requests.
 	asserter, err := asserter.NewServer(
 		zen.OperationTypes,
-		true,
+		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,
 	)

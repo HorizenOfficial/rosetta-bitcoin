@@ -37,7 +37,7 @@ var (
 			OperationStatuses: zen.OperationStatuses,
 			OperationTypes:    zen.OperationTypes,
 			Errors:            Errors,
-		},
+			HistoricalBalanceLookup: HistoricalBalanceLookup,		},
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{

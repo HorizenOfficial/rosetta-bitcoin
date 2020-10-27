@@ -98,6 +98,6 @@ func (s *NetworkAPIService) NetworkOptions(
 			OperationStatuses: zen.OperationStatuses,
 			OperationTypes:    zen.OperationTypes,
 			Errors:            Errors,
-		},
+			HistoricalBalanceLookup: HistoricalBalanceLookup,		},
 	}, nil
 }
