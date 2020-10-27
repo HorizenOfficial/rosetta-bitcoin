@@ -6,7 +6,12 @@
 <h3 align="center">
    Rosetta Zen
 </h3>
-
+<p align="center">
+  <a href="https://travis-ci.com/github/HorizenOfficial/rosetta-zen"><img src="https://travis-ci.com/HorizenOfficial/rosetta-zen.svg?branch=rosetta-zen" /></a>
+  <a href="https://coveralls.io/github/HorizenOfficial/rosetta-zen"><img src="https://coveralls.io/repos/github/HorizenOfficial/rosetta-zen/badge.svg" /></a>
+  <a href="https://goreportcard.com/report/github.com/HorizenOfficial/rosetta-zen"><img src="https://goreportcard.com/badge/github.com/HorizenOfficial/rosetta-zen" /></a>
+  <a href="https://github.com/HorizenOfficial/rosetta-zen/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/HorizenOfficial/rosetta-zen.svg" /></a>
+</p>
 
 
 ## Overview
