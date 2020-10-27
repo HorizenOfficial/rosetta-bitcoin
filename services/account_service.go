@@ -17,13 +17,13 @@ package services
 import (
 	"context"
 
-	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	"github.com/coinbase/rosetta-bitcoin/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-// AccountAPIService implements the server.AccountAPIService interface.
+// AccountAPIService implements the server.AccountAPIServicer interface.
 type AccountAPIService struct {
 	config *configuration.Configuration
 	i      Indexer
@@ -49,32 +49,51 @@ func (s *AccountAPIService) AccountBalance(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToGetCoins, err)
-	}
+	// If we are fetching the current balance,
+	// return all coins for an address and calculate
+	// the balance from those coins.
+	if request.BlockIdentifier == nil {
+		coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToGetCoins, err)
+		}
 
-	var filtered_coin []*types.Coin
-
-	balance := "0"
-	for _, coin := range coins {
-		if (coin.Amount.Value != "0") {
+		balance := "0"
+		for _, coin := range coins {
 			balance, err = types.AddValues(balance, coin.Amount.Value)
 			if err != nil {
 				return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 			}
-			filtered_coin = append(filtered_coin, coin)
 		}
+
+		return &types.AccountBalanceResponse{
+			BlockIdentifier: block,
+			Coins:           coins,
+			Balances: []*types.Amount{
+				{
+					Value:    balance,
+					Currency: s.config.Currency,
+				},
+			},
+		}, nil
+	}
+
+	// If we are fetching a historical balance,
+	// use balance storage and don't return coins.
+	amount, block, err := s.i.GetBalance(
+		ctx,
+		request.AccountIdentifier,
+		s.config.Currency,
+		request.BlockIdentifier,
+	)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToGetBalance, err)
 	}
 
 	return &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           filtered_coin,
 		Balances: []*types.Amount{
-			{
-				Value:    balance,
-				Currency: s.config.Currency,
-			},
+			amount,
 		},
 	}, nil
 }

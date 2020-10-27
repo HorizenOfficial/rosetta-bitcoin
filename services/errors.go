@@ -41,6 +41,7 @@ var (
 		ErrTransactionNotFound,
 		ErrCouldNotGetFeeRate,
 		ErrCouldNotGetBestBlock,
+		ErrUnableToGetBalance,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -60,8 +61,9 @@ var (
 	// ErrNotReady is returned when bitcoind is not
 	// yet ready to serve queries.
 	ErrNotReady = &types.Error{
-		Code:    2, //nolint
-		Message: "Bitcoind is not ready",
+		Code:      2, //nolint
+		Message:   "Bitcoind is not ready",
+		Retriable: true,
 	}
 
 	// ErrBitcoind is returned when bitcoind
@@ -175,10 +177,18 @@ var (
 		Message: "Could not get suggested fee rate",
 	}
 
+	// ErrUnableToGetBalance is returned by the indexer
+	// when it is not possible to get the balance
+	// of a *types.AccountIdentifier.
+	ErrUnableToGetBalance = &types.Error{
+		Code:    18, //nolint
+		Message: "Unable to get balance",
+	}
+
 	// ErrCouldNotGetBestBlock is returned when the fetch
 	// to get the best block heigth.
 	ErrCouldNotGetBestBlock = &types.Error{
-		Code:    18, // nolint
+		Code:    19, // nolint
 		Message: "Could not get best block height",
 	}
 )
@@ -188,8 +198,8 @@ var (
 // errors.
 func wrapErr(rErr *types.Error, err error) *types.Error {
 	newErr := &types.Error{
-		Code:    rErr.Code,
-		Message: rErr.Message,
+		Code:      rErr.Code,
+		Message:   rErr.Message,
 		Retriable: rErr.Retriable,
 	}
 	if err != nil {
