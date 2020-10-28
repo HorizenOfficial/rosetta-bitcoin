@@ -34,10 +34,10 @@ var (
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: zen.OperationStatuses,
-			OperationTypes:    zen.OperationTypes,
-			Errors:            Errors,
-			HistoricalBalanceLookup: HistoricalBalanceLookup,		},
+			OperationStatuses:       zen.OperationStatuses,
+			OperationTypes:          zen.OperationTypes,
+			Errors:                  Errors,
+			HistoricalBalanceLookup: HistoricalBalanceLookup},
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{
@@ -92,9 +92,6 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 		networkIdentifier,
 	}, networkList.NetworkIdentifiers)
 
-	rawStatus := &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
-	}
 	blockResponse := &types.BlockResponse{
 		Block: &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{

@@ -18,9 +18,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -71,34 +71,25 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 				Identifier: "coin 2",
 			},
 		},
-		{
-			Amount: &types.Amount{
-				Value: "0",
-			},
-			CoinIdentifier: &types.CoinIdentifier{
-				Identifier: "coin 3",
-			},
-		},
 	}
 
 	expectedCoins := []*types.Coin{
-	{
-		Amount: &types.Amount{
-			Value: "10",
+		{
+			Amount: &types.Amount{
+				Value: "10",
+			},
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 1",
+			},
 		},
-		CoinIdentifier: &types.CoinIdentifier{
-			Identifier: "coin 1",
-		},
-	},
-	{
-		Amount:
-			&types.Amount{
+		{
+			Amount: &types.Amount{
 				Value: "15",
 			},
-				CoinIdentifier: &types.CoinIdentifier{
-			Identifier: "coin 2",
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 2",
+			},
 		},
-	},
 	}
 
 	block := &types.BlockIdentifier{
@@ -129,7 +120,7 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 func TestAccountBalance_Online_Historical(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: bitcoin.MainnetCurrency,
+		Currency: zen.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -146,14 +137,14 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 	}
 	amount := &types.Amount{
 		Value:    "25",
-		Currency: bitcoin.MainnetCurrency,
+		Currency: zen.MainnetCurrency,
 	}
 
 	mockIndexer.On(
 		"GetBalance",
 		ctx,
 		account,
-		bitcoin.MainnetCurrency,
+		zen.MainnetCurrency,
 		partialBlock,
 	).Return(amount, block, nil).Once()
 	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{

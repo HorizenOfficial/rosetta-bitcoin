@@ -40,8 +40,8 @@ var (
 		ErrUnableToGetCoins,
 		ErrTransactionNotFound,
 		ErrCouldNotGetFeeRate,
-		ErrCouldNotGetBestBlock,
 		ErrUnableToGetBalance,
+		ErrCouldNotGetBestBlock,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
