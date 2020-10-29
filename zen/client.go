@@ -617,11 +617,8 @@ func (b *Client) parseOutputTransactionOperation(
 	networkIndex int64,
 	txIndex int,
 ) (*types.Operation, error) {
-	value := output.Value
-	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash { //if is coinbase output set amount to 0
-		value = 0
-	}
-	amount, err := b.parseAmount(value)
+
+	amount, err := b.parseAmount(output.Value)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"%w: error parsing output value, hash: %s, index: %d",
@@ -652,6 +649,13 @@ func (b *Client) parseOutputTransactionOperation(
 	account := b.parseOutputAccount(output.ScriptPubKey)
 	if len(account.Address) == 0 {
 		account.Address = fmt.Sprintf("%s:%d", txHash, networkIndex)
+	}
+
+	//if it's a coinbase output and we are not in regtest populate SubAccount field
+	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash {
+		account.SubAccount = &types.SubAccountIdentifier{
+			Address:  "coinbase",
+		}
 	}
 
 	// If this is an OP_RETURN locking script,
