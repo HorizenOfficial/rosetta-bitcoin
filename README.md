@@ -33,7 +33,7 @@ Running the following commands will create a Docker image called `rosetta-zen:la
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
 ```text
-curl -sSfL https://raw.githubusercontent.com/HorizenOfficial/rosetta-zen/blob/mo/Data_API/install.sh | sh -s
+curl -sSfL https://raw.githubusercontent.com/HorizenOfficial/rosetta-zen/rosetta-zen/install.sh | sh -s
 ```
 _Do not try to install rosetta-zen using GitHub Packages!_
 
@@ -100,8 +100,8 @@ You should also modify your open file settings to `100000`. This can be done on 
 with the command: `ulimit -n 100000`.
 
 ### Memory-Mapped Files
-`rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
-persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
+`rosetta-zen` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
+persist data in the `indexer`. As a result, you **must** run `rosetta-zen` on a 64-bit
 architecture (the virtual address space easily exceeds 100s of GBs).
 
 If you receive a kernel OOM, you may need to increase the allocated size of swap space
