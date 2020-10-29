@@ -105,7 +105,7 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 
 	assert.Equal(t, &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           expectedCoins,
+		Coins:           coins,
 		Balances: []*types.Amount{
 			{
 				Value:    "25",
