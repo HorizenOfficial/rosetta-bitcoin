@@ -81,26 +81,6 @@ func TestAccountBalance_Online(t *testing.T) {
 		},
 	}
 
-	expectedCoins := []*types.Coin{
-	{
-		Amount: &types.Amount{
-			Value: "10",
-		},
-		CoinIdentifier: &types.CoinIdentifier{
-			Identifier: "coin 1",
-		},
-	},
-	{
-		Amount:
-			&types.Amount{
-				Value: "15",
-			},
-				CoinIdentifier: &types.CoinIdentifier{
-			Identifier: "coin 2",
-		},
-	},
-	}
-
 	block := &types.BlockIdentifier{
 		Index: 1000,
 		Hash:  "block 1000",
@@ -114,7 +94,7 @@ func TestAccountBalance_Online(t *testing.T) {
 
 	assert.Equal(t, &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           expectedCoins,
+		Coins:           coins,
 		Balances: []*types.Amount{
 			{
 				Value:    "25",

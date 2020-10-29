@@ -54,22 +54,18 @@ func (s *AccountAPIService) AccountBalance(
 		return nil, wrapErr(ErrUnableToGetCoins, err)
 	}
 
-	var filtered_coin []*types.Coin
 
 	balance := "0"
 	for _, coin := range coins {
-		if (coin.Amount.Value != "0") {
-			balance, err = types.AddValues(balance, coin.Amount.Value)
-			if err != nil {
-				return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
-			}
-			filtered_coin = append(filtered_coin, coin)
+		balance, err = types.AddValues(balance, coin.Amount.Value)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
 		}
 	}
 
 	return &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           filtered_coin,
+		Coins:           coins,
 		Balances: []*types.Amount{
 			{
 				Value:    balance,
