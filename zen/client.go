@@ -385,7 +385,7 @@ func (b *Client) getBlockchainInfo(
 	return response.Result, nil
 }
 
-// GetBestBlock performs the `getblockchaininfo` JSON-RPC request
+// GetBestBlock performs the `getbestblock` JSON-RPC request
 func (b *Client) GetBestBlock(
 	ctx context.Context,
 ) (int64, error) {

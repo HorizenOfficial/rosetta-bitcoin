@@ -225,7 +225,7 @@ type BlockMetadata struct {
 	Difficulty float64 `json:"difficulty,omitempty"`
 }
 
-// Transaction is a raw Bitcoin transaction.
+// Transaction is a raw Horizen transaction.
 type Transaction struct {
 	Hex      string `json:"hex"`
 	Hash     string `json:"txid"`

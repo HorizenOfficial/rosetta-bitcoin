@@ -6,12 +6,17 @@
 <h3 align="center">
    Rosetta Zen
 </h3>
-
+<p align="center">
+  <a href="https://travis-ci.com/github/HorizenOfficial/rosetta-zen"><img src="https://travis-ci.com/HorizenOfficial/rosetta-zen.svg?branch=rosetta-zen" /></a>
+  <a href="https://coveralls.io/github/HorizenOfficial/rosetta-zen"><img src="https://coveralls.io/repos/github/HorizenOfficial/rosetta-zen/badge.svg" /></a>
+  <a href="https://goreportcard.com/report/github.com/HorizenOfficial/rosetta-zen"><img src="https://goreportcard.com/badge/github.com/HorizenOfficial/rosetta-zen" /></a>
+  <a href="https://github.com/HorizenOfficial/rosetta-zen/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/HorizenOfficial/rosetta-zen.svg" /></a>
+</p>
 
 
 ## Overview
-`rosetta-zen` provides an implementation of the Rosetta API for
-Hotizen network in Golang. If you haven't heard of the Rosetta API, you can find more
+`rosetta-zen` provides an implementation of the Rosetta API for the
+Horizen network in Golang. If you haven't heard of the Rosetta API, you can find more
 information [here](https://rosetta-api.org).
 
 ## Usage
@@ -28,7 +33,7 @@ Running the following commands will create a Docker image called `rosetta-zen:la
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
 ```text
-curl -sSfL https://raw.githubusercontent.com/HorizenOfficial/rosetta-zen/blob/mo/Data_API/install.sh | sh -s
+curl -sSfL https://raw.githubusercontent.com/HorizenOfficial/rosetta-zen/rosetta-zen/install.sh | sh -s
 ```
 _Do not try to install rosetta-zen using GitHub Packages!_
 
@@ -42,11 +47,15 @@ make build-local
 Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
 a data directory at `<working directory>/zen-data` and the Rosetta API accessible
-at port `8080`.
+at port `8080`. Please make sure that `<working directory>/zen-data` has `nobody:nogroup` ownership.
+You can also use a named volume which will be created with the correct ownership using: `-v "zen-data:/data"`.
 
 #### Mainnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-zen:latest
+# create <working directory>/zen-data with correct ownership
+docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
+# start rosetta-zen
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-online`._
 
@@ -58,7 +67,10 @@ _If you cloned the repository, you can run `make run-mainnet-offline`._
 
 #### Testnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-zen:latest
+# create <working directory>/zen-data with correct ownership
+docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
+# start rosetta-zen
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-online`._
 
@@ -88,8 +100,8 @@ You should also modify your open file settings to `100000`. This can be done on 
 with the command: `ulimit -n 100000`.
 
 ### Memory-Mapped Files
-`rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
-persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
+`rosetta-zen` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
+persist data in the `indexer`. As a result, you **must** run `rosetta-zen` on a 64-bit
 architecture (the virtual address space easily exceeds 100s of GBs).
 
 If you receive a kernel OOM, you may need to increase the allocated size of swap space
@@ -139,7 +151,6 @@ you can find a high-level overview of how everything fits together:
 ```
 
 ### Optimizations
-* Automatically prune bitcoind while indexing blocks
 * Reduce sync time with concurrent block indexing
 * Use [Zstandard compression](https://github.com/facebook/zstd) to reduce the size of data stored on disk
 without needing to write a manual byte-level encoding

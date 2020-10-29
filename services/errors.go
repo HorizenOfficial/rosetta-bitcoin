@@ -58,19 +58,19 @@ var (
 		Message: "Endpoint unavailable offline",
 	}
 
-	// ErrNotReady is returned when bitcoind is not
+	// ErrNotReady is returned when zend is not
 	// yet ready to serve queries.
 	ErrNotReady = &types.Error{
 		Code:      2, //nolint
-		Message:   "Bitcoind is not ready",
+		Message:   "Zend is not ready",
 		Retriable: true,
 	}
 
-	// ErrBitcoind is returned when bitcoind
+	// ErrBitcoind is returned when zend
 	// errors on a request.
 	ErrBitcoind = &types.Error{
 		Code:    3, //nolint
-		Message: "Bitcoind error",
+		Message: "Zend error",
 	}
 
 	// ErrBlockNotFound is returned when a block

@@ -14,30 +14,33 @@ GO_FOLDERS=$(shell echo ${GO_PACKAGES} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.
 TEST_SCRIPT=go test ${GO_PACKAGES}
 LINT_SETTINGS=golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
 PWD=$(shell pwd)
+GZIP_CMD=$(shell command -v pigz || echo gzip)
 NOFILE=100000
 
 deps:
 	go get ./...
 
 build:
-	docker build -t rosetta-zen:latest https://github.com/HorizenOfficial/rosetta-zen
+	docker build --pull -t rosetta-zen:latest https://github.com/HorizenOfficial/rosetta-zen
 
 build-local:
-	docker build -t rosetta-zen:latest .
+	docker build --pull -t rosetta-zen:latest .
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build -t rosetta-zen:$(version) .;
-	docker save rosetta-zen:$(version) | gzip > rosetta-zen-$(version).tar.gz;
+	docker build --pull --no-cache --build-arg IS_RELEASE=true -t rosetta-zen:$(version) .;
+	docker save rosetta-zen:$(version) | ${GZIP_CMD} > rosetta-zen-$(version).tar.gz;
 
 run-mainnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-zen:latest
+	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest;
 
 run-mainnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-zen:latest
+	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest;
 
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
