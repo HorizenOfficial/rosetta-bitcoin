@@ -48,7 +48,7 @@ Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
 a data directory at `<working directory>/zen-data` and the Rosetta API accessible
 at port `8080`. Please make sure that `<working directory>/zen-data` has `nobody:nogroup` ownership.
-You can also use a named volume which will be created with the correct ownership using: `-v "zen-data:/data`.
+You can also use a named volume which will be created with the correct ownership using: `-v "zen-data:/data"`.
 
 #### Mainnet:Online
 ```text
