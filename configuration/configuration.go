@@ -22,9 +22,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
-	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
@@ -42,27 +42,36 @@ const (
 	// to make outbound connections.
 	Offline Mode = "OFFLINE"
 
-	// Mainnet is the Bitcoin Mainnet.
+	// Mainnet is the Zen Mainnet.
 	Mainnet string = "MAINNET"
 
-	// Testnet is Bitcoin Testnet3.
+	// Testnet is Zen Testnet.
 	Testnet string = "TESTNET"
 
-	// mainnetConfigPath is the path of the Bitcoin
-	// configuration file for mainnet.
-	mainnetConfigPath = "/app/bitcoin-mainnet.conf"
+	// Regtest is Zen Regtest.
+	Regtest string = "REGTEST"
 
-	// testnetConfigPath is the path of the Bitcoin
+	// mainnetConfigPath is the path of the Horizen
+	// configuration file for mainnet.
+	mainnetConfigPath = "/app/zen-mainnet.conf"
+
+	// testnetConfigPath is the path of the Horizen
 	// configuration file for testnet.
-	testnetConfigPath = "/app/bitcoin-testnet.conf"
+	testnetConfigPath = "/app/zen-testnet.conf"
+
+	// regtestConfigPath is the path of the Zen
+	// configuration file for regtest.
+	regtestConfigPath = "/app/zen-regtest.conf"
 
 	// Zstandard compression dictionaries
 	transactionNamespace         = "transaction"
 	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
 	mainnetTransactionDictionary = "/app/mainnet-transaction.zstd"
+	regtestTransactionDictionary = "/app/regtest-transaction.zstd"
 
 	mainnetRPCPort = 8231
 	testnetRPCPort = 18231
+	regtestRPCPort = 18231
 
 	// min prune depth is 288:
 	// https://github.com/bitcoin/bitcoin/blob/ad2952d17a2af419a04256b10b53c7377f826a27/src/validation.h#L84
@@ -79,7 +88,7 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	bitcoindPath = "bitcoind"
+	zendPath = ".zen"
 	indexerPath  = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
@@ -120,7 +129,7 @@ type Configuration struct {
 	ConfigPath             string
 	Pruning                *PruningConfiguration
 	IndexerPath            string
-	BitcoindPath           string
+	ZendPath               string
 	Compressors            []*storage.CompressorEntry
 }
 
@@ -143,9 +152,9 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 			return nil, fmt.Errorf("%w: unable to create indexer path", err)
 		}
 
-		config.BitcoindPath = path.Join(baseDirectory, bitcoindPath)
-		if err := ensurePathExists(config.BitcoindPath); err != nil {
-			return nil, fmt.Errorf("%w: unable to create bitcoind path", err)
+		config.ZendPath = path.Join(baseDirectory, zendPath)
+		if err := ensurePathExists(config.ZendPath); err != nil {
+			return nil, fmt.Errorf("%w: unable to create zen data directory path", err)
 		}
 	case Offline:
 		config.Mode = Offline
@@ -159,12 +168,12 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 	switch networkValue {
 	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.MainnetNetwork,
+			Blockchain: zen.Blockchain,
+			Network:    zen.MainnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.MainnetGenesisBlockIdentifier
-		config.Params = bitcoin.MainnetParams
-		config.Currency = bitcoin.MainnetCurrency
+		config.GenesisBlockIdentifier = zen.MainnetGenesisBlockIdentifier
+		config.Params = zen.MainnetParams
+		config.Currency = zen.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
 		config.Compressors = []*storage.CompressorEntry{
@@ -175,14 +184,30 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		}
 	case Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.TestnetNetwork,
+			Blockchain: zen.Blockchain,
+			Network:    zen.TestnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
-		config.Params = bitcoin.TestnetParams
-		config.Currency = bitcoin.TestnetCurrency
+		config.GenesisBlockIdentifier = zen.TestnetGenesisBlockIdentifier
+		config.Params = zen.TestnetParams
+		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
+		config.Compressors = []*storage.CompressorEntry{
+			{
+				Namespace:      transactionNamespace,
+				DictionaryPath: testnetTransactionDictionary,
+			},
+		}
+	case Regtest:
+		config.Network = &types.NetworkIdentifier{
+			Blockchain: zen.Blockchain,
+			Network:    zen.TestnetNetwork,
+		}
+		config.GenesisBlockIdentifier = zen.RegtestGenesisBlockIdentifier
+		config.Params = zen.RegtestParams
+		config.Currency = zen.TestnetCurrency
+		config.ConfigPath = regtestConfigPath
+		config.RPCPort = regtestRPCPort
 		config.Compressors = []*storage.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,

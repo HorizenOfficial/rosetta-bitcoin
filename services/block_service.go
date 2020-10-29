@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/ark2038/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -54,6 +54,28 @@ func (s *BlockAPIService) Block(
 		return nil, wrapErr(ErrBlockNotFound, err)
 	}
 
+	// Direct client to fetch transactions individually if
+	// more than inlineFetchLimit.
+	if len(blockResponse.OtherTransactions) > inlineFetchLimit {
+		return blockResponse, nil
+	}
+
+	txs := make([]*types.Transaction, len(blockResponse.OtherTransactions))
+	for i, otherTx := range blockResponse.OtherTransactions {
+		transaction, err := s.i.GetBlockTransaction(
+			ctx,
+			blockResponse.Block.BlockIdentifier,
+			otherTx,
+		)
+		if err != nil {
+			return nil, wrapErr(ErrTransactionNotFound, err)
+		}
+
+		txs[i] = transaction
+	}
+	blockResponse.Block.Transactions = txs
+
+	blockResponse.OtherTransactions = nil
 	return blockResponse, nil
 }
 

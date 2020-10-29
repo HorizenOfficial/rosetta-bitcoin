@@ -20,7 +20,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -56,12 +56,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    bitcoin.MainnetNetwork,
-					Blockchain: bitcoin.Blockchain,
+					Network:    zen.MainnetNetwork,
+					Blockchain: zen.Blockchain,
 				},
-				Params:                 bitcoin.MainnetParams,
-				Currency:               bitcoin.MainnetCurrency,
-				GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
+				Params:                 zen.MainnetParams,
+				Currency:               zen.MainnetCurrency,
+				GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
@@ -85,12 +85,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    bitcoin.TestnetNetwork,
-					Blockchain: bitcoin.Blockchain,
+					Network:    zen.TestnetNetwork,
+					Blockchain: zen.Blockchain,
 				},
-				Params:                 bitcoin.TestnetParams,
-				Currency:               bitcoin.TestnetCurrency,
-				GenesisBlockIdentifier: bitcoin.TestnetGenesisBlockIdentifier,
+				Params:                 zen.TestnetParams,
+				Currency:               zen.TestnetCurrency,
+				GenesisBlockIdentifier: zen.TestnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,
@@ -143,7 +143,7 @@ func TestLoadConfiguration(t *testing.T) {
 				assert.Contains(t, err.Error(), test.err.Error())
 			} else {
 				test.cfg.IndexerPath = path.Join(newDir, "indexer")
-				test.cfg.BitcoindPath = path.Join(newDir, "bitcoind")
+				test.cfg.ZendPath = path.Join(newDir, ".zen")
 				assert.Equal(t, test.cfg, cfg)
 				assert.NoError(t, err)
 			}

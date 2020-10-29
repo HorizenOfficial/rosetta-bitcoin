@@ -40,6 +40,8 @@ var (
 		ErrUnableToGetCoins,
 		ErrTransactionNotFound,
 		ErrCouldNotGetFeeRate,
+		ErrUnableToGetBalance,
+		ErrCouldNotGetBestBlock,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -56,18 +58,19 @@ var (
 		Message: "Endpoint unavailable offline",
 	}
 
-	// ErrNotReady is returned when bitcoind is not
+	// ErrNotReady is returned when zend is not
 	// yet ready to serve queries.
 	ErrNotReady = &types.Error{
-		Code:    2, //nolint
-		Message: "Bitcoind is not ready",
+		Code:      2, //nolint
+		Message:   "Zend is not ready",
+		Retriable: true,
 	}
 
-	// ErrBitcoind is returned when bitcoind
+	// ErrBitcoind is returned when zend
 	// errors on a request.
 	ErrBitcoind = &types.Error{
 		Code:    3, //nolint
-		Message: "Bitcoind error",
+		Message: "Zend error",
 	}
 
 	// ErrBlockNotFound is returned when a block
@@ -173,6 +176,21 @@ var (
 		Code:    17, // nolint
 		Message: "Could not get suggested fee rate",
 	}
+
+	// ErrUnableToGetBalance is returned by the indexer
+	// when it is not possible to get the balance
+	// of a *types.AccountIdentifier.
+	ErrUnableToGetBalance = &types.Error{
+		Code:    18, //nolint
+		Message: "Unable to get balance",
+	}
+
+	// ErrCouldNotGetBestBlock is returned when the fetch
+	// to get the best block heigth.
+	ErrCouldNotGetBestBlock = &types.Error{
+		Code:    19, // nolint
+		Message: "Could not get best block height",
+	}
 )
 
 // wrapErr adds details to the types.Error provided. We use a function
@@ -180,8 +198,9 @@ var (
 // errors.
 func wrapErr(rErr *types.Error, err error) *types.Error {
 	newErr := &types.Error{
-		Code:    rErr.Code,
-		Message: rErr.Message,
+		Code:      rErr.Code,
+		Message:   rErr.Message,
+		Retriable: rErr.Retriable,
 	}
 	if err != nil {
 		newErr.Details = map[string]interface{}{

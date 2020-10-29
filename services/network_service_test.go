@@ -18,32 +18,31 @@ import (
 	"context"
 	"testing"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
-	"github.com/coinbase/rosetta-bitcoin/configuration"
-	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
-
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	middlewareVersion     = "0.0.2"
+	middlewareVersion     = "0.0.5"
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			RosettaVersion:    "1.4.4",
-			NodeVersion:       "0.20.1",
+			RosettaVersion:    types.RosettaAPIVersion,
+			NodeVersion:       "2.0.22",
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: bitcoin.OperationStatuses,
-			OperationTypes:    bitcoin.OperationTypes,
-			Errors:            Errors,
-		},
+			OperationStatuses:       zen.OperationStatuses,
+			OperationTypes:          zen.OperationTypes,
+			Errors:                  Errors,
+			HistoricalBalanceLookup: HistoricalBalanceLookup},
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    bitcoin.MainnetNetwork,
-		Blockchain: bitcoin.Blockchain,
+		Network:    zen.MainnetNetwork,
+		Blockchain: zen.Blockchain,
 	}
 )
 
@@ -78,8 +77,9 @@ func TestNetworkEndpoints_Offline(t *testing.T) {
 
 func TestNetworkEndpoints_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
-		Mode:    configuration.Online,
-		Network: networkIdentifier,
+		Mode:                   configuration.Online,
+		Network:                networkIdentifier,
+		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 	}
 	mockIndexer := &mocks.Indexer{}
 	mockClient := &mocks.Client{}
@@ -92,9 +92,6 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 		networkIdentifier,
 	}, networkList.NetworkIdentifiers)
 
-	rawStatus := &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
-	}
 	blockResponse := &types.BlockResponse{
 		Block: &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
@@ -103,7 +100,11 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 			},
 		},
 	}
-	mockClient.On("NetworkStatus", ctx).Return(rawStatus, nil)
+	mockClient.On("GetPeers", ctx).Return([]*types.Peer{
+		{
+			PeerID: "77.93.223.9:8333",
+		},
+	}, nil)
 	mockIndexer.On(
 		"GetBlockLazy",
 		ctx,
@@ -115,8 +116,13 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	networkStatus, err := servicer.NetworkStatus(ctx, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 		CurrentBlockIdentifier: blockResponse.Block.BlockIdentifier,
+		Peers: []*types.Peer{
+			{
+				PeerID: "77.93.223.9:8333",
+			},
+		},
 	}, networkStatus)
 
 	networkOptions, err := servicer.NetworkOptions(ctx, nil)

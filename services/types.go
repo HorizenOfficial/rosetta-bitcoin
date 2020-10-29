@@ -17,42 +17,50 @@ package services
 import (
 	"context"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
-
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
 const (
-	// RosettaVersion is the version of the
-	// Rosetta Specification we are using.
-	RosettaVersion = "1.4.4"
-
 	// NodeVersion is the version of
-	// bitcoin core we are using.
-	NodeVersion = "0.20.1"
+	// zend core we are using.
+	NodeVersion = "2.0.22"
+
+	// HistoricalBalanceLookup indicates
+	// that historical balance lookup is supported.
+	HistoricalBalanceLookup = true
+
+	// inlineFetchLimit is the maximum number
+	// of transactions to fetch inline.
+	inlineFetchLimit = 100
 )
 
 var (
 	// MiddlewareVersion is the version
-	// of rosetta-bitcoin. We set this as a
+	// of rosetta-zen. We set this as a
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.2"
+	MiddlewareVersion = "0.0.5"
 )
 
 // Client is used by the servicers to get Peer information
 // and to submit transactions.
 type Client interface {
-	NetworkStatus(context.Context) (*types.NetworkStatusResponse, error)
+	GetPeers(context.Context) ([]*types.Peer, error)
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)
+	GetBestBlock (context.Context) (int64, error)
+	GetHashFromIndex(context.Context, int64) (string, error)
 }
 
 // Indexer is used by the servicers to get block and account data.
 type Indexer interface {
-	GetBlockLazy(context.Context, *types.PartialBlockIdentifier) (*types.BlockResponse, error)
+	GetBlockLazy(
+		context.Context,
+		*types.PartialBlockIdentifier,
+	) (*types.BlockResponse, error)
 	GetBlockTransaction(
 		context.Context,
 		*types.BlockIdentifier,
@@ -65,14 +73,20 @@ type Indexer interface {
 	GetScriptPubKeys(
 		context.Context,
 		[]*types.Coin,
-	) ([]*bitcoin.ScriptPubKey, error)
+	) ([]*zen.ScriptPubKey, error)
+	GetBalance(
+		context.Context,
+		*types.AccountIdentifier,
+		*types.Currency,
+		*types.PartialBlockIdentifier,
+	) (*types.Amount, *types.BlockIdentifier, error)
 }
 
 type unsignedTransaction struct {
-	Transaction    string                  `json:"transaction"`
-	ScriptPubKeys  []*bitcoin.ScriptPubKey `json:"scriptPubKeys"`
-	InputAmounts   []string                `json:"input_amounts"`
-	InputAddresses []string                `json:"input_addresses"`
+	Transaction    string              `json:"transaction"`
+	ScriptPubKeys  []*zen.ScriptPubKey `json:"scriptPubKeys"`
+	InputAmounts   []string            `json:"input_amounts"`
+	InputAddresses []string            `json:"input_addresses"`
 }
 
 type preprocessOptions struct {
@@ -82,7 +96,10 @@ type preprocessOptions struct {
 }
 
 type constructionMetadata struct {
-	ScriptPubKeys []*bitcoin.ScriptPubKey `json:"script_pub_keys"`
+	ScriptPubKeys []*zen.ScriptPubKey `json:"script_pub_keys"`
+	ReplayBlockHeight int64           `json:"replay_block_height"`
+	ReplayBlockHash string            `json:"replay_block_hash"`
+
 }
 
 type signedTransaction struct {
@@ -93,5 +110,5 @@ type signedTransaction struct {
 // ParseOperationMetadata is returned from
 // ConstructionParse.
 type ParseOperationMetadata struct {
-	ScriptPubKey *bitcoin.ScriptPubKey `json:"scriptPubKey"`
+	ScriptPubKey *zen.ScriptPubKey `json:"scriptPubKey"`
 }

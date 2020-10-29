@@ -18,9 +18,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
-	"github.com/coinbase/rosetta-bitcoin/configuration"
-	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/services"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -41,10 +41,10 @@ func TestAccountBalance_Offline(t *testing.T) {
 	mockIndexer.AssertExpectations(t)
 }
 
-func TestAccountBalance_Online(t *testing.T) {
+func TestAccountBalance_Online_Current(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: bitcoin.MainnetCurrency,
+		Currency: zen.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -71,15 +71,27 @@ func TestAccountBalance_Online(t *testing.T) {
 				Identifier: "coin 2",
 			},
 		},
+	}
+
+	expectedCoins := []*types.Coin{
 		{
 			Amount: &types.Amount{
-				Value: "0",
+				Value: "10",
 			},
 			CoinIdentifier: &types.CoinIdentifier{
-				Identifier: "coin 3",
+				Identifier: "coin 1",
+			},
+		},
+		{
+			Amount: &types.Amount{
+				Value: "15",
+			},
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 2",
 			},
 		},
 	}
+
 	block := &types.BlockIdentifier{
 		Index: 1000,
 		Hash:  "block 1000",
@@ -93,12 +105,57 @@ func TestAccountBalance_Online(t *testing.T) {
 
 	assert.Equal(t, &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           coins,
+		Coins:           expectedCoins,
 		Balances: []*types.Amount{
 			{
 				Value:    "25",
-				Currency: bitcoin.MainnetCurrency,
+				Currency: zen.MainnetCurrency,
 			},
+		},
+	}, bal)
+
+	mockIndexer.AssertExpectations(t)
+}
+
+func TestAccountBalance_Online_Historical(t *testing.T) {
+	cfg := &configuration.Configuration{
+		Mode:     configuration.Online,
+		Currency: zen.MainnetCurrency,
+	}
+	mockIndexer := &mocks.Indexer{}
+	servicer := NewAccountAPIService(cfg, mockIndexer)
+	ctx := context.Background()
+	account := &types.AccountIdentifier{
+		Address: "hello",
+	}
+	block := &types.BlockIdentifier{
+		Index: 1000,
+		Hash:  "block 1000",
+	}
+	partialBlock := &types.PartialBlockIdentifier{
+		Index: &block.Index,
+	}
+	amount := &types.Amount{
+		Value:    "25",
+		Currency: zen.MainnetCurrency,
+	}
+
+	mockIndexer.On(
+		"GetBalance",
+		ctx,
+		account,
+		zen.MainnetCurrency,
+		partialBlock,
+	).Return(amount, block, nil).Once()
+	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{
+		AccountIdentifier: account,
+		BlockIdentifier:   partialBlock,
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, &types.AccountBalanceResponse{
+		BlockIdentifier: block,
+		Balances: []*types.Amount{
+			amount,
 		},
 	}, bal)
 

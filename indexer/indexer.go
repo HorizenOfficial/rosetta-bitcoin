@@ -20,23 +20,21 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
-	"github.com/ark2038/rosetta-zen/configuration"
-	"github.com/ark2038/rosetta-zen/services"
-	"github.com/ark2038/rosetta-zen/utils"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/services"
+	"github.com/HorizenOfficial/rosetta-zen/utils"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"github.com/coinbase/rosetta-sdk-go/types"
+	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/dgraph-io/badger/v2"
+	"github.com/dgraph-io/badger/v2/options"
 )
 
 const (
-	// DefaultIndexCacheSize is the default size of the indexer cache. The larger
-	// the index cache size, the better the performance.
-	DefaultIndexCacheSize = 1 << 30 // 5 GB
-
 	// indexPlaceholder is provided to the syncer
 	// to indicate we should both start from the
 	// last synced block and that we should sync
@@ -56,9 +54,8 @@ const (
 	// block fetched by the indexer.
 	sizeMultiplier = 15
 
-	// Other BadgerDB options overrides
-	defaultBlockSize      = 1 << 20 // use large blocks so less table indexes (1 MB)
-	defaultValueThreshold = 0       // put almost everything in value logs (only use table for key)
+	// zeroValue is 0 as a string
+	zeroValue = "0"
 )
 
 var (
@@ -69,10 +66,10 @@ var (
 type Client interface {
 	NetworkStatus(context.Context) (*types.NetworkStatusResponse, error)
 	PruneBlockchain(context.Context, int64) (int64, error)
-	GetRawBlock(context.Context, *types.PartialBlockIdentifier) (*bitcoin.Block, []string, error)
+	GetRawBlock(context.Context, *types.PartialBlockIdentifier) (*zen.Block, []string, error)
 	ParseBlock(
 		context.Context,
-		*bitcoin.Block,
+		*zen.Block,
 		map[string]*storage.AccountCoin,
 	) (*types.Block, error)
 }
@@ -80,7 +77,6 @@ type Client interface {
 var _ syncer.Handler = (*Indexer)(nil)
 var _ syncer.Helper = (*Indexer)(nil)
 var _ services.Indexer = (*Indexer)(nil)
-var _ storage.CoinStorageHelper = (*Indexer)(nil)
 
 // Indexer caches blocks and provides balance query functionality.
 type Indexer struct {
@@ -91,11 +87,12 @@ type Indexer struct {
 
 	client Client
 
-	asserter     *asserter.Asserter
-	database     storage.Database
-	blockStorage *storage.BlockStorage
-	coinStorage  *storage.CoinStorage
-	workers      []storage.BlockWorker
+	asserter       *asserter.Asserter
+	database       storage.Database
+	blockStorage   *storage.BlockStorage
+	balanceStorage *storage.BalanceStorage
+	coinStorage    *storage.CoinStorage
+	workers        []storage.BlockWorker
 
 	waiter *waitTable
 }
@@ -113,23 +110,51 @@ func (i *Indexer) CloseDatabase(ctx context.Context) {
 }
 
 // defaultBadgerOptions returns a set of badger.Options optimized
-// for running a Rosetta implementation. After extensive research
-// and profiling, we determined that the bottleneck to high RPC
-// load was fetching table indexes from disk on an index cache miss.
-// Thus, we increased the default block size to be much larger than
-// the Badger default so we have a lot less indexes to store. We also
-// ensure all values are stored in value log files (as to minimize
-// table bloat at the cost of some performance).
+// for running a Rosetta implementation.
 func defaultBadgerOptions(
-	path string,
-	indexCacheSize int64,
+	dir string,
 ) badger.Options {
-	defaultOps := storage.DefaultBadgerOptions(path)
-	defaultOps.BlockSize = defaultBlockSize
-	defaultOps.ValueThreshold = defaultValueThreshold
-	defaultOps.IndexCacheSize = indexCacheSize
+	opts := badger.DefaultOptions(dir)
 
-	return defaultOps
+	// By default, we do not compress the table at all. Doing so can
+	// significantly increase memory usage.
+	opts.Compression = options.None
+
+	// Load tables into memory and memory map value logs.
+	opts.TableLoadingMode = options.MemoryMap
+	opts.ValueLogLoadingMode = options.MemoryMap
+
+	// Use an extended table size for larger commits.
+	opts.MaxTableSize = storage.DefaultMaxTableSize
+
+	// Smaller value log sizes means smaller contiguous memory allocations
+	// and less RAM usage on cleanup.
+	opts.ValueLogFileSize = storage.DefaultLogValueSize
+
+	// To allow writes at a faster speed, we create a new memtable as soon as
+	// an existing memtable is filled up. This option determines how many
+	// memtables should be kept in memory.
+	opts.NumMemtables = 1
+
+	// Don't keep multiple memtables in memory. With larger
+	// memtable size, this explodes memory usage.
+	opts.NumLevelZeroTables = 1
+	opts.NumLevelZeroTablesStall = 2
+
+	// This option will have a significant effect the memory. If the level is kept
+	// in-memory, read are faster but the tables will be kept in memory. By default,
+	// this is set to false.
+	opts.KeepL0InMemory = false
+
+	// We don't compact L0 on close as this can greatly delay shutdown time.
+	opts.CompactL0OnClose = false
+
+	// LoadBloomsOnOpen=false will improve the db startup speed. This is also
+	// a waste to enable with a limited index cache size (as many of the loaded bloom
+	// filters will be immediately discarded from the cache).
+	opts.LoadBloomsOnOpen = false
+
+	return opts
 }
 
 // Initialize returns a new Indexer.
@@ -138,7 +163,6 @@ func Initialize(
 	cancel context.CancelFunc,
 	config *configuration.Configuration,
 	client Client,
-	indexCacheSize int64,
 ) (*Indexer, error) {
 	localStore, err := storage.NewBadgerStorage(
 		ctx,
@@ -146,7 +170,6 @@ func Initialize(
 		storage.WithCompressorEntries(config.Compressors),
 		storage.WithCustomSettings(defaultBadgerOptions(
 			config.IndexerPath,
-			indexCacheSize,
 		)),
 	)
 	if err != nil {
@@ -157,9 +180,10 @@ func Initialize(
 	asserter, err := asserter.NewClientWithOptions(
 		config.Network,
 		config.GenesisBlockIdentifier,
-		bitcoin.OperationTypes,
-		bitcoin.OperationStatuses,
+		zen.OperationTypes,
+		zen.OperationStatuses,
 		services.Errors,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable to initialize asserter", err)
@@ -176,14 +200,26 @@ func Initialize(
 		asserter:      asserter,
 	}
 
-	coinStorage := storage.NewCoinStorage(localStore, i, asserter)
+	coinStorage := storage.NewCoinStorage(
+		localStore,
+		&CoinStorageHelper{blockStorage},
+		asserter,
+	)
 	i.coinStorage = coinStorage
-	i.workers = []storage.BlockWorker{coinStorage}
+
+	balanceStorage := storage.NewBalanceStorage(localStore)
+	balanceStorage.Initialize(
+		&BalanceStorageHelper{asserter},
+		&BalanceStorageHandler{},
+	)
+	i.balanceStorage = balanceStorage
+
+	i.workers = []storage.BlockWorker{coinStorage, balanceStorage}
 
 	return i, nil
 }
 
-// waitForNode returns once bitcoind is ready to serve
+// waitForNode returns once zend is ready to serve
 // block queries.
 func (i *Indexer) waitForNode(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
@@ -194,14 +230,14 @@ func (i *Indexer) waitForNode(ctx context.Context) error {
 			return nil
 		}
 
-		logger.Infow("waiting for bitcoind...")
-		if err := utils.ContextSleep(ctx, nodeWaitSleep); err != nil {
+		logger.Infow("waiting for zend...")
+		if err := sdkUtils.ContextSleep(ctx, nodeWaitSleep); err != nil {
 			return err
 		}
 	}
 }
 
-// Sync attempts to index Bitcoin blocks using
+// Sync attempts to index Horizen blocks using
 // the bitcoin.Client until stopped.
 func (i *Indexer) Sync(ctx context.Context) error {
 	if err := i.waitForNode(ctx); err != nil {
@@ -236,7 +272,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
 }
 
-// Prune attempts to prune blocks in bitcoind every
+// Prune attempts to prune blocks in zend every
 // pruneFrequency.
 func (i *Indexer) Prune(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "pruner")
@@ -264,16 +300,16 @@ func (i *Indexer) Prune(ctx context.Context) error {
 				continue
 			}
 
-			logger.Infow("attempting to prune bitcoind", "prune height", pruneHeight)
+			logger.Infow("attempting to prune zend", "prune height", pruneHeight)
 			prunedHeight, err := i.client.PruneBlockchain(ctx, pruneHeight)
 			if err != nil {
 				logger.Warnw(
-					"unable to prune bitcoind",
+					"unable to prune zend",
 					"prune height", pruneHeight,
 					"error", err,
 				)
 			} else {
-				logger.Infow("pruned bitcoind", "prune height", prunedHeight)
+				logger.Infow("pruned zend", "prune height", prunedHeight)
 			}
 		}
 	}
@@ -384,7 +420,7 @@ func (i *Indexer) NetworkStatus(
 
 func (i *Indexer) findCoin(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 	coinIdentifier string,
 ) (*types.Coin, *types.AccountIdentifier, error) {
 	for ctx.Err() == nil {
@@ -396,7 +432,7 @@ func (i *Indexer) findCoin(
 			databaseTransaction,
 		)
 		if errors.Is(err, storage.ErrHeadBlockNotFound) {
-			if err := utils.ContextSleep(ctx, missingTransactionDelay); err != nil {
+			if err := sdkUtils.ContextSleep(ctx, missingTransactionDelay); err != nil {
 				return nil, nil, err
 			}
 
@@ -446,7 +482,7 @@ func (i *Indexer) findCoin(
 
 		// Put Transaction in WaitTable if doesn't already exist (could be
 		// multiple listeners)
-		transactionHash := bitcoin.TransactionHash(coinIdentifier)
+		transactionHash := zen.TransactionHash(coinIdentifier)
 		val, ok := i.waiter.Get(transactionHash, false)
 		if !ok {
 			val = &waitTableEntry{
@@ -469,7 +505,7 @@ func (i *Indexer) findCoin(
 
 func (i *Indexer) checkHeaderMatch(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 ) error {
 	headBlock, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
 	if err != nil && !errors.Is(err, storage.ErrHeadBlockNotFound) {
@@ -489,7 +525,7 @@ func (i *Indexer) checkHeaderMatch(
 
 func (i *Indexer) findCoins(
 	ctx context.Context,
-	btcBlock *bitcoin.Block,
+	btcBlock *zen.Block,
 	coins []string,
 ) (map[string]*storage.AccountCoin, error) {
 	if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
@@ -528,7 +564,7 @@ func (i *Indexer) findCoins(
 	shouldAbort := false
 	for _, coinIdentifier := range remainingCoins {
 		// Wait on Channel
-		txHash := bitcoin.TransactionHash(coinIdentifier)
+		txHash := zen.TransactionHash(coinIdentifier)
 		entry, ok := i.waiter.Get(txHash, true)
 		if !ok {
 			return nil, fmt.Errorf("transaction %s not in waiter", txHash)
@@ -590,7 +626,7 @@ func (i *Indexer) Block(
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.Block, error) {
 	// get raw block
-	var btcBlock *bitcoin.Block
+	var btcBlock *zen.Block
 	var coins []string
 	var err error
 
@@ -606,7 +642,7 @@ func (i *Indexer) Block(
 			return nil, fmt.Errorf("%w: unable to get raw block %+v", err, blockIdentifier)
 		}
 
-		if err := utils.ContextSleep(ctx, retryDelay); err != nil {
+		if err := sdkUtils.ContextSleep(ctx, retryDelay); err != nil {
 			return nil, err
 		}
 	}
@@ -638,14 +674,14 @@ func (i *Indexer) Block(
 func (i *Indexer) GetScriptPubKeys(
 	ctx context.Context,
 	coins []*types.Coin,
-) ([]*bitcoin.ScriptPubKey, error) {
+) ([]*zen.ScriptPubKey, error) {
 	databaseTransaction := i.database.NewDatabaseTransaction(ctx, false)
 	defer databaseTransaction.Discard(ctx)
 
-	scripts := make([]*bitcoin.ScriptPubKey, len(coins))
+	scripts := make([]*zen.ScriptPubKey, len(coins))
 	for j, coin := range coins {
 		coinIdentifier := coin.CoinIdentifier
-		transactionHash, networkIndex, err := bitcoin.ParseCoinIdentifier(coinIdentifier)
+		transactionHash, networkIndex, err := zen.ParseCoinIdentifier(coinIdentifier)
 		if err != nil {
 			return nil, fmt.Errorf("%w: unable to parse coin identifier", err)
 		}
@@ -664,7 +700,7 @@ func (i *Indexer) GetScriptPubKeys(
 		}
 
 		for _, op := range transaction.Operations {
-			if op.Type != bitcoin.OutputOpType {
+			if op.Type != zen.OutputOpType {
 				continue
 			}
 
@@ -672,7 +708,7 @@ func (i *Indexer) GetScriptPubKeys(
 				continue
 			}
 
-			var opMetadata bitcoin.OperationMetadata
+			var opMetadata zen.OperationMetadata
 			if err := types.UnmarshalMap(op.Metadata, &opMetadata); err != nil {
 				return nil, fmt.Errorf(
 					"%w: unable to unmarshal operation metadata %+v",
@@ -729,7 +765,11 @@ func (i *Indexer) GetBlockTransaction(
 	blockIdentifier *types.BlockIdentifier,
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
-	return i.blockStorage.GetBlockTransaction(ctx, blockIdentifier, transactionIdentifier)
+	return i.blockStorage.GetBlockTransaction(
+		ctx,
+		blockIdentifier,
+		transactionIdentifier,
+	)
 }
 
 // GetCoins returns all unspent coins for a particular *types.AccountIdentifier.
@@ -740,11 +780,42 @@ func (i *Indexer) GetCoins(
 	return i.coinStorage.GetCoins(ctx, accountIdentifier)
 }
 
-// CurrentBlockIdentifier returns the current head block identifier
-// and is used to comply with the CoinStorageHelper interface.
-func (i *Indexer) CurrentBlockIdentifier(
+// GetBalance returns the balance of an account
+// at a particular *types.PartialBlockIdentifier.
+func (i *Indexer) GetBalance(
 	ctx context.Context,
-	transaction storage.DatabaseTransaction,
-) (*types.BlockIdentifier, error) {
-	return i.blockStorage.GetHeadBlockIdentifierTransactional(ctx, transaction)
+	accountIdentifier *types.AccountIdentifier,
+	currency *types.Currency,
+	blockIdentifier *types.PartialBlockIdentifier,
+) (*types.Amount, *types.BlockIdentifier, error) {
+	dbTx := i.database.NewDatabaseTransaction(ctx, false)
+	defer dbTx.Discard(ctx)
+
+	blockResponse, err := i.blockStorage.GetBlockLazyTransactional(
+		ctx,
+		blockIdentifier,
+		dbTx,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	amount, err := i.balanceStorage.GetBalanceTransactional(
+		ctx,
+		dbTx,
+		accountIdentifier,
+		currency,
+		blockResponse.Block.BlockIdentifier.Index,
+	)
+	if errors.Is(err, storage.ErrAccountMissing) {
+		return &types.Amount{
+			Value:    zeroValue,
+			Currency: currency,
+		}, blockResponse.Block.BlockIdentifier, nil
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return amount, blockResponse.Block.BlockIdentifier, nil
 }

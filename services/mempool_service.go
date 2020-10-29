@@ -17,18 +17,24 @@ package services
 import (
 	"context"
 
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
 // MempoolAPIService implements the server.MempoolAPIServicer interface.
 type MempoolAPIService struct {
+	config *configuration.Configuration
 	client Client
 }
 
 // NewMempoolAPIService creates a new instance of a MempoolAPIService.
-func NewMempoolAPIService(client Client) server.MempoolAPIServicer {
+func NewMempoolAPIService(
+	config *configuration.Configuration,
+	client Client,
+) server.MempoolAPIServicer {
 	return &MempoolAPIService{
+		config: config,
 		client: client,
 	}
 }
@@ -38,6 +44,10 @@ func (s *MempoolAPIService) Mempool(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.MempoolResponse, *types.Error) {
+	if s.config.Mode != configuration.Online {
+		return nil, wrapErr(ErrUnavailableOffline, nil)
+	}
+
 	mempoolTransactions, err := s.client.RawMempool(ctx)
 	if err != nil {
 		return nil, wrapErr(ErrBitcoind, err)
@@ -58,5 +68,9 @@ func (s *MempoolAPIService) MempoolTransaction(
 	ctx context.Context,
 	request *types.MempoolTransactionRequest,
 ) (*types.MempoolTransactionResponse, *types.Error) {
+	if s.config.Mode != configuration.Online {
+		return nil, wrapErr(ErrUnavailableOffline, nil)
+	}
+
 	return nil, wrapErr(ErrUnimplemented, nil)
 }

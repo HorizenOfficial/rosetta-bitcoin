@@ -1,2 +1,8 @@
 rosetta-bitcoin
-bitcoin-data
+zen-data
+cli-data
+Dockerfile*
+*.sh
+!entrypoint.sh
+*.md
+ci/

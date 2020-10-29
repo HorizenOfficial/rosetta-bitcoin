@@ -17,8 +17,8 @@ package services
 import (
 	"context"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
-	"github.com/ark2038/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -65,7 +65,7 @@ func (s *NetworkAPIService) NetworkStatus(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	rawStatus, err := s.client.NetworkStatus(ctx)
+	peers, err := s.client.GetPeers(ctx)
 	if err != nil {
 		return nil, wrapErr(ErrBitcoind, err)
 	}
@@ -75,9 +75,12 @@ func (s *NetworkAPIService) NetworkStatus(
 		return nil, wrapErr(ErrNotReady, nil)
 	}
 
-	rawStatus.CurrentBlockIdentifier = cachedBlockResponse.Block.BlockIdentifier
-
-	return rawStatus, nil
+	return &types.NetworkStatusResponse{
+		CurrentBlockIdentifier: cachedBlockResponse.Block.BlockIdentifier,
+		CurrentBlockTimestamp:  cachedBlockResponse.Block.Timestamp,
+		GenesisBlockIdentifier: s.config.GenesisBlockIdentifier,
+		Peers:                  peers,
+	}, nil
 }
 
 // NetworkOptions implements the /network/options endpoint.
@@ -87,14 +90,14 @@ func (s *NetworkAPIService) NetworkOptions(
 ) (*types.NetworkOptionsResponse, *types.Error) {
 	return &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			RosettaVersion:    RosettaVersion,
+			RosettaVersion:    types.RosettaAPIVersion,
 			NodeVersion:       NodeVersion,
 			MiddlewareVersion: &MiddlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: bitcoin.OperationStatuses,
-			OperationTypes:    bitcoin.OperationTypes,
+			OperationStatuses: zen.OperationStatuses,
+			OperationTypes:    zen.OperationTypes,
 			Errors:            Errors,
-		},
+			HistoricalBalanceLookup: HistoricalBalanceLookup,		},
 	}, nil
 }

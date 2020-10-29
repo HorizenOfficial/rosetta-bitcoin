@@ -9,38 +9,41 @@ GOLINES_CMD=go run github.com/segmentio/golines
 GOLINT_CMD=go run golang.org/x/lint/golint
 GOVERALLS_CMD=go run github.com/mattn/goveralls
 GOIMPORTS_CMD=go run golang.org/x/tools/cmd/goimports
-GO_PACKAGES=./services/... ./indexer/... ./bitcoin/... ./configuration/...
+GO_PACKAGES=./services/... ./indexer/... ./zen/... ./zend/... ./zenutil/... ./configuration/...
 GO_FOLDERS=$(shell echo ${GO_PACKAGES} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.//g")
 TEST_SCRIPT=go test ${GO_PACKAGES}
 LINT_SETTINGS=golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
 PWD=$(shell pwd)
+GZIP_CMD=$(shell command -v pigz || echo gzip)
 NOFILE=100000
 
 deps:
 	go get ./...
 
 build:
-	docker build -t rosetta-bitcoin:latest https://github.com/coinbase/rosetta-bitcoin.git
+	docker build --pull -t rosetta-zen:latest https://github.com/HorizenOfficial/rosetta-zen
 
 build-local:
-	docker build -t rosetta-bitcoin:latest .
+	docker build --pull -t rosetta-zen:latest .
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build -t rosetta-bitcoin:$(version) .;
-	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
+	docker build --pull --no-cache --build-arg IS_RELEASE=true -t rosetta-zen:$(version) .;
+	docker save rosetta-zen:$(version) | ${GZIP_CMD} > rosetta-zen-$(version).tar.gz;
 
 run-mainnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
+	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest;
 
 run-mainnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
+	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest;
 
 run-testnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)
@@ -71,7 +74,7 @@ check-format:
 test:
 	${TEST_SCRIPT}
 
-coverage:	
+coverage:
 	if [ "${COVERALLS_TOKEN}" ]; then ${TEST_SCRIPT} -coverprofile=c.out -covermode=count; ${GOVERALLS_CMD} -coverprofile=c.out -repotoken ${COVERALLS_TOKEN}; fi
 
 coverage-local:

@@ -24,11 +24,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ark2038/rosetta-zen/bitcoin"
-	"github.com/ark2038/rosetta-zen/configuration"
-	"github.com/ark2038/rosetta-zen/indexer"
-	"github.com/ark2038/rosetta-zen/services"
-	"github.com/ark2038/rosetta-zen/utils"
+	"github.com/HorizenOfficial/rosetta-zen/configuration"
+	"github.com/HorizenOfficial/rosetta-zen/indexer"
+	"github.com/HorizenOfficial/rosetta-zen/services"
+	"github.com/HorizenOfficial/rosetta-zen/utils"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
@@ -51,10 +51,6 @@ const (
 	// idleTimeout is the maximum amount of time to wait for the
 	// next request when keep-alives are enabled.
 	idleTimeout = 30 * time.Second
-
-	// maxHeapUsage is the size of the heap in MB before we manually
-	// trigger garbage collection.
-	maxHeapUsage = 1000 // ~8.5 GB
 )
 
 var (
@@ -83,15 +79,15 @@ func startOnlineDependencies(
 	cancel context.CancelFunc,
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
-) (*bitcoin.Client, *indexer.Indexer, error) {
-	client := bitcoin.NewClient(
-		bitcoin.LocalhostURL(cfg.RPCPort),
+) (*zen.Client, *indexer.Indexer, error) {
+	client := zen.NewClient(
+		zen.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
 		cfg.Currency,
 	)
 
 	g.Go(func() error {
-		return bitcoin.StartBitcoind(ctx, cfg.ConfigPath, g)
+		return zen.StartZEND(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -99,7 +95,6 @@ func startOnlineDependencies(
 		cancel,
 		cfg,
 		client,
-		indexer.DefaultIndexCacheSize,
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: unable to initialize indexer", err)
@@ -109,9 +104,10 @@ func startOnlineDependencies(
 		return i.Sync(ctx)
 	})
 
-	g.Go(func() error {
-		return i.Prune(ctx)
-	})
+	//zend does not support manual pruning
+	//g.Go(func() error {
+	//	return i.Prune(ctx)
+	//})
 
 	return client, i, nil
 }
@@ -143,11 +139,11 @@ func main() {
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		return utils.MonitorMemoryUsage(ctx, maxHeapUsage)
+		return utils.MonitorMemoryUsage(ctx, -1)
 	})
 
 	var i *indexer.Indexer
-	var client *bitcoin.Client
+	var client *zen.Client
 	if cfg.Mode == configuration.Online {
 		client, i, err = startOnlineDependencies(ctx, cancel, cfg, g)
 		if err != nil {
@@ -158,9 +154,10 @@ func main() {
 	// The asserter automatically rejects incorrectly formatted
 	// requests.
 	asserter, err := asserter.NewServer(
-		bitcoin.OperationTypes,
-		false,
+		zen.OperationTypes,
+		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
+		nil,
 	)
 	if err != nil {
 		logger.Fatalw("unable to create new server asserter", "error", err)
@@ -200,10 +197,10 @@ func main() {
 	}
 
 	if signalReceived {
-		logger.Fatalw("rosetta-bitcoin halted")
+		logger.Fatalw("rosetta-zen halted")
 	}
 
 	if err != nil {
-		logger.Fatalw("rosetta-bitcoin sync failed", "error", err)
+		logger.Fatalw("rosetta-zen sync failed", "error", err)
 	}
 }

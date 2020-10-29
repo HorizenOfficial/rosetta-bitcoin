@@ -15,16 +15,16 @@ type Client struct {
 	mock.Mock
 }
 
-// NetworkStatus provides a mock function with given fields: _a0
-func (_m *Client) NetworkStatus(_a0 context.Context) (*types.NetworkStatusResponse, error) {
+// GetPeers provides a mock function with given fields: _a0
+func (_m *Client) GetPeers(_a0 context.Context) ([]*types.Peer, error) {
 	ret := _m.Called(_a0)
 
-	var r0 *types.NetworkStatusResponse
-	if rf, ok := ret.Get(0).(func(context.Context) *types.NetworkStatusResponse); ok {
+	var r0 []*types.Peer
+	if rf, ok := ret.Get(0).(func(context.Context) []*types.Peer); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.NetworkStatusResponse)
+			r0 = ret.Get(0).([]*types.Peer)
 		}
 	}
 
@@ -91,6 +91,50 @@ func (_m *Client) SuggestedFeeRate(_a0 context.Context, _a1 int64) (float64, err
 		r0 = rf(_a0, _a1)
 	} else {
 		r0 = ret.Get(0).(float64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetBestBlock provides a mock function with given fields: _a0
+func (_m *Client) GetBestBlock(_a0 context.Context) (int64, error) {
+	ret := _m.Called(_a0)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context) int64); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(int64)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetBestBlock provides a mock function with given fields: _a0, _a1
+func (_m *Client) GetHashFromIndex(_a0 context.Context, _a1 int64) (string, error) {
+	ret := _m.Called(_a0, _a1)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, int64) string); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
