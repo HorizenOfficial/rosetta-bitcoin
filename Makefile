@@ -32,21 +32,21 @@ build-release:
 	docker save rosetta-zen:$(version) | ${GZIP_CMD} > rosetta-zen-$(version).tar.gz;
 
 run-mainnet-online:
-	docker container rm rosetta-zen-mainnet-online
+	docker container rm rosetta-zen-mainnet-online || true
 	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
 	docker run -d --name=rosetta-zen-mainnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest;
 
 run-mainnet-offline:
-	docker container rm rosetta-zen-mainnet-offline
+	docker container rm rosetta-zen-mainnet-offline || true
 	docker run -d --name=rosetta-zen-mainnet-offline -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 run-testnet-online:
-	docker container rm rosetta-zen-testnet-online
+	docker container rm rosetta-zen-testnet-online || true
 	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
 	docker run -d --name=rosetta-zen-testnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest;
 
 run-testnet-offline:
-	docker container rm rosetta-zen-testnet-offline
+	docker container rm rosetta-zen-testnet-offline || true
 	docker run -d --name=rosetta-zen-testnet-offline -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 train:
