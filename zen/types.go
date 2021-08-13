@@ -186,18 +186,47 @@ type PeerInfo struct {
 
 // Block is a raw Bitcoin block (with verbosity == 2).
 type Block struct {
-	Hash              string  `json:"hash"`
-	Height            int64   `json:"height"`
-	PreviousBlockHash string  `json:"previousblockhash"`
-	Time              int64   `json:"time"`
-	Nonce             string  `json:"nonce"`
-	MerkleRoot        string  `json:"merkleroot"`
-	Version           int32   `json:"version"`
-	Size              int64   `json:"size"`
-	Bits              string  `json:"bits"`
-	Difficulty        float64 `json:"difficulty"`
+	Hash                    string  `json:"hash"`
+	Height                  int64   `json:"height"`
+	PreviousBlockHash       string  `json:"previousblockhash"`
+	Time                    int64   `json:"time"`
+	Nonce                   string  `json:"nonce"`
+	MerkleRoot              string  `json:"merkleroot"`
+	Version                 int32   `json:"version"`
+	Size                    int64   `json:"size"`
+	Bits                    string  `json:"bits"`
+	Difficulty              float64 `json:"difficulty"`
+	ScTransactionCommitment string  `json:"scTxsCommitment"`
 
-	Txs []*Transaction `json:"tx"`
+	Txs           []*Transaction   `json:"tx"`
+	ScCertificate []*ScCertificate `json:"cert"`
+}
+
+type ScCertificate struct {
+	CertId        string `json:"certid"`
+	BlockHash     string `json:"blockhash"`
+	Hex           string `json:"hex"`
+	Confirmations int32  `json:"confirmations"`
+	Version       int32  `json:"version"`
+
+	Inputs  []*Input  `json:"vin"`
+	Outputs []*Output `json:"vout"`
+
+	ScCertificateInfo ScCertificateInfo `json:"cert"`
+}
+
+// TODO: find a better name than FieldElement
+type ScCertificateInfo struct {
+	ScId                           string   `json:"scid"`
+	EpochNumber                    int32    `json:"epochNumber"`
+	Quality                        int64    `json:"quality"`
+	FieldElement                   string   `json:"endEpochCumScTxCommTreeRoot"`
+	ScProof                        string   `json:"scProof"`
+	FieldElementCertificateField   []string `json:"vFieldElementCertificateField"`
+	BitVectorCertificateField      []string `json:"vBitVectorCertificateField"`
+	ForwardTransferScFee           float64  `json:"ftScFee"`
+	MCBackwardTransferRequestScFee float64  `json:"mbtrScFee"`
+	TotalAmount                    float64  `json:"totalAmount"`
 }
 
 // Metadata returns the metadata for a block.
@@ -237,6 +266,50 @@ type Transaction struct {
 	Inputs     []*Input     `json:"vin"`
 	Outputs    []*Output    `json:"vout"`
 	Joinsplits []*Joinsplit `json:"vjoinsplit"`
+	ScOutputs  []*ScOutput  `json:"vsc_ccout"`
+	FtOutputs  []*FtOutput  `json:"vft_ccout"`
+	// vmbtr_out
+	CeasedScWithdrawalInputs []*CeasedScWithdrawalInput `json:"vcsw_ccin"`
+}
+
+type CeasedScWithdrawalInput struct {
+	ScId         string        `json:"scId"`
+	Value        float64       `json:"value"`
+	Nullifier    string        `json:"nullifier"`
+	ScriptPubKey *ScriptPubKey `json:"scriptPubKey"`
+	ScProof      string        `json:"scProof"`
+	RedeemScript *RedeemScript `json:"redeemScript"`
+}
+
+type RedeemScript struct {
+	ASM string `json:"asm"`
+	Hex string `json:"hex"`
+}
+
+type ScOutput struct {
+	ScId                               string   `json:"scid"`
+	Index                              int64    `json:"n"`
+	WithdrawalEpochLen                 int64    `json:"withdrawal epoch length"`
+	Value                              float64  `json:"value"`
+	Address                            string   `json:"address"`
+	CertProvingSystem                  string   `json:"certProvingSystem"`
+	WCertVk                            string   `json:"wCertVk"`
+	FieldElementCertificateFieldConfig []string `json:"vFieldElementCertificateFieldConfig"`
+	BitVectorCertificateFieldConfig    []string `json:"vBitVectorCertificateFieldConfig"`
+	CustomData                         string   `json:"customData"`
+	Constant                           string   `json:"constant"`
+	CswProvingSystem                   string   `json:"cswProvingSystem"`
+	CeasedVk                           string   `json:"wCeasedVk"`
+	ForwardTransferScFee               float64  `json:"ftScFee"`
+	MbtrScFee                          float64  `json:"mbtrScFee"`
+	MbtrRequestDataLength              int32    `json:"mbtrRequestDataLength"`
+}
+
+type FtOutput struct {
+	ScId    string  `json:"scid"`
+	Value   float64 `json:"value"`
+	Index   int64   `json:"n"`
+	Address string  `json:"address"`
 }
 
 // Joinsplit is a raw Joinsplit transaction representation.
@@ -298,9 +371,11 @@ func (i Input) Metadata() (map[string]interface{}, error) {
 
 // Output is a raw output in a Bitcoin transaction.
 type Output struct {
-	Value        float64       `json:"value"`
-	Index        int64         `json:"n"`
-	ScriptPubKey *ScriptPubKey `json:"scriptPubKey"`
+	Value            float64       `json:"value"`
+	Index            int64         `json:"n"`
+	ScriptPubKey     *ScriptPubKey `json:"scriptPubKey"`
+	PubkeyHash       string        `json:"pubkeyhash"`
+	BackwardTransfer bool          `json:"backward transfer"`
 }
 
 // Metadata returns the metadata for an output.
