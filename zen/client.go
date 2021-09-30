@@ -236,6 +236,23 @@ func (b *Client) GetRawBlock(
 		}
 	}
 
+	blockCertTxHashes := []string{}
+	for certTxIndex, certTx := range block.Certs {
+		blockCertTxHashes = append(blockCertTxHashes, certTx.Hash)
+		for inputIndex, input := range certTx.Inputs {
+			certTxHash, vout, ok := b.getInputTxHash(input, certTxIndex, inputIndex)
+			if !ok {
+				continue
+			}
+
+			// If any transactions spent in the same block they are created, don't include them
+			// in previousTxHashes to fetch.
+			if !utils.ContainsString(blockCertTxHashes, certTxHash) {
+				coins = append(coins, CoinIdentifier(certTxHash, vout))
+			}
+		}
+	}
+
 	return block, coins, nil
 }
 
@@ -493,7 +510,7 @@ func (b *Client) parseTransactions(
 	if block == nil {
 		return nil, errors.New("error parsing nil block")
 	}
-	txs := make([]*types.Transaction, len(block.Txs))
+	txs := make([]*types.Transaction, len(block.Txs) + len(block.Certs))
 	for index, transaction := range block.Txs {
 		txOps, err := b.parseTxOperations(transaction, index, coins)
 		if err != nil {
@@ -535,6 +552,43 @@ func (b *Client) parseTransactions(
 			}
 		}
 	}
+
+	for index, certificate := range block.Certs {
+		certTxOps, err := b.parseCertTxOperations(certificate, index, coins)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
+		}
+
+		tx := &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: certificate.Hash,
+			},
+			Operations: certTxOps,
+		}
+
+		txs[len(block.Txs) + index] = tx
+
+		// In some cases, a transaction will spent an output
+		// from the same block.
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
+			}
+
+			if op.CoinChange.CoinAction != types.CoinCreated {
+				continue
+			}
+
+			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+				Coin: &types.Coin{
+					CoinIdentifier: op.CoinChange.CoinIdentifier,
+					Amount:         op.Amount,
+				},
+				Account: op.Account,
+			}
+		}
+	}
+
 
 	return txs, nil
 
@@ -606,6 +660,78 @@ func (b *Client) parseTxOperations(
 	}
 
 	return txOps, nil
+}
+
+func (b *Client) parseCertTxOperations(
+	cert *Certificate,
+	txIndex int,
+	coins map[string]*storage.AccountCoin,
+) ([]*types.Operation, error) {
+	certOps := []*types.Operation{}
+
+	for networkIndex, input := range cert.Inputs {
+		if bitcoinIsCoinbaseInput(input, txIndex, networkIndex) {
+			certOp, err := b.coinbaseTxOperation(input, int64(len(certOps)), int64(networkIndex))
+			if err != nil {
+				return nil, err
+			}
+
+			certOps = append(certOps, certOp)
+			break
+		}
+
+		// Fetch the *storage.AccountCoin the input is associated with
+		accountCoin, ok := coins[CoinIdentifier(input.TxHash, input.Vout)]
+		if !ok {
+			return nil, fmt.Errorf(
+				"error finding previous tx: %s, for tx: %s, input index: %d",
+				input.TxHash,
+				cert.Hash,
+				networkIndex,
+			)
+		}
+
+		// Parse the input transaction operation
+		certOp, err := b.parseInputTransactionOperation(
+			input,
+			int64(len(certOps)),
+			int64(networkIndex),
+			accountCoin,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error parsing tx input", err)
+		}
+
+		certOps = append(certOps, certOp)
+	}
+
+	for networkIndex, output := range cert.Outputs {
+
+		if output.BackwardTransfer == true {
+			continue
+		}
+
+		certOp, err := b.parseOutputTransactionOperation(
+			output,
+			cert.Hash,
+			int64(len(certOps)),
+			int64(networkIndex),
+			txIndex,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf(
+				"%w: error parsing tx output, hash: %s, index: %d",
+				err,
+				cert.Hash,
+				networkIndex,
+			)
+		}
+
+		certOps = append(certOps, certOp)
+	}
+
+	return certOps, nil
 }
 
 // parseOutputTransactionOperation returns the types.Operation for the specified
