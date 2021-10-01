@@ -20,8 +20,8 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 2.0.23
-ARG ZEN_COMMITTISH=v2.0.23
+# zend_oo sc-testnet2 release
+ARG ZEN_COMMITTISH=v2.2.0-beta1
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
 # Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
@@ -36,7 +36,7 @@ RUN set -euxo pipefail \
       bsdmainutils build-essential ca-certificates cmake curl dirmngr fakeroot \
       git g++-multilib gnupg2 libc6-dev libgomp1 libtool m4 ncurses-dev \
       pkg-config zlib1g-dev \
-    && git clone https://github.com/HorizenOfficial/zen.git \
+    && git clone https://github.com/HorizenOfficial/zend_oo.git zen \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
       ( gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
