@@ -586,11 +586,13 @@ func (b *Client) parseTxOperations(
 	}
 
 	for networkIndex, output := range tx.Outputs {
+		outputIndex := int64(output.index)
+
 		txOp, err := b.parseOutputTransactionOperation(
 			output,
 			tx.Hash,
 			int64(len(txOps)),
-			int64(networkIndex),
+			outputIndex,
 			txIndex,
 		)
 		if err != nil {
@@ -598,7 +600,7 @@ func (b *Client) parseTxOperations(
 				"%w: error parsing tx output, hash: %s, index: %d",
 				err,
 				tx.Hash,
-				networkIndex,
+				outputIndex,
 			)
 		}
 
