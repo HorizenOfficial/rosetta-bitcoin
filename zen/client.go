@@ -221,39 +221,34 @@ func (b *Client) GetRawBlock(
 	coins := []string{}
 	blockTxHashes := []string{}
 	for txIndex, tx := range block.Txs {
-		blockTxHashes = append(blockTxHashes, tx.Hash)
-		for inputIndex, input := range tx.Inputs {
-			txHash, vout, ok := b.getInputTxHash(input, txIndex, inputIndex)
-			if !ok {
-				continue
-			}
-
-			// If any transactions spent in the same block they are created, don't include them
-			// in previousTxHashes to fetch.
-			if !utils.ContainsString(blockTxHashes, txHash) {
-				coins = append(coins, CoinIdentifier(txHash, vout))
-			}
-		}
+		coins, blockTxHashes = addCoins(txIndex, blockTxHashes, tx.Hash, tx.Inputs, b, coins)
 	}
 
 	blockCertTxHashes := []string{}
 	for certTxIndex, certTx := range block.Certs {
-		blockCertTxHashes = append(blockCertTxHashes, certTx.Hash)
-		for inputIndex, input := range certTx.Inputs {
-			certTxHash, vout, ok := b.getInputTxHash(input, certTxIndex, inputIndex)
-			if !ok {
-				continue
-			}
-
-			// If any transactions spent in the same block they are created, don't include them
-			// in previousTxHashes to fetch.
-			if !utils.ContainsString(blockCertTxHashes, certTxHash) {
-				coins = append(coins, CoinIdentifier(certTxHash, vout))
-			}
-		}
+		coins, blockCertTxHashes = addCoins(certTxIndex, blockCertTxHashes, certTx.Hash, certTx.Inputs, b, coins)
 	}
 
 	return block, coins, nil
+}
+
+
+func addCoins(txIndex int, blockTxHashes []string, hash string, inputs []*Input, b *Client, coins []string) ([]string, []string) {
+	blockTxHashes = append(blockTxHashes, hash)
+	for inputIndex, input := range inputs {
+		txHash, vout, ok := b.getInputTxHash(input, txIndex, inputIndex)
+		if !ok {
+			continue
+		}
+
+		// If any transactions spent in the same block they are created, don't include them
+		// in previousTxHashes to fetch.
+		if !utils.ContainsString(blockTxHashes, txHash) {
+			coins = append(coins, CoinIdentifier(txHash, vout))
+		}
+	}
+
+	return coins, blockTxHashes
 }
 
 // ParseBlock returns a parsed bitcoin block given a raw bitcoin
@@ -512,7 +507,7 @@ func (b *Client) parseTransactions(
 	}
 	txs := make([]*types.Transaction, len(block.Txs) + len(block.Certs))
 	for index, transaction := range block.Txs {
-		txOps, err := b.parseTxOperations(transaction, index, coins)
+		txOps, err := b.parseTxOperations(transaction.Inputs, transaction.Outputs, transaction.Hash, index, coins, false)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
 		}
@@ -532,31 +527,13 @@ func (b *Client) parseTransactions(
 
 		txs[index] = tx
 
-		// In some cases, a transaction will spent an output
-		// from the same block.
-		for _, op := range tx.Operations {
-			if op.CoinChange == nil {
-				continue
-			}
-
-			if op.CoinChange.CoinAction != types.CoinCreated {
-				continue
-			}
-
-			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
-				Coin: &types.Coin{
-					CoinIdentifier: op.CoinChange.CoinIdentifier,
-					Amount:         op.Amount,
-				},
-				Account: op.Account,
-			}
-		}
+		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
 	for index, certificate := range block.Certs {
-		certTxOps, err := b.parseCertTxOperations(certificate, index, coins)
+		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, index, coins, true)
 		if err != nil {
-			return nil, fmt.Errorf("%w: error parsing transaction operations", err)
+			return nil, fmt.Errorf("%w: error parsing certificate transaction operations", err)
 		}
 
 		tx := &types.Transaction{
@@ -568,42 +545,50 @@ func (b *Client) parseTransactions(
 
 		txs[len(block.Txs) + index] = tx
 
-		// In some cases, a transaction will spent an output
-		// from the same block.
-		for _, op := range tx.Operations {
-			if op.CoinChange == nil {
-				continue
-			}
-
-			if op.CoinChange.CoinAction != types.CoinCreated {
-				continue
-			}
-
-			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
-				Coin: &types.Coin{
-					CoinIdentifier: op.CoinChange.CoinIdentifier,
-					Amount:         op.Amount,
-				},
-				Account: op.Account,
-			}
-		}
+		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
-
 
 	return txs, nil
 
 }
 
+func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*storage.AccountCoin) map[string]*storage.AccountCoin {
+	// In some cases, a transaction will spent an output
+	// from the same block.
+	for _, op := range operations {
+		if op.CoinChange == nil {
+			continue
+		}
+
+		if op.CoinChange.CoinAction != types.CoinCreated {
+			continue
+		}
+
+		coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+			Coin: &types.Coin{
+				CoinIdentifier: op.CoinChange.CoinIdentifier,
+				Amount:         op.Amount,
+			},
+			Account: op.Account,
+		}
+	}
+
+	return coins
+}
+
 // parseTransactions returns the transaction operations for a specified transaction.
 // It uses a map of previous transactions to properly hydrate the input operations.
 func (b *Client) parseTxOperations(
-	tx *Transaction,
+	inputs []*Input,
+	outputs []*Output,
+	hash string,
 	txIndex int,
 	coins map[string]*storage.AccountCoin,
+	isCertificate bool,
 ) ([]*types.Operation, error) {
 	txOps := []*types.Operation{}
 
-	for networkIndex, input := range tx.Inputs {
+	for networkIndex, input := range inputs {
 		if bitcoinIsCoinbaseInput(input, txIndex, networkIndex) {
 			txOp, err := b.coinbaseTxOperation(input, int64(len(txOps)), int64(networkIndex))
 			if err != nil {
@@ -620,7 +605,7 @@ func (b *Client) parseTxOperations(
 			return nil, fmt.Errorf(
 				"error finding previous tx: %s, for tx: %s, input index: %d",
 				input.TxHash,
-				tx.Hash,
+				hash,
 				networkIndex,
 			)
 		}
@@ -639,10 +624,15 @@ func (b *Client) parseTxOperations(
 		txOps = append(txOps, txOp)
 	}
 
-	for networkIndex, output := range tx.Outputs {
+	for networkIndex, output := range outputs {
+
+		if isCertificate == true && output.BackwardTransfer == true {
+			continue
+		}
+
 		txOp, err := b.parseOutputTransactionOperation(
 			output,
-			tx.Hash,
+			hash,
 			int64(len(txOps)),
 			int64(networkIndex),
 			txIndex,
@@ -651,7 +641,7 @@ func (b *Client) parseTxOperations(
 			return nil, fmt.Errorf(
 				"%w: error parsing tx output, hash: %s, index: %d",
 				err,
-				tx.Hash,
+				hash,
 				networkIndex,
 			)
 		}
@@ -660,78 +650,6 @@ func (b *Client) parseTxOperations(
 	}
 
 	return txOps, nil
-}
-
-func (b *Client) parseCertTxOperations(
-	cert *Certificate,
-	txIndex int,
-	coins map[string]*storage.AccountCoin,
-) ([]*types.Operation, error) {
-	certOps := []*types.Operation{}
-
-	for networkIndex, input := range cert.Inputs {
-		if bitcoinIsCoinbaseInput(input, txIndex, networkIndex) {
-			certOp, err := b.coinbaseTxOperation(input, int64(len(certOps)), int64(networkIndex))
-			if err != nil {
-				return nil, err
-			}
-
-			certOps = append(certOps, certOp)
-			break
-		}
-
-		// Fetch the *storage.AccountCoin the input is associated with
-		accountCoin, ok := coins[CoinIdentifier(input.TxHash, input.Vout)]
-		if !ok {
-			return nil, fmt.Errorf(
-				"error finding previous tx: %s, for tx: %s, input index: %d",
-				input.TxHash,
-				cert.Hash,
-				networkIndex,
-			)
-		}
-
-		// Parse the input transaction operation
-		certOp, err := b.parseInputTransactionOperation(
-			input,
-			int64(len(certOps)),
-			int64(networkIndex),
-			accountCoin,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("%w: error parsing tx input", err)
-		}
-
-		certOps = append(certOps, certOp)
-	}
-
-	for networkIndex, output := range cert.Outputs {
-
-		if output.BackwardTransfer == true {
-			continue
-		}
-
-		certOp, err := b.parseOutputTransactionOperation(
-			output,
-			cert.Hash,
-			int64(len(certOps)),
-			int64(networkIndex),
-			txIndex,
-		)
-
-		if err != nil {
-			return nil, fmt.Errorf(
-				"%w: error parsing tx output, hash: %s, index: %d",
-				err,
-				cert.Hash,
-				networkIndex,
-			)
-		}
-
-		certOps = append(certOps, certOp)
-	}
-
-	return certOps, nil
 }
 
 // parseOutputTransactionOperation returns the types.Operation for the specified

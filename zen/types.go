@@ -251,7 +251,7 @@ type Certificate struct {
 
 type Cert struct {
 	Scid                           string   `json:"scid"`
-	EpochNumber     	           string   `json:"epochNumber"`
+	EpochNumber     	           int64    `json:"epochNumber"`
 	Quality     				   int64    `json:"quality"`
 	EndEpochCumScTxCommTreeRoot    string   `json:"endEpochCumScTxCommTreeRoot"`
 	ScProof     				   string   `json:"scProof"`
