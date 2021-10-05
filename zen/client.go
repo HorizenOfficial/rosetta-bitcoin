@@ -630,7 +630,7 @@ func (b *Client) parseTxOperations(
 			continue
 		}
 
-		outputIndex := int64(output.index)
+		outputIndex := int64(output.Index)
 
 		txOp, err := b.parseOutputTransactionOperation(
 			output,
