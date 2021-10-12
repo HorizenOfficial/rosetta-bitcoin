@@ -624,17 +624,19 @@ func (b *Client) parseTxOperations(
 		txOps = append(txOps, txOp)
 	}
 
-	for networkIndex, output := range outputs {
+	for _, output := range outputs {
 
 		if isCertificate == true && output.BackwardTransfer == true {
 			continue
 		}
 
+		outputIndex := int64(output.Index)
+
 		txOp, err := b.parseOutputTransactionOperation(
 			output,
 			hash,
 			int64(len(txOps)),
-			int64(networkIndex),
+			outputIndex,
 			txIndex,
 		)
 		if err != nil {
@@ -642,7 +644,7 @@ func (b *Client) parseTxOperations(
 				"%w: error parsing tx output, hash: %s, index: %d",
 				err,
 				hash,
-				networkIndex,
+				outputIndex,
 			)
 		}
 
