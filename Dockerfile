@@ -20,8 +20,8 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 2.0.23
-ARG ZEN_COMMITTISH=v2.0.23
+# Latest release zen 2.0.24
+ARG ZEN_COMMITTISH=v2.0.24
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
 # Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
@@ -63,8 +63,8 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-ARG GOLANG_VERSION=1.15.3
-ARG GOLANG_DOWNLOAD_SHA256=010a88df924a81ec21b293b5da8f9b11c176d27c0ee3962dc1738d2352d3c02d
+ARG GOLANG_VERSION=1.17.2
+ARG GOLANG_DOWNLOAD_SHA256=f242a9db6a0ad1846de7b6d94d507915d14062660616a61ef7c808a76e4f1676
 ARG GOLANG_DOWNLOAD_URL="https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz"
 
 COPY . /go/src
