@@ -7,6 +7,8 @@ if [ "$(stat -c '%u:%g' /data)" != "65534:65534" ]; then
   exit 1
 fi
 
-/app/fetch-params.sh
+if [ "${MODE:-x}" = "ONLINE" ]; then
+  /app/fetch-params.sh
+fi
 
 exec "$@"
