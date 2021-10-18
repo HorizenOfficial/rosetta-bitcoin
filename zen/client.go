@@ -56,7 +56,7 @@ type requestMethod string
 
 const (
 	// https://bitcoin.org/en/developer-reference#getblock
-	requestMethodGetBlock requestMethod = "getblock"
+	requestMethodGetBlock requestMethod = "getblockexpanded"
 
 	// https://bitcoin.org/en/developer-reference#getblockhash
 	requestMethodGetBlockHash requestMethod = "getblockhash"
@@ -548,8 +548,34 @@ func (b *Client) parseTransactions(
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
-	return txs, nil
+	for index, certificate := range block.MaturedCerts {
+		// For matured certificates, we only parse outputs that are backward transfers
+		backwardTransferOutputs := []*Output{}
 
+		for i := range certificate.Outputs {
+			if certificate.Outputs[i].BackwardTransfer == true  {
+				backwardTransferOutputs = append(backwardTransferOutputs, certificate.Outputs[i])
+			}
+		}
+
+		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, index, coins, false)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
+		}
+
+		tx := &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: certificate.Hash,
+			},
+			Operations: certTxOps,
+		}
+
+		txs = append(txs, tx)
+
+		coins = addCoinsFromSameBlock(tx.Operations, coins)
+	}
+
+	return txs, nil
 }
 
 func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*storage.AccountCoin) map[string]*storage.AccountCoin {
@@ -584,7 +610,7 @@ func (b *Client) parseTxOperations(
 	hash string,
 	txIndex int,
 	coins map[string]*storage.AccountCoin,
-	isCertificate bool,
+	isImmatureCertificate bool,
 ) ([]*types.Operation, error) {
 	txOps := []*types.Operation{}
 
@@ -626,7 +652,7 @@ func (b *Client) parseTxOperations(
 
 	for _, output := range outputs {
 
-		if isCertificate == true && output.BackwardTransfer == true {
+		if isImmatureCertificate == true && output.BackwardTransfer == true {
 			continue
 		}
 
