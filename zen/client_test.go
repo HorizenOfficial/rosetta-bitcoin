@@ -2485,7 +2485,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
