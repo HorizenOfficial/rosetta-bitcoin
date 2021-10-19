@@ -531,7 +531,8 @@ func (b *Client) parseTransactions(
 	}
 
 	for index, certificate := range block.Certs {
-		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, index, coins, true)
+		txIndex := len(block.Txs) + index;
+		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, txIndex, coins, true)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing certificate transaction operations", err)
 		}
@@ -543,7 +544,7 @@ func (b *Client) parseTransactions(
 			Operations: certTxOps,
 		}
 
-		txs[len(block.Txs) + index] = tx
+		txs[txIndex] = tx
 
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
@@ -558,7 +559,7 @@ func (b *Client) parseTransactions(
 			}
 		}
 
-		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, index, coins, false)
+		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
 		}
@@ -651,9 +652,7 @@ func (b *Client) parseTxOperations(
 	}
 
 	for _, output := range outputs {
-		isBackwardTransfer := output.BackwardTransfer == true
-
-		if isImmatureCertificate == true && isBackwardTransfer {
+		if isImmatureCertificate == true && output.BackwardTransfer == true {
 			continue
 		}
 
@@ -665,7 +664,6 @@ func (b *Client) parseTxOperations(
 			int64(len(txOps)),
 			outputIndex,
 			txIndex,
-			isBackwardTransfer,
 		)
 		if err != nil {
 			return nil, fmt.Errorf(
@@ -690,7 +688,6 @@ func (b *Client) parseOutputTransactionOperation(
 	index int64,
 	networkIndex int64,
 	txIndex int,
-	isBackwardTransfer bool,
 ) (*types.Operation, error) {
 
 	amount, err := b.parseAmount(output.Value)
@@ -726,8 +723,8 @@ func (b *Client) parseOutputTransactionOperation(
 		account.Address = fmt.Sprintf("%s:%d", txHash, networkIndex)
 	}
 
-	//if it's a coinbase output and we are not in regtest populate SubAccount field
-	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash && !isBackwardTransfer {
+	// if it's a coinbase output and we are not in regtest populate SubAccount field
+	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash {
 		account.SubAccount = &types.SubAccountIdentifier{
 			Address:  "coinbase",
 		}

@@ -2160,9 +2160,6 @@ func TestParseBlockWithCertificate(t *testing.T) {
 								Status: SuccessStatus,
 								Account: &types.AccountIdentifier{
 									Address: "ztpha3vQzv7eTdBvPC1oWnouuManmCEVbTT",
-									SubAccount: &types.SubAccountIdentifier{
-										Address:  "coinbase",
-									},
 								},
 								Amount: &types.Amount{
 									Value:    "24895145",
