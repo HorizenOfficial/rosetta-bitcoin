@@ -491,6 +491,7 @@ var (
 						},
 					},
 				},
+				Joinsplits: []*Joinsplit{},
 			},
 		},
 		Certs: []*Certificate{},
@@ -518,13 +519,14 @@ var (
 					VFieldElementCertificateField: []string{
 						"ab000100",
 						"ccccdddd0000",
-						"0100"
+						"0100",
 					},
 					VBitVectorCertificateField: []string{
 						"021f8b08000000000002ff017f0080ff44c7e21ba1c7c0a29de006cb8074e2ba39f15abfef2525a4cbb3f235734410bda21cdab6624de769ceec818ac6c2d3a01e382e357dce1f6e9a0ff281f0fedae0efe274351db37599af457984dcf8e3ae4479e0561341adfff4746fbe274d90f6f76b8a2552a6ebb98aee918c7ceac058f4c1ae0131249546ef5e22f4187a07da02ca5b7f000000",
 					},
 					FtScFee: 1.00000000,
 					MbtrScFee: 2.00000000,
+					TotalAmount: 2.00000000,
 				},
 				Outputs: []*Output{
 					{
@@ -555,6 +557,7 @@ var (
 						BackwardTransfer: true,
 					},
 				},
+				Joinsplits: []*Joinsplit{},
 			},
 		},
 	}
@@ -736,7 +739,7 @@ func TestGetRawBlock(t *testing.T) {
 			expectedBlock: block717984,
 			expectedCoins: []string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1","62091923e9805a8650d752b3b83e0d56ce70e775ee67c080feade7e5ee677ad9:0"},
 		},
-		"lookup by hash - block with certificate": {
+		"lookup by hash - block with mature certificate": {
 			blockIdentifier: &types.PartialBlockIdentifier{
 				Hash: &blockIdentifier717985.Hash,
 			},
@@ -748,7 +751,7 @@ func TestGetRawBlock(t *testing.T) {
 				},
 			},
 			expectedBlock: block717985,
-			expectedCoins: []string{"9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0", "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0", "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1"},
+			expectedCoins: []string{},
 		},
 		"lookup by hash (get block api error)": {
 			blockIdentifier: &types.PartialBlockIdentifier{
@@ -2309,7 +2312,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 					Hash:  "005d3821c522b528f42fa16187d70ccb59170e2dcd72e9242d54d967e63b6fxe",
 					Index: 717984,
 				},
-				Timestamp: 1634583659,
+				Timestamp: 1634583659000,
 				Transactions: []*types.Transaction{
 					{
 						TransactionIdentifier: &types.TransactionIdentifier{
@@ -2423,8 +2426,8 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 								},
 								Metadata: mustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
-										ASM:  "OP_HASH160 ca76beb25c5f1c29c305a2b3e71a2de5fe1d2eed OP_EQUAL", // nolint
-										Hex:  "a914ca76beb25c5f1c29c305a2b3e71a2de5fe1d2eed87",         // nolint
+										ASM:  "OP_HASH160 e7d25d82be231cf77ab8aecb80b6066923819ffc OP_EQUAL", // nolint
+										Hex:  "a914e7d25d82be231cf77ab8aecb80b6066923819ffc87",         // nolint
 										RequiredSigs: 1,
 										Type: "scripthash",
 										Addresses: []string{
@@ -2504,7 +2507,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										ASM: "OP_DUP OP_HASH160 80271800053d996d0ebd51ee357e37bfedafc6a6 OP_EQUALVERIFY OP_CHECKSIG",
 										Hex: "76a91480271800053d996d0ebd51ee357e37bfedafc6a688ac",
 										RequiredSigs: 1,
-										Type: "pubkeyhashreplay",
+										Type: "pubkeyhash",
 										Addresses: []string{
 											"zteqa5taBUZaJFsTJpmD9KVvCSfWjEG7w2S",
 										},

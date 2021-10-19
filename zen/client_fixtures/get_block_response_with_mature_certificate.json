@@ -3,7 +3,7 @@
     "hash": "0de2120157f2d366354e12291bf5af8c06e37931067dabc4c9286c6254a7042e",
     "confirmations": 1,
     "size": 365,
-    "height": 640,
+    "height": 717985,
     "version": 3,
     "merkleroot": "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e",
     "scTxsCommitment": "0d65e96cc400f0e6537f6391d812c1959dd46e958928d2338b75d4662f01d466",
@@ -101,7 +101,7 @@
         "valueDeltaZat": 0
       }
     ],
-    "previousblockhash": "059b1e06aaddad21b521b92c54c0ea9f619aa910ad284b7565efa20a26df179f",
+    "previousblockhash": "005d3821c522b528f42fa16187d70ccb59170e2dcd72e9242d54d967e63b6fxe",
     "matureCertificate": [
       {
         "txid": "815c88e2bb7a0b083c74bf9643f94db252704f475290c58f6cb123e8793f5376",
