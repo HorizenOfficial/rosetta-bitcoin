@@ -184,7 +184,7 @@ type PeerInfo struct {
 	SyncedHeaders  int64  `json:"synced_headers"`
 }
 
-// Block is a raw Bitcoin block (with verbosity == 2).
+// Block is a raw Horizen block (with verbosity == 2).
 type Block struct {
 	Hash              string  `json:"hash"`
 	Height            int64   `json:"height"`
@@ -199,6 +199,7 @@ type Block struct {
 
 	Txs   []*Transaction `json:"tx"`
 	Certs []*Certificate `json:"cert"`
+	MaturedCerts []*Certificate `json:"matureCertificate"`
 }
 
 // Metadata returns the metadata for a block.

@@ -56,7 +56,7 @@ type requestMethod string
 
 const (
 	// https://bitcoin.org/en/developer-reference#getblock
-	requestMethodGetBlock requestMethod = "getblock"
+	requestMethodGetBlock requestMethod = "getblockexpanded"
 
 	// https://bitcoin.org/en/developer-reference#getblockhash
 	requestMethodGetBlockHash requestMethod = "getblockhash"
@@ -531,7 +531,8 @@ func (b *Client) parseTransactions(
 	}
 
 	for index, certificate := range block.Certs {
-		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, index, coins, true)
+		txIndex := len(block.Txs) + index;
+		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, txIndex, coins, true)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing certificate transaction operations", err)
 		}
@@ -543,13 +544,39 @@ func (b *Client) parseTransactions(
 			Operations: certTxOps,
 		}
 
-		txs[len(block.Txs) + index] = tx
+		txs[txIndex] = tx
+
+		coins = addCoinsFromSameBlock(tx.Operations, coins)
+	}
+
+	for index, certificate := range block.MaturedCerts {
+		// For matured certificates, we only parse outputs that are backward transfers
+		backwardTransferOutputs := []*Output{}
+
+		for i := range certificate.Outputs {
+			if certificate.Outputs[i].BackwardTransfer == true  {
+				backwardTransferOutputs = append(backwardTransferOutputs, certificate.Outputs[i])
+			}
+		}
+
+		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
+		}
+
+		tx := &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: certificate.Hash,
+			},
+			Operations: certTxOps,
+		}
+
+		txs = append(txs, tx)
 
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
 	return txs, nil
-
 }
 
 func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*storage.AccountCoin) map[string]*storage.AccountCoin {
@@ -584,7 +611,7 @@ func (b *Client) parseTxOperations(
 	hash string,
 	txIndex int,
 	coins map[string]*storage.AccountCoin,
-	isCertificate bool,
+	isImmatureCertificate bool,
 ) ([]*types.Operation, error) {
 	txOps := []*types.Operation{}
 
@@ -625,8 +652,7 @@ func (b *Client) parseTxOperations(
 	}
 
 	for _, output := range outputs {
-
-		if isCertificate == true && output.BackwardTransfer == true {
+		if isImmatureCertificate == true && output.BackwardTransfer == true {
 			continue
 		}
 
@@ -697,7 +723,7 @@ func (b *Client) parseOutputTransactionOperation(
 		account.Address = fmt.Sprintf("%s:%d", txHash, networkIndex)
 	}
 
-	//if it's a coinbase output and we are not in regtest populate SubAccount field
+	// if it's a coinbase output and we are not in regtest populate SubAccount field
 	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash {
 		account.SubAccount = &types.SubAccountIdentifier{
 			Address:  "coinbase",
