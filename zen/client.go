@@ -651,8 +651,9 @@ func (b *Client) parseTxOperations(
 	}
 
 	for _, output := range outputs {
+		isBackwardTransfer := output.BackwardTransfer == true
 
-		if isImmatureCertificate == true && output.BackwardTransfer == true {
+		if isImmatureCertificate == true && isBackwardTransfer {
 			continue
 		}
 
@@ -664,6 +665,7 @@ func (b *Client) parseTxOperations(
 			int64(len(txOps)),
 			outputIndex,
 			txIndex,
+			isBackwardTransfer,
 		)
 		if err != nil {
 			return nil, fmt.Errorf(
@@ -688,6 +690,7 @@ func (b *Client) parseOutputTransactionOperation(
 	index int64,
 	networkIndex int64,
 	txIndex int,
+	isBackwardTransfer bool,
 ) (*types.Operation, error) {
 
 	amount, err := b.parseAmount(output.Value)
@@ -724,7 +727,7 @@ func (b *Client) parseOutputTransactionOperation(
 	}
 
 	//if it's a coinbase output and we are not in regtest populate SubAccount field
-	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash {
+	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash && !isBackwardTransfer {
 		account.SubAccount = &types.SubAccountIdentifier{
 			Address:  "coinbase",
 		}
