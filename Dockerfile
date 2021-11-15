@@ -40,11 +40,11 @@ RUN set -euxo pipefail \
     && git clone https://github.com/HorizenOfficial/zen.git \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
-      ( gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver hkp://ha.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver pgp.mit.edu --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver keyserver.pgp.com --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver pgp.key-server.io --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS ) \
+      ( gpg -v --batch --keyserver hkps://keys.openpgp.org --recv $MAINTAINER_KEYS || \
+      gpg -v --batch --keyserver keyserver.ubuntu.com --recv $MAINTAINER_KEYS || \
+      gpg -v --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys $MAINTAINER_KEYS || \
+      gpg -v --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $MAINTAINER_KEYS || \
+      gpg -v --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys $MAINTAINER_KEYS ) \
       && if git verify-tag -v "${ZEN_COMMITTISH}"; then \
         echo "Valid signed tag"; \
       else \
