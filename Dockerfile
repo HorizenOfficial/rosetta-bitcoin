@@ -22,7 +22,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Latest release zen 3.0.0
 # TODO: Update ZEN_COMMITTISH to newest tag
-ARG ZEN_COMMITTISH=mo/getblockexpanded 
+ARG ZEN_COMMITTISH=v3.0.0 
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
 # Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
@@ -37,7 +37,7 @@ RUN set -euxo pipefail \
       bsdmainutils build-essential ca-certificates cmake curl dirmngr fakeroot \
       git g++-multilib gnupg2 libc6-dev libgomp1 libtool m4 ncurses-dev \
       pkg-config zlib1g-dev \
-    && git clone https://github.com/HorizenOfficial/zend_oo.git zen \
+    && git clone https://github.com/HorizenOfficial/zen.git \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
       ( gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
