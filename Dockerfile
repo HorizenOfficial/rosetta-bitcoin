@@ -20,8 +20,9 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 2.0.24
-ARG ZEN_COMMITTISH=v2.0.24
+# Latest release zen 3.0.0
+# TODO: Update ZEN_COMMITTISH to newest tag
+ARG ZEN_COMMITTISH=v3.0.0 
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
 # Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
@@ -39,11 +40,11 @@ RUN set -euxo pipefail \
     && git clone https://github.com/HorizenOfficial/zen.git \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
-      ( gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver hkp://ha.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver pgp.mit.edu --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver keyserver.pgp.com --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver pgp.key-server.io --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS ) \
+      ( gpg2 --batch --keyserver hkps://keys.openpgp.org --keyserver-options timeout=15 --recv $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver keyserver.ubuntu.com --keyserver-options timeout=15 --recv $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS || \
+      gpg2 --batch --keyserver hkp://pgp.mit.edu:80 --keyserver-options timeout=15 --recv-keys $MAINTAINER_KEYS ) \
       && if git verify-tag -v "${ZEN_COMMITTISH}"; then \
         echo "Valid signed tag"; \
       else \

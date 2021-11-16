@@ -184,7 +184,7 @@ type PeerInfo struct {
 	SyncedHeaders  int64  `json:"synced_headers"`
 }
 
-// Block is a raw Bitcoin block (with verbosity == 2).
+// Block is a raw Horizen block (with verbosity == 2).
 type Block struct {
 	Hash              string  `json:"hash"`
 	Height            int64   `json:"height"`
@@ -197,7 +197,9 @@ type Block struct {
 	Bits              string  `json:"bits"`
 	Difficulty        float64 `json:"difficulty"`
 
-	Txs []*Transaction `json:"tx"`
+	Txs   []*Transaction `json:"tx"`
+	Certs []*Certificate `json:"cert"`
+	MaturedCerts []*Certificate `json:"matureCertificate"`
 }
 
 // Metadata returns the metadata for a block.
@@ -237,6 +239,28 @@ type Transaction struct {
 	Inputs     []*Input     `json:"vin"`
 	Outputs    []*Output    `json:"vout"`
 	Joinsplits []*Joinsplit `json:"vjoinsplit"`
+}
+
+type Certificate struct {
+	Hash       string       `json:"txid"`
+	Version    int32        `json:"version"`
+	Inputs     []*Input     `json:"vin"`
+	Cert       *Cert   	    `json:"cert"`
+	Outputs    []*Output    `json:"vout"`
+	Joinsplits []*Joinsplit `json:"vjoinsplit"`
+}
+
+type Cert struct {
+	Scid                           string   `json:"scid"`
+	EpochNumber     	           int64    `json:"epochNumber"`
+	Quality     				   int64    `json:"quality"`
+	EndEpochCumScTxCommTreeRoot    string   `json:"endEpochCumScTxCommTreeRoot"`
+	ScProof     				   string   `json:"scProof"`
+	VFieldElementCertificateField  []string `json:"vFieldElementCertificateField"`
+	VBitVectorCertificateField     []string `json:"vBitVectorCertificateField"`
+	FtScFee 					   float64  `json:"ftScFee"`
+	MbtrScFee 					   float64  `json:"mbtrScFee"`
+	TotalAmount 				   float64  `json:"totalAmount"`
 }
 
 // Joinsplit is a raw Joinsplit transaction representation.
@@ -298,9 +322,10 @@ func (i Input) Metadata() (map[string]interface{}, error) {
 
 // Output is a raw output in a Bitcoin transaction.
 type Output struct {
-	Value        float64       `json:"value"`
-	Index        int64         `json:"n"`
-	ScriptPubKey *ScriptPubKey `json:"scriptPubKey"`
+	Value            float64       `json:"value"`
+	Index            int64         `json:"n"`
+	ScriptPubKey     *ScriptPubKey `json:"scriptPubKey"`
+	BackwardTransfer bool          `json:"backwardTransfer,omitempty"`
 }
 
 // Metadata returns the metadata for an output.

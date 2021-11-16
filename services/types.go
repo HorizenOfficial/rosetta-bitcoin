@@ -24,7 +24,7 @@ import (
 const (
 	// NodeVersion is the version of
 	// zend core we are using.
-	NodeVersion = "2.0.24"
+	NodeVersion = "3.0.0"
 
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.
@@ -41,7 +41,7 @@ var (
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.5"
+	MiddlewareVersion = "0.0.6"
 )
 
 // Client is used by the servicers to get Peer information
