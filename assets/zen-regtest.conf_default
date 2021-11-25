@@ -1,0 +1,32 @@
+##
+## zen.conf configuration file. Lines beginning with # are comments.
+##
+
+# DO NOT USE THIS CONFIGURATION FILE IF YOU PLAN TO EXPOSE
+# ZEND'S RPC PORT PUBLICALLY (THESE INSECURE CREDENTIALS
+# COULD LEAD TO AN ATTACK). ROSETTA-ZEN USES THE RPC PORT
+# FOR INDEXING AND TRANSACTION BROADCAST BUT NEVER PROVIDES THE
+# CALLER ACCESS TO ZEND'S RPC PORT.
+
+datadir=/data/.zen
+bind=0.0.0.0
+rpcbind=0.0.0.0
+bantime=15
+rpcallowip=0.0.0.0/0
+rpcallowip=::/0
+rpcthreads=16
+rpcworkqueue=1000
+#disablewallet=1
+txindex=1
+port=19033
+rpcport=18231
+rpcuser=rosetta
+rpcpassword=rosetta
+showmetrics=0
+printtoconsole=1
+regtest=1
+maturityheightindex=1
+
+# manual pruning is not supported in zend
+#prune=1
+
