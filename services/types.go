@@ -24,7 +24,7 @@ import (
 const (
 	// NodeVersion is the version of
 	// zend core we are using.
-	NodeVersion = "3.0.1"
+	NodeVersion = "3.0.2"
 
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.
