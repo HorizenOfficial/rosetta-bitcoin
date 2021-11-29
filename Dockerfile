@@ -20,9 +20,9 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 3.0.1
+# Latest release zen 3.0.2
 # TODO: Update ZEN_COMMITTISH to newest tag
-ARG ZEN_COMMITTISH=v3.0.1 
+ARG ZEN_COMMITTISH=v3.0.2
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
 # Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
