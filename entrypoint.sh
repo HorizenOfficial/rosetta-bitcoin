@@ -11,4 +11,21 @@ if [ "${MODE:-x}" = "ONLINE" ]; then
   /app/fetch-params.sh
 fi
 
+args_kept=""
+# parse args
+for arg in "$@"; do
+  case "$arg" in
+    -e=*|-extend-zen-conf=*)
+      cat "/app/zen-${NETWORK,,}.conf_default" > "/app/zen-${NETWORK,,}.conf"
+      echo -e "${arg#*=}" >> "/app/zen-${NETWORK,,}.conf"
+      shift
+      ;;
+    *)
+      args_kept+="${arg} "
+      shift
+      ;;
+  esac
+done
+
+set -- $args_kept
 exec "$@"

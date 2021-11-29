@@ -59,6 +59,18 @@ docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e
 ```
 _If you cloned the repository, you can run `make run-mainnet-online`._
 
+#### Adding options to the zend conf file
+The zend configuration file can be extended by setting the docker command to /app/rosetta-zen
+and using the optional -extend-zen-conf="" switch. The value of -extend-zen-conf="" will be
+appended to /app/zen-${NETWORK}.conf, newlines can be set as "\n".
+```text
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest /app/rosetta-zen -extend-zen-conf="reindexfast=1\ndebug=rpc\ndebug=net"
+# this command line would append the following to /app/zen-mainnet.conf
+reindexfast=1
+debug=rpc
+debug=net
+```
+
 #### Mainnet:Offline
 ```text
 docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
