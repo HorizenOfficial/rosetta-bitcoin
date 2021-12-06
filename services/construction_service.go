@@ -101,7 +101,7 @@ func (s *ConstructionAPIService) estimateSize(operations []*types.Operation) flo
 				continue
 			}
 			hashReplay, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000000")
-			script, err := txscript.PayToAddrReplayOutScript(addr, hashReplay,100)
+			script, err := txscript.PayToAddrReplayOutScript(addr, hashReplay, 100)
 			if err != nil {
 				size += zen.P2PKHReplayScriptPubkeySize
 				continue
@@ -342,7 +342,7 @@ func (s *ConstructionAPIService) ConstructionPayloads(
 		inputAddresses[i] = address
 		inputAmounts[i] = matches[0].Amounts[i].String()
 
-		if class != txscript.PubKeyHashReplayOutTy {
+		if class != txscript.PubKeyHashReplayOutTy && class != txscript.PubKeyHashTy {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
@@ -452,7 +452,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 		fullsig := normalizeSignature(request.Signatures[i].Bytes)
 		pkData := request.Signatures[i].PublicKey.Bytes
 
-		if class != txscript.PubKeyHashReplayOutTy {
+		if class != txscript.PubKeyHashReplayOutTy && class != txscript.PubKeyHashTy {
 			return nil, wrapErr(
 				ErrUnsupportedScriptType,
 				fmt.Errorf("unupported script type: %s", class),
