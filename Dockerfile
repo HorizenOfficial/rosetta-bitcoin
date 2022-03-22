@@ -20,13 +20,12 @@ MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 3.0.3
-# TODO: Update ZEN_COMMITTISH to newest tag
-ARG ZEN_COMMITTISH=v3.0.3
+# Latest release zen 3.1.0
+ARG ZEN_COMMITTISH=v3.1.0
 ARG IS_RELEASE=false
-# cronic <cronic@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x219F55740BBF7A1CE368BA45FB7053CE4991B669&op=vindex
-# Luigi Varriale <luigi@zensystem.io> http://pool.sks-keyservers.net:11371/pks/lookup?search=0x7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6&op=vindex
-ARG MAINTAINER_KEYS="219F55740BBF7A1CE368BA45FB7053CE4991B669 7C20EDC1CABFC9D1005EADBF3C80D9DD9F971AB6"
+# cronic <cronic@zensystem.io> https://keys.openpgp.org/vks/v1/by-fingerprint/219F55740BBF7A1CE368BA45FB7053CE4991B669
+# Luigi Varriale <luigi@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C
+ARG MAINTAINER_KEYS="219F55740BBF7A1CE368BA45FB7053CE4991B669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C"
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
