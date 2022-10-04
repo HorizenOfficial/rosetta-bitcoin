@@ -30,12 +30,12 @@ import (
 
 func TestLoadConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		Mode    string
-		Network string
-		Port    string
-
-		cfg *Configuration
-		err error
+		Mode        string
+		Network     string
+		Port        string
+		NodeVersion string
+		cfg         *Configuration
+		err         error
 	}{
 		"no envs set": {
 			err: errors.New("MODE must be populated"),
@@ -49,10 +49,17 @@ func TestLoadConfiguration(t *testing.T) {
 			Network: Mainnet,
 			err:     errors.New("PORT must be populated"),
 		},
-		"all set (mainnet)": {
+		"only mode, network and port set": {
 			Mode:    string(Online),
 			Network: Mainnet,
 			Port:    "1000",
+			err:     errors.New("Zend Version must be populated"),
+		},
+		"all set (mainnet)": {
+			Mode:        string(Online),
+			Network:     Mainnet,
+			Port:        "1000",
+			NodeVersion: "1.0.0",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
@@ -70,6 +77,7 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
+				ZendVersion: "1.0.0",
 				Compressors: []*storage.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
@@ -79,9 +87,10 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 		},
 		"all set (testnet)": {
-			Mode:    string(Online),
-			Network: Testnet,
-			Port:    "1000",
+			Mode:        string(Online),
+			Network:     Testnet,
+			Port:        "1000",
+			NodeVersion: "1.0.0",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
@@ -99,6 +108,7 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
+				ZendVersion: "1.0.0",
 				Compressors: []*storage.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
@@ -108,22 +118,25 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 		},
 		"invalid mode": {
-			Mode:    "bad mode",
-			Network: Testnet,
-			Port:    "1000",
-			err:     errors.New("bad mode is not a valid mode"),
+			Mode:        "bad mode",
+			Network:     Testnet,
+			Port:        "1000",
+			NodeVersion: "1.0.0",
+			err:         errors.New("bad mode is not a valid mode"),
 		},
 		"invalid network": {
-			Mode:    string(Offline),
-			Network: "bad network",
-			Port:    "1000",
-			err:     errors.New("bad network is not a valid network"),
+			Mode:        string(Offline),
+			Network:     "bad network",
+			Port:        "1000",
+			NodeVersion: "1.0.0",
+			err:         errors.New("bad network is not a valid network"),
 		},
 		"invalid port": {
-			Mode:    string(Offline),
-			Network: Testnet,
-			Port:    "bad port",
-			err:     errors.New("unable to parse port bad port"),
+			Mode:        string(Offline),
+			Network:     Testnet,
+			Port:        "bad port",
+			NodeVersion: "1.0.0",
+			err:         errors.New("unable to parse port bad port"),
 		},
 	}
 
@@ -136,6 +149,7 @@ func TestLoadConfiguration(t *testing.T) {
 			os.Setenv(ModeEnv, test.Mode)
 			os.Setenv(NetworkEnv, test.Network)
 			os.Setenv(PortEnv, test.Port)
+			os.Setenv(NodeVersionEnv, test.NodeVersion)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {

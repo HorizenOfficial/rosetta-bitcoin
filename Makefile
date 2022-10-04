@@ -11,7 +11,7 @@ GOVERALLS_CMD=go run github.com/mattn/goveralls
 GOIMPORTS_CMD=go run golang.org/x/tools/cmd/goimports
 GO_PACKAGES=./services/... ./indexer/... ./zen/... ./zend/... ./zenutil/... ./configuration/...
 GO_FOLDERS=$(shell echo ${GO_PACKAGES} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.//g")
-TEST_SCRIPT=go test ${GO_PACKAGES}
+TEST_SCRIPT=go test ${GO_PACKAGES} -buildmode=pie
 LINT_SETTINGS=golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
 PWD=$(shell pwd)
 GZIP_CMD=$(shell command -v pigz || echo gzip)

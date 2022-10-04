@@ -88,8 +88,8 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	zendPath = ".zen"
-	indexerPath  = "indexer"
+	zendPath    = ".zen"
+	indexerPath = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
@@ -107,6 +107,11 @@ const (
 	// read to determine the port for the Rosetta
 	// implementation.
 	PortEnv = "PORT"
+
+	// NodeVersionEnv is the environment variable
+	// read to determine the Zend version for the Rosetta
+	// implementation.
+	NodeVersionEnv = "NODE_VERSION"
 )
 
 // PruningConfiguration is the configuration to
@@ -130,6 +135,7 @@ type Configuration struct {
 	Pruning                *PruningConfiguration
 	IndexerPath            string
 	ZendPath               string
+	ZendVersion            string
 	Compressors            []*storage.CompressorEntry
 }
 
@@ -230,6 +236,12 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		return nil, fmt.Errorf("%w: unable to parse port %s", err, portValue)
 	}
 	config.Port = port
+
+	zendVersion := os.Getenv(NodeVersionEnv)
+	if len(zendVersion) == 0 {
+		return nil, errors.New("Zend Version must be populated")
+	}
+	config.ZendVersion = zendVersion
 
 	return config, nil
 }
