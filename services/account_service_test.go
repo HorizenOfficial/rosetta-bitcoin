@@ -73,25 +73,6 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 		},
 	}
 
-	expectedCoins := []*types.Coin{
-		{
-			Amount: &types.Amount{
-				Value: "10",
-			},
-			CoinIdentifier: &types.CoinIdentifier{
-				Identifier: "coin 1",
-			},
-		},
-		{
-			Amount: &types.Amount{
-				Value: "15",
-			},
-			CoinIdentifier: &types.CoinIdentifier{
-				Identifier: "coin 2",
-			},
-		},
-	}
-
 	block := &types.BlockIdentifier{
 		Index: 1000,
 		Hash:  "block 1000",
@@ -105,7 +86,6 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 
 	assert.Equal(t, &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           expectedCoins,
 		Balances: []*types.Amount{
 			{
 				Value:    "25",
@@ -157,6 +137,64 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 		Balances: []*types.Amount{
 			amount,
 		},
+	}, bal)
+
+	mockIndexer.AssertExpectations(t)
+}
+
+func TestAccountCoins_Online(t *testing.T) {
+	cfg := &configuration.Configuration{
+		Mode:     configuration.Online,
+		Currency: zen.MainnetCurrency,
+	}
+	mockIndexer := &mocks.Indexer{}
+	servicer := NewAccountAPIService(cfg, mockIndexer)
+	ctx := context.Background()
+
+	account := &types.AccountIdentifier{
+		Address: "hello",
+	}
+
+	coins := []*types.Coin{
+		{
+			Amount: &types.Amount{
+				Value: "10",
+			},
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 1",
+			},
+		},
+		{
+			Amount: &types.Amount{
+				Value: "15",
+			},
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 2",
+			},
+		},
+		{
+			Amount: &types.Amount{
+				Value: "0",
+			},
+			CoinIdentifier: &types.CoinIdentifier{
+				Identifier: "coin 3",
+			},
+		},
+	}
+	block := &types.BlockIdentifier{
+		Index: 1000,
+		Hash:  "block 1000",
+	}
+	mockIndexer.On("GetCoins", ctx, account).Return(coins, block, nil).Once()
+
+	bal, err := servicer.AccountCoins(ctx, &types.AccountCoinsRequest{
+		AccountIdentifier: account,
+	})
+	assert.Nil(t, err)
+
+	assert.Equal(t, &types.AccountCoinsResponse{
+		BlockIdentifier: block,
+		Coins:           coins,
 	}, bal)
 
 	mockIndexer.AssertExpectations(t)

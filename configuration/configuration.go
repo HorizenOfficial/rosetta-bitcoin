@@ -25,7 +25,7 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -136,7 +136,7 @@ type Configuration struct {
 	IndexerPath            string
 	ZendPath               string
 	ZendVersion            string
-	Compressors            []*storage.CompressorEntry
+	Compressors            []*encoder.CompressorEntry
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -182,7 +182,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: mainnetTransactionDictionary,
@@ -198,7 +198,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: testnetTransactionDictionary,
@@ -214,7 +214,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = regtestConfigPath
 		config.RPCPort = regtestRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: testnetTransactionDictionary,
@@ -236,12 +236,6 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		return nil, fmt.Errorf("%w: unable to parse port %s", err, portValue)
 	}
 	config.Port = port
-
-	zendVersion := os.Getenv(NodeVersionEnv)
-	if len(zendVersion) == 0 {
-		return nil, errors.New("Zend Version must be populated")
-	}
-	config.ZendVersion = zendVersion
 
 	return config, nil
 }

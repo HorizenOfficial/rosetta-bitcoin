@@ -30,7 +30,7 @@ var (
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
 			RosettaVersion:    types.RosettaAPIVersion,
-			NodeVersion:       NodeVersion,
+			NodeVersion:       "1.0.0",
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
@@ -48,8 +48,9 @@ var (
 
 func TestNetworkEndpoints_Offline(t *testing.T) {
 	cfg := &configuration.Configuration{
-		Mode:    configuration.Offline,
-		Network: networkIdentifier,
+		Mode:        configuration.Offline,
+		Network:     networkIdentifier,
+		ZendVersion: "1.0.0",
 	}
 	mockIndexer := &mocks.Indexer{}
 	mockClient := &mocks.Client{}
@@ -79,6 +80,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:                   configuration.Online,
 		Network:                networkIdentifier,
+		ZendVersion:            "1.0.0",
 		GenesisBlockIdentifier: zen.MainnetGenesisBlockIdentifier,
 	}
 	mockIndexer := &mocks.Indexer{}
