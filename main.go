@@ -112,28 +112,36 @@ func startOnlineDependencies(
 	return client, i, nil
 }
 
-func main() {
-	loggerRaw, err := zap.NewDevelopment()
+func initializeLogger(cfg *configuration.Configuration) *zap.Logger {
+	if cfg.LogLevelDebug {
+		loggerRaw, err := zap.NewDevelopment()
+		if err != nil {
+			log.Fatalf("can't initialize zap logger: %v", err)
+		}
+		return loggerRaw
+	}
+	loggerRaw, err := zap.NewProduction()
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
 	}
+	return loggerRaw
+}
 
+func main() {
+	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
+	if err != nil {
+		log.Fatalf("Unable to load configuration: %v", err)
+	}
+	loggerRaw := initializeLogger(cfg)
 	defer func() {
 		_ = loggerRaw.Sync()
 	}()
-
 	ctx := context.Background()
 	ctx = ctxzap.ToContext(ctx, loggerRaw)
 	ctx, cancel := context.WithCancel(ctx)
 	go handleSignals(ctx, []context.CancelFunc{cancel})
 
 	logger := loggerRaw.Sugar().Named("main")
-
-	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
-	if err != nil {
-		logger.Fatalw("unable to load configuration", "error", err)
-	}
-
 	logger.Infow("loaded configuration", "configuration", types.PrintStruct(cfg))
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -151,9 +159,9 @@ func main() {
 		}
 	}
 
-	// The asserter automatically rejects incorrectly formatted
+	// The assertServer automatically rejects incorrectly formatted
 	// requests.
-	asserter, err := asserter.NewServer(
+	assertServer, err := asserter.NewServer(
 		zen.OperationTypes,
 		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
@@ -162,13 +170,13 @@ func main() {
 		"",
 	)
 	if err != nil {
-		logger.Fatalw("unable to create new server asserter", "error", err)
+		logger.Fatalw("unable to create new httpServer assertServer", "error", err)
 	}
 
-	router := services.NewBlockchainRouter(cfg, client, i, asserter)
+	router := services.NewBlockchainRouter(cfg, client, i, assertServer)
 	loggedRouter := services.LoggerMiddleware(loggerRaw, router)
 	corsRouter := server.CorsMiddleware(loggedRouter)
-	server := &http.Server{
+	httpServer := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
 		Handler:      corsRouter,
 		ReadTimeout:  readTimeout,
@@ -177,17 +185,17 @@ func main() {
 	}
 
 	g.Go(func() error {
-		logger.Infow("server listening", "port", cfg.Port)
-		return server.ListenAndServe()
+		logger.Infow("httpServer listening", "port", cfg.Port)
+		return httpServer.ListenAndServe()
 	})
 
 	g.Go(func() error {
-		// If we don't shutdown server in errgroup, it will
-		// never stop because server.ListenAndServe doesn't
+		// If we don't shutdown httpServer in errgroup, it will
+		// never stop because httpServer.ListenAndServe doesn't
 		// take any context.
 		<-ctx.Done()
 
-		return server.Shutdown(ctx)
+		return httpServer.Shutdown(ctx)
 	})
 
 	err = g.Wait()

@@ -108,10 +108,10 @@ const (
 	// implementation.
 	PortEnv = "PORT"
 
-	// NodeVersionEnv is the environment variable
-	// read to determine the Zend version for the Rosetta
-	// implementation.
-	NodeVersionEnv = "NODE_VERSION"
+	// LogLevel is the environment variable
+	// read to determine if the log level for the Rosetta
+	// implementation must be set to debug.
+	LogLevel = "LOGLEVEL"
 )
 
 // PruningConfiguration is the configuration to
@@ -137,6 +137,7 @@ type Configuration struct {
 	ZendPath               string
 	ZendVersion            string
 	Compressors            []*encoder.CompressorEntry
+	LogLevelDebug          bool
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -237,6 +238,12 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 	}
 	config.Port = port
 
+	logLevel := os.Getenv(LogLevel)
+	if len(logLevel) == 0 || logLevel != "DEBUG" {
+		config.LogLevelDebug = false
+	} else {
+		config.LogLevelDebug = true
+	}
 	return config, nil
 }
 

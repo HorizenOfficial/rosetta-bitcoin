@@ -17,7 +17,6 @@ package services
 import (
 	"context"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
-	"github.com/HorizenOfficial/rosetta-zen/utils"
 	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -87,13 +86,8 @@ func (s *NetworkAPIService) NetworkOptions(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.NetworkOptionsResponse, *types.Error) {
-	logger := utils.ExtractLogger(ctx, "Network Service")
 	if s.config.ZendVersion == "" {
-		logger.Info("No Zend version provided")
-		version, err := s.client.SetZendNodeVersion(ctx)
-		if err != nil {
-			logger.Error("unable to retrieve network info", "error", err)
-		}
+		version, _ := s.client.SetZendNodeVersion(ctx)
 		s.config.ZendVersion = version
 	}
 	return &types.NetworkOptionsResponse{

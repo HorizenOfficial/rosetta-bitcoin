@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -166,11 +166,11 @@ func newHTTPClient(timeout time.Duration) *http.Client {
 }
 
 func (b *Client) SetZendNodeVersion(ctx context.Context) (string, error) {
-	logger := utils.ExtractLogger(ctx, "Network Service")
+	logger := utils.ExtractLogger(ctx, "client")
 	networkInfo, err := b.NetworkInfo(ctx)
 	if err != nil {
-		logger.Error("unable to retrieve network info", "error", err)
-		return "", err
+		logger.Warnw("unable to retrieve network info", "error", err)
+		return "", nil
 	}
 	needsSplit := strings.Contains(networkInfo.Subversion, "zen:")
 	versionArray := strings.Split(strings.Trim(networkInfo.Subversion, "/"), ":")
@@ -209,7 +209,7 @@ func (b *Client) NetworkStatus(ctx context.Context) (*types.NetworkStatusRespons
 // WaitForNode returns once zend is ready to serve
 // block queries.
 func (b *Client) WaitForNode(ctx context.Context) error {
-	logger := utils.ExtractLogger(ctx, "indexer")
+	logger := utils.ExtractLogger(ctx, "client")
 	for {
 		_, err := b.NetworkStatus(ctx)
 		if err == nil {
@@ -955,7 +955,7 @@ func (b *Client) post(
 
 	// We expect JSON-RPC responses to return `200 OK` statuses
 	if res.StatusCode != http.StatusOK {
-		val, _ := ioutil.ReadAll(res.Body)
+		val, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("invalid response: %s %s", res.Status, string(val))
 	}
 
