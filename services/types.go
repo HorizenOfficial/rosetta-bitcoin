@@ -22,13 +22,14 @@ import (
 )
 
 const (
-	// NodeVersion is the version of
-	// zend core we are using.
-	NodeVersion = "3.2.0"
-
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.
 	HistoricalBalanceLookup = true
+
+	// MempoolCoins indicates that
+	// including mempool coins in the /account/coins
+	// response is not supported.
+	MempoolCoins = false
 
 	// inlineFetchLimit is the maximum number
 	// of transactions to fetch inline.
@@ -51,8 +52,9 @@ type Client interface {
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)
-	GetBestBlock (context.Context) (int64, error)
+	GetBestBlock(context.Context) (int64, error)
 	GetHashFromIndex(context.Context, int64) (string, error)
+	SetZendNodeVersion(ctx context.Context) (string, error)
 }
 
 // Indexer is used by the servicers to get block and account data.
@@ -96,10 +98,9 @@ type preprocessOptions struct {
 }
 
 type constructionMetadata struct {
-	ScriptPubKeys []*zen.ScriptPubKey `json:"script_pub_keys"`
-	ReplayBlockHeight int64           `json:"replay_block_height"`
-	ReplayBlockHash string            `json:"replay_block_hash"`
-
+	ScriptPubKeys     []*zen.ScriptPubKey `json:"script_pub_keys"`
+	ReplayBlockHeight int64               `json:"replay_block_height"`
+	ReplayBlockHash   string              `json:"replay_block_hash"`
 }
 
 type signedTransaction struct {

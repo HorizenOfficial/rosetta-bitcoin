@@ -20,16 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/HorizenOfficial/rosetta-zen/utils"
 	"github.com/HorizenOfficial/rosetta-zen/zenutil"
-	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/coinbase/rosetta-sdk-go/utils"
+	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 )
 
 const (
@@ -50,6 +51,8 @@ const (
 	// * 1 returns the JSON representation
 	// * 2 returns the JSON representation with included Transaction data
 	blockVerbosity = 2
+
+	nodeWaitSleep = 3 * time.Second
 )
 
 type requestMethod string
@@ -63,6 +66,9 @@ const (
 
 	// https://bitcoin.org/en/developer-reference#getblockchaininfo
 	requestMethodGetBlockchainInfo requestMethod = "getblockchaininfo"
+
+	// https://bitcoin.org/en/developer-reference#getnetworkinfo
+	requestMethodGetNetworkInfo requestMethod = "getnetworkinfo"
 
 	// https://developer.bitcoin.org/reference/rpc/getpeerinfo.html
 	requestMethodGetPeerInfo requestMethod = "getpeerinfo"
@@ -159,6 +165,21 @@ func newHTTPClient(timeout time.Duration) *http.Client {
 	return httpClient
 }
 
+func (b *Client) SetZendNodeVersion(ctx context.Context) (string, error) {
+	logger := utils.ExtractLogger(ctx, "client")
+	networkInfo, err := b.NetworkInfo(ctx)
+	if err != nil {
+		logger.Warnw("unable to retrieve network info", "error", err)
+		return "", nil
+	}
+	needsSplit := strings.Contains(networkInfo.Subversion, "zen:")
+	versionArray := strings.Split(strings.Trim(networkInfo.Subversion, "/"), ":")
+	if needsSplit {
+		return versionArray[1], nil
+	}
+	return versionArray[0], nil
+}
+
 // NetworkStatus returns the *types.NetworkStatusResponse for
 // bitcoind.
 func (b *Client) NetworkStatus(ctx context.Context) (*types.NetworkStatusResponse, error) {
@@ -183,6 +204,24 @@ func (b *Client) NetworkStatus(ctx context.Context) (*types.NetworkStatusRespons
 		GenesisBlockIdentifier: b.genesisBlockIdentifier,
 		Peers:                  peers,
 	}, nil
+}
+
+// WaitForNode returns once zend is ready to serve
+// block queries.
+func (b *Client) WaitForNode(ctx context.Context) error {
+	logger := utils.ExtractLogger(ctx, "client")
+	for {
+		_, err := b.NetworkStatus(ctx)
+		if err == nil {
+			logger.Infow("status is ok...")
+			return nil
+		}
+
+		logger.Infow("waiting for zend...")
+		if err := sdkUtils.ContextSleep(ctx, nodeWaitSleep); err != nil {
+			return err
+		}
+	}
 }
 
 // GetPeers fetches the list of peer nodes
@@ -232,7 +271,6 @@ func (b *Client) GetRawBlock(
 	return block, coins, nil
 }
 
-
 func addCoins(txIndex int, blockTxHashes []string, hash string, inputs []*Input, b *Client, coins []string) ([]string, []string) {
 	blockTxHashes = append(blockTxHashes, hash)
 	for inputIndex, input := range inputs {
@@ -243,7 +281,7 @@ func addCoins(txIndex int, blockTxHashes []string, hash string, inputs []*Input,
 
 		// If any transactions spent in the same block they are created, don't include them
 		// in previousTxHashes to fetch.
-		if !utils.ContainsString(blockTxHashes, txHash) {
+		if !sdkUtils.ContainsString(blockTxHashes, txHash) {
 			coins = append(coins, CoinIdentifier(txHash, vout))
 		}
 	}
@@ -256,7 +294,7 @@ func addCoins(txIndex int, blockTxHashes []string, hash string, inputs []*Input,
 func (b *Client) ParseBlock(
 	ctx context.Context,
 	block *Block,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 ) (*types.Block, error) {
 	rblock, err := b.parseBlockData(block)
 	if err != nil {
@@ -397,6 +435,22 @@ func (b *Client) getBlockchainInfo(
 	return response.Result, nil
 }
 
+// NetworkInfo performs the `getnetworkinfo` JSON-RPC request
+func (b *Client) NetworkInfo(
+	ctx context.Context,
+) (*NetworkInfo, error) {
+	if err := b.WaitForNode(ctx); err != nil {
+		return nil, fmt.Errorf("%w: failed to wait for node", err)
+	}
+	params := []interface{}{}
+	response := &networkInfoResponse{}
+	if err := b.post(ctx, requestMethodGetNetworkInfo, params, response); err != nil {
+		return nil, fmt.Errorf("%w: unbale to get network info", err)
+	}
+
+	return response.Result, nil
+}
+
 // GetBestBlock performs the `getbestblock` JSON-RPC request
 func (b *Client) GetBestBlock(
 	ctx context.Context,
@@ -494,18 +548,17 @@ func (b *Client) GetHashFromIndex(
 	return response.Result, nil
 }
 
-
 // parseTransactions returns the transactions for a specified `Block`
 func (b *Client) parseTransactions(
 	ctx context.Context,
 	block *Block,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 ) ([]*types.Transaction, error) {
 
 	if block == nil {
 		return nil, errors.New("error parsing nil block")
 	}
-	txs := make([]*types.Transaction, len(block.Txs) + len(block.Certs))
+	txs := make([]*types.Transaction, len(block.Txs)+len(block.Certs))
 	for index, transaction := range block.Txs {
 		txOps, err := b.parseTxOperations(transaction.Inputs, transaction.Outputs, transaction.Hash, index, coins, false)
 		if err != nil {
@@ -531,7 +584,7 @@ func (b *Client) parseTransactions(
 	}
 
 	for index, certificate := range block.Certs {
-		txIndex := len(block.Txs) + index;
+		txIndex := len(block.Txs) + index
 		certTxOps, err := b.parseTxOperations(certificate.Inputs, certificate.Outputs, certificate.Hash, txIndex, coins, true)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing certificate transaction operations", err)
@@ -554,12 +607,12 @@ func (b *Client) parseTransactions(
 		backwardTransferOutputs := []*Output{}
 
 		for i := range certificate.Outputs {
-			if certificate.Outputs[i].BackwardTransfer == true  {
+			if certificate.Outputs[i].BackwardTransfer == true {
 				backwardTransferOutputs = append(backwardTransferOutputs, certificate.Outputs[i])
 			}
 		}
 
-		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
+		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, len(block.Txs)+len(block.Certs)+index, coins, false)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
 		}
@@ -579,7 +632,7 @@ func (b *Client) parseTransactions(
 	return txs, nil
 }
 
-func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*storage.AccountCoin) map[string]*storage.AccountCoin {
+func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*types.AccountCoin) map[string]*types.AccountCoin {
 	// In some cases, a transaction will spent an output
 	// from the same block.
 	for _, op := range operations {
@@ -591,7 +644,7 @@ func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*stor
 			continue
 		}
 
-		coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+		coins[op.CoinChange.CoinIdentifier.Identifier] = &types.AccountCoin{
 			Coin: &types.Coin{
 				CoinIdentifier: op.CoinChange.CoinIdentifier,
 				Amount:         op.Amount,
@@ -610,7 +663,7 @@ func (b *Client) parseTxOperations(
 	outputs []*Output,
 	hash string,
 	txIndex int,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 	isImmatureCertificate bool,
 ) ([]*types.Operation, error) {
 	txOps := []*types.Operation{}
@@ -726,7 +779,7 @@ func (b *Client) parseOutputTransactionOperation(
 	// if it's a coinbase output and we are not in regtest populate SubAccount field
 	if txIndex == 0 && b.genesisBlockIdentifier.Hash != RegtestGenesisBlockIdentifier.Hash {
 		account.SubAccount = &types.SubAccountIdentifier{
-			Address:  "coinbase",
+			Address: "coinbase",
 		}
 	}
 
@@ -742,7 +795,7 @@ func (b *Client) parseOutputTransactionOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:    OutputOpType,
-		Status:  SuccessStatus,
+		Status:  types.String(SuccessStatus),
 		Account: account,
 		Amount: &types.Amount{
 			Value:    strconv.FormatInt(int64(amount), 10),
@@ -781,7 +834,7 @@ func (b *Client) parseInputTransactionOperation(
 	input *Input,
 	index int64,
 	networkIndex int64,
-	accountCoin *storage.AccountCoin,
+	accountCoin *types.AccountCoin,
 ) (*types.Operation, error) {
 	metadata, err := input.Metadata()
 	if err != nil {
@@ -799,7 +852,7 @@ func (b *Client) parseInputTransactionOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:    InputOpType,
-		Status:  SuccessStatus,
+		Status:  types.String(SuccessStatus),
 		Account: accountCoin.Account,
 		Amount: &types.Amount{
 			Value:    newValue,
@@ -861,7 +914,7 @@ func (b *Client) coinbaseTxOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:     CoinbaseOpType,
-		Status:   SuccessStatus,
+		Status:   types.String(SuccessStatus),
 		Metadata: metadata,
 	}, nil
 }
@@ -902,7 +955,7 @@ func (b *Client) post(
 
 	// We expect JSON-RPC responses to return `200 OK` statuses
 	if res.StatusCode != http.StatusOK {
-		val, _ := ioutil.ReadAll(res.Body)
+		val, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("invalid response: %s %s", res.Status, string(val))
 	}
 

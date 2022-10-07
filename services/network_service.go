@@ -16,10 +16,8 @@ package services
 
 import (
 	"context"
-
-	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
-
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
@@ -88,16 +86,22 @@ func (s *NetworkAPIService) NetworkOptions(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.NetworkOptionsResponse, *types.Error) {
+	if s.config.ZendVersion == "" {
+		version, _ := s.client.SetZendNodeVersion(ctx)
+		s.config.ZendVersion = version
+	}
 	return &types.NetworkOptionsResponse{
 		Version: &types.Version{
 			RosettaVersion:    types.RosettaAPIVersion,
-			NodeVersion:       NodeVersion,
-			MiddlewareVersion: &MiddlewareVersion,
+			NodeVersion:       s.config.ZendVersion,
+			MiddlewareVersion: types.String(MiddlewareVersion),
 		},
 		Allow: &types.Allow{
-			OperationStatuses: zen.OperationStatuses,
-			OperationTypes:    zen.OperationTypes,
-			Errors:            Errors,
-			HistoricalBalanceLookup: HistoricalBalanceLookup,		},
+			OperationStatuses:       zen.OperationStatuses,
+			OperationTypes:          zen.OperationTypes,
+			Errors:                  Errors,
+			HistoricalBalanceLookup: HistoricalBalanceLookup,
+			MempoolCoins:            MempoolCoins,
+		},
 	}, nil
 }

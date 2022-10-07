@@ -14,18 +14,18 @@
 # limitations under the License.
 
 ## Build zend
-FROM ubuntu:18.04 as zend-builder
+FROM ubuntu:20.04 as zend-builder
 
 MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 3.2.0
-ARG ZEN_COMMITTISH=v3.2.0
+ARG ZEN_COMMITTISH
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> https://keys.openpgp.org/vks/v1/by-fingerprint/219F55740BBF7A1CE368BA45FB7053CE4991B669
 # Luigi Varriale <luigi@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C
-ARG MAINTAINER_KEYS="219F55740BBF7A1CE368BA45FB7053CE4991B669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C"
+# otoumas <tomas@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/2BBE2AA1A641F6147B58450BE3527B60DAACA1D8
+ARG MAINTAINER_KEYS="219F55740BBF7A1CE368BA45FB7053CE4991B669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C 2BBE2AA1A641F6147B58450BE3527B60DAACA1D8"
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
@@ -53,18 +53,18 @@ RUN set -euxo pipefail \
       && ( gpgconf --kill dirmngr || true ) \
       && ( gpgconf --kill gpg-agent || true ); \
     fi \
-    && export MAKEFLAGS="-j $(($(nproc)+1))" && ./zcutil/build.sh $MAKEFLAGS
+    && export MAKEFLAGS="-j $(($(nproc)+1))" && ./zcutil/build.sh --legacy-cpu $MAKEFLAGS
 
 
 ## Build Rosetta Server Components
-FROM ubuntu:18.04 as rosetta-builder
+FROM ubuntu:20.04 as rosetta-builder
 
 MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-ARG GOLANG_VERSION=1.17.2
-ARG GOLANG_DOWNLOAD_SHA256=f242a9db6a0ad1846de7b6d94d507915d14062660616a61ef7c808a76e4f1676
+ARG GOLANG_VERSION=1.19.1
+ARG GOLANG_DOWNLOAD_SHA256=acc512fbab4f716a8f97a8b3fbaa9ddd39606a28be6c2515ef7c6c6311acffde
 ARG GOLANG_DOWNLOAD_URL="https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz"
 
 COPY . /go/src
@@ -84,7 +84,7 @@ RUN set -euxo pipefail \
 
 
 ## Build Final Image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER cronic@horizen.io
 

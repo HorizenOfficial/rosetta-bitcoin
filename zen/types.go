@@ -184,6 +184,40 @@ type PeerInfo struct {
 	SyncedHeaders  int64  `json:"synced_headers"`
 }
 
+type Info struct {
+	Version         int     `json:"version"`
+	Protocolversion int     `json:"protocolversion"`
+	Blocks          int     `json:"blocks"`
+	Timeoffset      int     `json:"timeoffset"`
+	Connections     int     `json:"connections"`
+	Proxy           string  `json:"proxy"`
+	Difficulty      float64 `json:"difficulty"`
+	Testnet         bool    `json:"testnet"`
+	Paytxfee        float64 `json:"paytxfee"`
+	Relayfee        float64 `json:"relayfee"`
+	Errors          string  `json:"errors"`
+}
+
+type NetworkInfo struct {
+	Version         int    `json:"version"`
+	Subversion      string `json:"subversion"`
+	Protocolversion int    `json:"protocolversion"`
+	Localservices   string `json:"localservices"`
+	Timeoffset      int    `json:"timeoffset"`
+	Connections     int    `json:"connections"`
+	TlsCertVerified bool   `json:"tls_cert_verified"`
+	Networks        []struct {
+		Name                      string `json:"name"`
+		Limited                   bool   `json:"limited"`
+		Reachable                 bool   `json:"reachable"`
+		Proxy                     string `json:"proxy"`
+		ProxyRandomizeCredentials bool   `json:"proxy_randomize_credentials"`
+	} `json:"networks"`
+	Relayfee       float64       `json:"relayfee"`
+	Localaddresses []interface{} `json:"localaddresses"`
+	Warnings       string        `json:"warnings"`
+}
+
 // Block is a raw Horizen block (with verbosity == 2).
 type Block struct {
 	Hash              string  `json:"hash"`
@@ -197,8 +231,8 @@ type Block struct {
 	Bits              string  `json:"bits"`
 	Difficulty        float64 `json:"difficulty"`
 
-	Txs   []*Transaction `json:"tx"`
-	Certs []*Certificate `json:"cert"`
+	Txs          []*Transaction `json:"tx"`
+	Certs        []*Certificate `json:"cert"`
 	MaturedCerts []*Certificate `json:"matureCertificate"`
 }
 
@@ -245,22 +279,22 @@ type Certificate struct {
 	Hash       string       `json:"txid"`
 	Version    int32        `json:"version"`
 	Inputs     []*Input     `json:"vin"`
-	Cert       *Cert   	    `json:"cert"`
+	Cert       *Cert        `json:"cert"`
 	Outputs    []*Output    `json:"vout"`
 	Joinsplits []*Joinsplit `json:"vjoinsplit"`
 }
 
 type Cert struct {
-	Scid                           string   `json:"scid"`
-	EpochNumber     	           int64    `json:"epochNumber"`
-	Quality     				   int64    `json:"quality"`
-	EndEpochCumScTxCommTreeRoot    string   `json:"endEpochCumScTxCommTreeRoot"`
-	ScProof     				   string   `json:"scProof"`
-	VFieldElementCertificateField  []string `json:"vFieldElementCertificateField"`
-	VBitVectorCertificateField     []string `json:"vBitVectorCertificateField"`
-	FtScFee 					   float64  `json:"ftScFee"`
-	MbtrScFee 					   float64  `json:"mbtrScFee"`
-	TotalAmount 				   float64  `json:"totalAmount"`
+	Scid                          string   `json:"scid"`
+	EpochNumber                   int64    `json:"epochNumber"`
+	Quality                       int64    `json:"quality"`
+	EndEpochCumScTxCommTreeRoot   string   `json:"endEpochCumScTxCommTreeRoot"`
+	ScProof                       string   `json:"scProof"`
+	VFieldElementCertificateField []string `json:"vFieldElementCertificateField"`
+	VBitVectorCertificateField    []string `json:"vBitVectorCertificateField"`
+	FtScFee                       float64  `json:"ftScFee"`
+	MbtrScFee                     float64  `json:"mbtrScFee"`
+	TotalAmount                   float64  `json:"totalAmount"`
 }
 
 // Joinsplit is a raw Joinsplit transaction representation.
@@ -423,6 +457,24 @@ type blockchainInfoResponse struct {
 }
 
 func (b blockchainInfoResponse) Err() error {
+	if b.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		b.Error.Code,
+		b.Error.Message,
+	)
+}
+
+type networkInfoResponse struct {
+	Result *NetworkInfo   `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (b networkInfoResponse) Err() error {
 	if b.Error == nil {
 		return nil
 	}

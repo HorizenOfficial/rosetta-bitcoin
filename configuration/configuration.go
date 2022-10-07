@@ -25,7 +25,7 @@ import (
 	"github.com/HorizenOfficial/rosetta-zen/zen"
 
 	"github.com/HorizenOfficial/rosetta-zen/zend/chaincfg"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -88,8 +88,8 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	zendPath = ".zen"
-	indexerPath  = "indexer"
+	zendPath    = ".zen"
+	indexerPath = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
@@ -130,7 +130,8 @@ type Configuration struct {
 	Pruning                *PruningConfiguration
 	IndexerPath            string
 	ZendPath               string
-	Compressors            []*storage.CompressorEntry
+	ZendVersion            string
+	Compressors            []*encoder.CompressorEntry
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -176,7 +177,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: mainnetTransactionDictionary,
@@ -192,7 +193,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: testnetTransactionDictionary,
@@ -208,7 +209,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = zen.TestnetCurrency
 		config.ConfigPath = regtestConfigPath
 		config.RPCPort = regtestRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: testnetTransactionDictionary,

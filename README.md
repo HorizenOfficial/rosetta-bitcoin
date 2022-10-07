@@ -54,8 +54,8 @@ You can also use a named volume which will be created with the correct ownership
 ```text
 # create <working directory>/zen-data with correct ownership
 docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
-# start rosetta-zen
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest
+# start rosetta-zen. Zend version needs to be specified (ex. v3.2.0)
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "NODE_VERSION=${ZEND_VERSION}" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-online`._
 
@@ -64,7 +64,7 @@ The zend configuration file can be extended by setting the docker command to /ap
 and using the optional -extend-zen-conf="" switch. The value of -extend-zen-conf="" will be
 appended to /app/zen-${NETWORK}.conf, newlines can be set as "\n".
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest /app/rosetta-zen -extend-zen-conf="reindexfast=1\ndebug=rpc\ndebug=net"
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "NODE_VERSION=${ZEND_VERSION}" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest /app/rosetta-zen -extend-zen-conf="reindexfast=1\ndebug=rpc\ndebug=net"
 # this command line would append the following to /app/zen-mainnet.conf
 reindexfast=1
 debug=rpc
@@ -73,7 +73,7 @@ debug=net
 
 #### Mainnet:Offline
 ```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
+docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "NODE_VERSION=${ZEND_VERSION}" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-offline`._
 
@@ -82,13 +82,13 @@ _If you cloned the repository, you can run `make run-mainnet-offline`._
 # create <working directory>/zen-data with correct ownership
 docker run --rm -v "$(pwd)/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data'
 # start rosetta-zen
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "NODE_VERSION=${ZEND_VERSION}" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-online`._
 
 #### Testnet:Offline
 ```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
+docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "NODE_VERSION=${ZEND_VERSION}" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-offline`._
 

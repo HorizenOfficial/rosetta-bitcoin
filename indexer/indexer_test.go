@@ -23,11 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/HorizenOfficial/rosetta-zen/zen"
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
 	mocks "github.com/HorizenOfficial/rosetta-zen/mocks/indexer"
+	"github.com/HorizenOfficial/rosetta-zen/zen"
 
-	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/stretchr/testify/assert"
@@ -48,7 +47,6 @@ var (
 
 func TestIndexer_Pruning(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -157,7 +155,7 @@ func TestIndexer_Pruning(t *testing.T) {
 				"ParseBlock",
 				mock.Anything,
 				block,
-				map[string]*storage.AccountCoin{},
+				map[string]*types.AccountCoin{},
 			).Return(
 				blockReturn,
 				nil,
@@ -167,7 +165,7 @@ func TestIndexer_Pruning(t *testing.T) {
 				"ParseBlock",
 				mock.Anything,
 				block,
-				map[string]*storage.AccountCoin{},
+				map[string]*types.AccountCoin{},
 			).Return(
 				blockReturn,
 				nil,
@@ -215,7 +213,6 @@ func TestIndexer_Pruning(t *testing.T) {
 
 func TestIndexer_Transactions(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -286,7 +283,7 @@ func TestIndexer_Transactions(t *testing.T) {
 							Index:        0,
 							NetworkIndex: &index0,
 						},
-						Status: zen.SuccessStatus,
+						Status: types.String(zen.SuccessStatus),
 						Type:   zen.OutputOpType,
 						Account: &types.AccountIdentifier{
 							Address: rawHash,
@@ -356,9 +353,9 @@ func TestIndexer_Transactions(t *testing.T) {
 			Transactions:          transactions,
 		}
 
-		coinMap := map[string]*storage.AccountCoin{}
+		coinMap := map[string]*types.AccountCoin{}
 		for _, coinIdentifier := range requiredCoins {
-			coinMap[coinIdentifier] = &storage.AccountCoin{
+			coinMap[coinIdentifier] = &types.AccountCoin{
 				Account: coinBank[coinIdentifier].Account,
 				Coin:    coinBank[coinIdentifier].Coin,
 			}
@@ -433,7 +430,6 @@ func TestIndexer_Transactions(t *testing.T) {
 
 func TestIndexer_Reorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -505,7 +501,7 @@ func TestIndexer_Reorg(t *testing.T) {
 							Index:        0,
 							NetworkIndex: &index0,
 						},
-						Status: zen.SuccessStatus,
+						Status: types.String(zen.SuccessStatus),
 						Type:   zen.OutputOpType,
 						Account: &types.AccountIdentifier{
 							Address: rawHash,
@@ -602,9 +598,9 @@ func TestIndexer_Reorg(t *testing.T) {
 			Transactions:          transactions,
 		}
 
-		coinMap := map[string]*storage.AccountCoin{}
+		coinMap := map[string]*types.AccountCoin{}
 		for _, coinIdentifier := range requiredCoins {
-			coinMap[coinIdentifier] = &storage.AccountCoin{
+			coinMap[coinIdentifier] = &types.AccountCoin{
 				Account: coinBank[coinIdentifier].Account,
 				Coin:    coinBank[coinIdentifier].Coin,
 			}
@@ -675,7 +671,6 @@ func TestIndexer_Reorg(t *testing.T) {
 
 func TestIndexer_HeaderReorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -774,7 +769,7 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 			Transactions:          transactions,
 		}
 
-		coinMap := map[string]*storage.AccountCoin{}
+		coinMap := map[string]*types.AccountCoin{}
 		if i == 400 {
 			mockClient.On(
 				"ParseBlock",

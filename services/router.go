@@ -18,7 +18,7 @@ import (
 	"net/http"
 
 	"github.com/HorizenOfficial/rosetta-zen/configuration"
-
+	rosettaZenServer "github.com/HorizenOfficial/rosetta-zen/server"
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
 )
@@ -61,11 +61,15 @@ func NewBlockchainRouter(
 		asserter,
 	)
 
+	loggerAPIService := NewLoggerAPIService()
+	loggerAPIController := rosettaZenServer.NewLoggerApiController(loggerAPIService, asserter)
+
 	return server.NewRouter(
 		networkAPIController,
 		blockAPIController,
 		accountAPIController,
 		constructionAPIController,
 		mempoolAPIController,
+		loggerAPIController,
 	)
 }

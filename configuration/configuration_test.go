@@ -22,7 +22,7 @@ import (
 
 	"github.com/HorizenOfficial/rosetta-zen/zen"
 
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/stretchr/testify/assert"
@@ -33,9 +33,8 @@ func TestLoadConfiguration(t *testing.T) {
 		Mode    string
 		Network string
 		Port    string
-
-		cfg *Configuration
-		err error
+		cfg     *Configuration
+		err     error
 	}{
 		"no envs set": {
 			err: errors.New("MODE must be populated"),
@@ -70,7 +69,8 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
-				Compressors: []*storage.CompressorEntry{
+				ZendVersion: "",
+				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
 						DictionaryPath: mainnetTransactionDictionary,
@@ -99,7 +99,8 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
-				Compressors: []*storage.CompressorEntry{
+				ZendVersion: "",
+				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
 						DictionaryPath: testnetTransactionDictionary,
@@ -133,9 +134,9 @@ func TestLoadConfiguration(t *testing.T) {
 			assert.NoError(t, err)
 			defer utils.RemoveTempDir(newDir)
 
-			os.Setenv(ModeEnv, test.Mode)
-			os.Setenv(NetworkEnv, test.Network)
-			os.Setenv(PortEnv, test.Port)
+			_ = os.Setenv(ModeEnv, test.Mode)
+			_ = os.Setenv(NetworkEnv, test.Network)
+			_ = os.Setenv(PortEnv, test.Port)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {
