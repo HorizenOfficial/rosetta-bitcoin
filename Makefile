@@ -40,20 +40,20 @@ build-release:
 run-mainnet-online:
 	docker container rm rosetta-zen-mainnet-online || true
 	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:20.04 bash -c 'chown -R nobody:nogroup /data';
-	docker run -d --name=rosetta-zen-mainnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -e "LOGLEVEL=DEBUG" -p 8080:8080 -p 9033:9033 rosetta-zen:latest;
+	docker run -d --name=rosetta-zen-mainnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 9033:9033 rosetta-zen:latest;
 
 run-mainnet-offline:
 	docker container rm rosetta-zen-mainnet-offline || true
-	docker run -d --name=rosetta-zen-mainnet-offline -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -e "LOGLEVEL=DEBUG" -p 8081:8081 rosetta-zen:latest
+	docker run -d --name=rosetta-zen-mainnet-offline -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 run-testnet-online:
 	docker container rm rosetta-zen-testnet-online || true
 	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:20.04 bash -c 'chown -R nobody:nogroup /data';
-	docker run -d --name=rosetta-zen-testnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -e "LOGLEVEL=DEBUG" -p 8080:8080 -p 19033:19033 -p 18231:18231 rosetta-zen:latest;
+	docker run -d --name=rosetta-zen-testnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 -p 18231:18231 rosetta-zen:latest;
 
 run-testnet-offline:
 	docker container rm rosetta-zen-testnet-offline || true
-	docker run -d --name=rosetta-zen-testnet-offline -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -e "LOGLEVEL=DEBUG" -p 8081:8081 rosetta-zen:latest
+	docker run -d --name=rosetta-zen-testnet-offline -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-zen:latest
 
 stop-mainnet-online:
 	docker container stop rosetta-zen-mainnet-online

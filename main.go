@@ -34,7 +34,6 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
-	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -112,27 +111,11 @@ func startOnlineDependencies(
 	return client, i, nil
 }
 
-func initializeLogger(cfg *configuration.Configuration) *zap.Logger {
-	if cfg.LogLevelDebug {
-		loggerRaw, err := zap.NewDevelopment()
-		if err != nil {
-			log.Fatalf("can't initialize zap logger: %v", err)
-		}
-		return loggerRaw
-	}
-	loggerRaw, err := zap.NewProduction()
+func main() {
+	loggerRaw, err := utils.NewLogger()
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
 	}
-	return loggerRaw
-}
-
-func main() {
-	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
-	if err != nil {
-		log.Fatalf("Unable to load configuration: %v", err)
-	}
-	loggerRaw := initializeLogger(cfg)
 	defer func() {
 		_ = loggerRaw.Sync()
 	}()
@@ -142,6 +125,10 @@ func main() {
 	go handleSignals(ctx, []context.CancelFunc{cancel})
 
 	logger := loggerRaw.Sugar().Named("main")
+	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
+	if err != nil {
+		logger.Fatalw("Unable to load configuration", "error", err)
+	}
 	logger.Infow("loaded configuration", "configuration", types.PrintStruct(cfg))
 
 	g, ctx := errgroup.WithContext(ctx)

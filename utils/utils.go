@@ -29,6 +29,15 @@ const (
 	monitorMemorySleep = 50 * time.Millisecond
 )
 
+var (
+	LoggerConfig = zap.NewDevelopmentConfig()
+	Atom         = LoggerConfig.Level
+)
+
+func NewLogger(options ...zap.Option) (*zap.Logger, error) {
+	return LoggerConfig.Build(options...)
+}
+
 // ExtractLogger returns a sugared logger with the origin
 // tag added.
 func ExtractLogger(ctx context.Context, origin string) *zap.SugaredLogger {

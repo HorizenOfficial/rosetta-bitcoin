@@ -30,12 +30,11 @@ import (
 
 func TestLoadConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		Mode     string
-		Network  string
-		Port     string
-		LogLevel string
-		cfg      *Configuration
-		err      error
+		Mode    string
+		Network string
+		Port    string
+		cfg     *Configuration
+		err     error
 	}{
 		"no envs set": {
 			err: errors.New("MODE must be populated"),
@@ -50,10 +49,9 @@ func TestLoadConfiguration(t *testing.T) {
 			err:     errors.New("PORT must be populated"),
 		},
 		"all set (mainnet)": {
-			Mode:     string(Online),
-			Network:  Mainnet,
-			Port:     "1000",
-			LogLevel: "DEBUG",
+			Mode:    string(Online),
+			Network: Mainnet,
+			Port:    "1000",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
@@ -78,7 +76,6 @@ func TestLoadConfiguration(t *testing.T) {
 						DictionaryPath: mainnetTransactionDictionary,
 					},
 				},
-				LogLevelDebug: true,
 			},
 		},
 		"all set (testnet)": {
@@ -109,7 +106,6 @@ func TestLoadConfiguration(t *testing.T) {
 						DictionaryPath: testnetTransactionDictionary,
 					},
 				},
-				LogLevelDebug: false,
 			},
 		},
 		"invalid mode": {
@@ -138,10 +134,9 @@ func TestLoadConfiguration(t *testing.T) {
 			assert.NoError(t, err)
 			defer utils.RemoveTempDir(newDir)
 
-			os.Setenv(ModeEnv, test.Mode)
-			os.Setenv(NetworkEnv, test.Network)
-			os.Setenv(PortEnv, test.Port)
-			os.Setenv(LogLevel, test.LogLevel)
+			_ = os.Setenv(ModeEnv, test.Mode)
+			_ = os.Setenv(NetworkEnv, test.Network)
+			_ = os.Setenv(PortEnv, test.Port)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {
