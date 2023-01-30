@@ -13,7 +13,6 @@
   <a href="https://github.com/HorizenOfficial/rosetta-zen/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/HorizenOfficial/rosetta-zen.svg" /></a>
 </p>
 
-
 ## Overview
 `rosetta-zen` provides an implementation of the Rosetta API for the
 Horizen network in Golang. If you haven't heard of the Rosetta API, you can find more
