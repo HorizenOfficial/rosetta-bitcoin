@@ -3,6 +3,7 @@
    "blockchain": "Zen",
    "network": "test"
  },
+ "online_url": "http://127.0.0.1:8081",
  "data_directory": "zen-testnet-data",
  "http_timeout": 300,
  "max_retries": 5,
@@ -12,6 +13,7 @@
  "tip_delay": 72000,
  "log_configuration": false,
  "construction": {
+  "offline_url": "http://127.0.0.1:8081", 
   "max_offline_connections": 0,
   "stale_depth": 0,
   "broadcast_limit": 0,
@@ -20,6 +22,21 @@
   "broadcast_behind_tip": false,
   "block_broadcast_limit": 0,
   "rebroadcast_all": false,
+  "prefunded_accounts": [
+   {
+    "privkey":"ac474bd6a8acca62988659c5ecd29b50ab41952ad86eef6bc6fd1fd9d565d0d3", 
+    "account_identifier":
+    {
+     "address":"ztojNNaFk84h5KqoJUU9Lhw15awXqr8WX5p"
+    },
+    "curve_type":"secp256k1",
+    "currency": 
+    {
+     "symbol": "ZEN",
+     "decimals":8
+    }
+   } 
+  ],			   
   "workflows": [
    {
     "name": "request_funds",
@@ -285,7 +302,7 @@
         "output_path": "transfer_dry_run.dry_run"
        },
        {
-        "input": "{\"address\": \"ztWcs2FKCK2R1H5LNuEBuDdHY8J2sJ1yEH7\"}",
+        "input": "{\"address\": \"ztojNNaFk84h5KqoJUU9Lhw15awXqr8WX5p\"}",
         "type": "set_variable",
         "output_path": "recipient"
        },
@@ -378,6 +395,6 @@
      "from_tip": true
    }
   },
-  "results_output_file": ""
+  "results_output_file": "/home/infra/rosetta-zen/result_check_data_testnet.txt"
  }
 }
