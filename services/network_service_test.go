@@ -30,7 +30,7 @@ var (
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
 			RosettaVersion:    types.RosettaAPIVersion,
-			NodeVersion:       "3.2.1",
+			NodeVersion:       "4.0.0-rc1",
 			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
