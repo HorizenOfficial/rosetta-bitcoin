@@ -35,7 +35,7 @@ RUN set -euxo pipefail \
     && apt-get -y --no-install-recommends install autoconf automake \
       bsdmainutils build-essential ca-certificates cmake curl dirmngr fakeroot \
       git g++-multilib gnupg2 libc6-dev libgomp1 libtool m4 ncurses-dev \
-      pkg-config zlib1g-dev \
+      pkg-config python3 zlib1g-dev \
     && git clone https://github.com/HorizenOfficial/zen.git \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
