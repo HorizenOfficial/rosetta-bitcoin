@@ -11,7 +11,7 @@ addons:
       - pigz
 
 vm:
-  size: large
+  size: 2x-large
 
 env:
   global:
