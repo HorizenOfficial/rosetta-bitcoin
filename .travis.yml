@@ -10,9 +10,6 @@ addons:
     packages:
       - pigz
 
-vm:
-  size: 2x-large
-
 env:
   global:
     - GO111MODULE=on
@@ -52,6 +49,8 @@ jobs:
         - ALLOW_FAIL=true
       script: make salus
     - stage: Build
+      vm:
+        size: 2x-large
       script:
         - source ci/setup_env.sh
         - if [ ! -z "${version}" ]; then make build-release; else make build-local; fi
