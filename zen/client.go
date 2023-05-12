@@ -549,29 +549,43 @@ func (b *Client) parseTransactions(
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
-	for index, certificate := range block.MaturedCerts {
+	for index, matureCertificate := range block.MaturedCerts {
 		// For matured certificates, we only parse outputs that are backward transfers
 		backwardTransferOutputs := []*Output{}
-
-		for i := range certificate.Outputs {
-			if certificate.Outputs[i].BackwardTransfer == true  {
-				backwardTransferOutputs = append(backwardTransferOutputs, certificate.Outputs[i])
+		
+		for i := range matureCertificate.Outputs {
+			
+			if matureCertificate.Outputs[i].BackwardTransfer  {
+				backwardTransferOutputs = append(backwardTransferOutputs, matureCertificate.Outputs[i])
 			}
 		}
 
-		certTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, certificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
+		matureCertTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, matureCertificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
 		}
 
+		certAndMatureCertTogether:=false 
+		for _, tx := range txs {
+			if tx.TransactionIdentifier.Hash == matureCertificate.Hash {
+				for _, matureCertTxOp := range matureCertTxOps {
+					matureCertTxOp.OperationIdentifier.Index += int64(len(tx.Operations)) 
+				}
+				tx.Operations = append(tx.Operations, matureCertTxOps...)
+				certAndMatureCertTogether = true 
+			}
+		}
+        
 		tx := &types.Transaction{
 			TransactionIdentifier: &types.TransactionIdentifier{
-				Hash: certificate.Hash,
+				Hash: matureCertificate.Hash,
 			},
-			Operations: certTxOps,
+			Operations: matureCertTxOps,
 		}
-
-		txs = append(txs, tx)
+		
+		if !certAndMatureCertTogether {
+			txs = append(txs, tx)
+		}
 
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
@@ -580,7 +594,7 @@ func (b *Client) parseTransactions(
 }
 
 func addCoinsFromSameBlock(operations []*types.Operation, coins map[string]*storage.AccountCoin) map[string]*storage.AccountCoin {
-	// In some cases, a transaction will spent an output
+	// In some cases, a transaction will spend an output
 	// from the same block.
 	for _, op := range operations {
 		if op.CoinChange == nil {
