@@ -59,3 +59,7 @@ var RegtestParams = params{
 func netName(chainParams *params) string {
 	return chainParams.Name
 }
+
+func main() {
+	
+}
