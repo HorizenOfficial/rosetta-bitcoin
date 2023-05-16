@@ -16,6 +16,13 @@ LINT_SETTINGS=golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyc
 PWD=$(shell pwd)
 GZIP_CMD=$(shell command -v pigz || echo gzip)
 NOFILE=100000
+# cronic <cronic@zensystem.io> https://keys.openpgp.org/vks/v1/by-fingerprint/219F55740BBF7A1CE368BA45FB7053CE4991B669
+# Luigi Varriale <luigi@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C
+# Paolo Tagliaferri <paolotagliaferri@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1
+# Daniele Rogora <danielerogora@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/661F6FC64773A0F47936625FD3A22623FF9B9F11
+# Alessandro Petrini <apetrini@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/BF1FCDC8AEE7AE53013FF0941FCA7260796CB902
+ZEND_MAINTAINER_KEYS?=219f55740bbf7a1ce368ba45fb7053ce4991b669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1 661F6FC64773A0F47936625FD3A22623FF9B9F11 BF1FCDC8AEE7AE53013FF0941FCA7260796CB902
+ZEN_COMMITTISH?=v4.0.0-rc3
 
 deps:
 	go get ./...
@@ -24,11 +31,11 @@ build:
 	docker build --pull -t rosetta-zen:latest https://github.com/HorizenOfficial/rosetta-zen
 
 build-local:
-	docker build --pull -t rosetta-zen:latest .
+	docker build --pull --build-arg ZEN_COMMITTISH=${ZEN_COMMITTISH} -t rosetta-zen:latest .
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build --pull --no-cache --build-arg IS_RELEASE=true -t rosetta-zen:$(version) .;
+	docker build --pull --no-cache --build-arg IS_RELEASE=true --build-arg ZEND_MAINTAINER_KEYS="${ZEND_MAINTAINER_KEYS}" --build-arg ZEN_COMMITTISH=${ZEN_COMMITTISH} -t rosetta-zen:$(version) .;
 	docker save rosetta-zen:$(version) | ${GZIP_CMD} > rosetta-zen-$(version).tar.gz;
 
 run-mainnet-online:
