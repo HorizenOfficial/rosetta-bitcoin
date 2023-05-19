@@ -241,8 +241,8 @@ func addCoins(txIndex int, blockTxHashes []string, hash string, inputs []*Input,
 			continue
 		}
 
-		// If any transactions spent in the same block they are created, don't include them
-		// in previousTxHashes to fetch.
+		// If any coins/inputs spent in the same block they are created, don't include them
+		// in coins list to fetch data for. 
 		if !utils.ContainsString(blockTxHashes, txHash) {
 			coins = append(coins, CoinIdentifier(txHash, vout))
 		}
@@ -549,7 +549,7 @@ func (b *Client) parseTransactions(
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
-	for index, matureCertificate := range block.MaturedCerts {
+	for _, matureCertificate := range block.MaturedCerts {
 		// For matured certificates, we only parse outputs that are backward transfers
 		backwardTransferOutputs := []*Output{}
 		
@@ -559,8 +559,8 @@ func (b *Client) parseTransactions(
 				backwardTransferOutputs = append(backwardTransferOutputs, matureCertificate.Outputs[i])
 			}
 		}
-
-		matureCertTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, matureCertificate.Hash, len(block.Txs) + len(block.Certs) + index, coins, false)
+		// we put -1 for index because this param is only used to determine that this "tx" is not a coinbase tx
+		matureCertTxOps, err := b.parseTxOperations([]*Input{}, backwardTransferOutputs, matureCertificate.Hash, -1, coins, false)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error parsing mature certificate transaction operations", err)
 		}
@@ -586,7 +586,7 @@ func (b *Client) parseTransactions(
 		if !certAndMatureCertTogether {
 			txs = append(txs, tx)
 		}
-
+		//this shouldn't be necessary but just in case...
 		coins = addCoinsFromSameBlock(tx.Operations, coins)
 	}
 
@@ -666,7 +666,7 @@ func (b *Client) parseTxOperations(
 	}
 
 	for _, output := range outputs {
-		if isImmatureCertificate == true && output.BackwardTransfer == true {
+		if isImmatureCertificate && output.BackwardTransfer {
 			continue
 		}
 

@@ -1153,15 +1153,6 @@ func TestGetRawBlock(t *testing.T) {
 	}
 }
 
-func int64Pointer(v int64) *int64 {
-	return &v
-}
-
-func mustMarshalMap(v interface{}) map[string]interface{} {
-	m, _ := types.MarshalMap(v)
-	return m
-}
-
 func TestParseBlockRegtest(t *testing.T) {
 	tests := map[string]struct {
 		block *Block
@@ -1232,11 +1223,11 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
 								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									Coinbase: "039ff40a0102",
 									Sequence: 4294967295,
 								}),
@@ -1244,7 +1235,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1261,7 +1252,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
 										Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
@@ -1276,7 +1267,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1293,7 +1284,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
 										Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
@@ -1308,7 +1299,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1325,7 +1316,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:2",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
 										Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
@@ -1340,7 +1331,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(3),
+									NetworkIndex: Int64Pointer(3),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1357,7 +1348,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:3",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
 										Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
@@ -1370,7 +1361,7 @@ func TestParseBlockRegtest(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    187,
 							Version: 1,
 						}),
@@ -1383,7 +1374,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1400,7 +1391,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1411,7 +1402,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1428,7 +1419,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1439,7 +1430,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1456,7 +1447,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1467,7 +1458,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1484,7 +1475,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -1499,7 +1490,7 @@ func TestParseBlockRegtest(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1516,7 +1507,7 @@ func TestParseBlockRegtest(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -1529,13 +1520,13 @@ func TestParseBlockRegtest(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    595,
 							Version: 1,
 						}),
 					},
 				},
-				Metadata: mustMarshalMap(&BlockMetadata{
+				Metadata: MustMarshalMap(&BlockMetadata{
 					Size:       2271,
 					Version:    3,
 					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279",
@@ -1635,11 +1626,11 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
 								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									Coinbase: "039ff40a0102",
 									Sequence: 4294967295,
 								}),
@@ -1647,7 +1638,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1667,7 +1658,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
 										Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
@@ -1682,7 +1673,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1702,7 +1693,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
 										Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
@@ -1717,7 +1708,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1737,7 +1728,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:2",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
 										Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
@@ -1752,7 +1743,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(3),
+									NetworkIndex: Int64Pointer(3),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1772,7 +1763,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:3",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
 										Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
@@ -1785,7 +1776,7 @@ func TestParseBlock(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    187,
 							Version: 1,
 						}),
@@ -1798,7 +1789,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1815,7 +1806,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1826,7 +1817,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1843,7 +1834,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1854,7 +1845,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -1871,7 +1862,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -1882,7 +1873,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1899,7 +1890,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -1914,7 +1905,7 @@ func TestParseBlock(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -1931,7 +1922,7 @@ func TestParseBlock(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -1944,13 +1935,13 @@ func TestParseBlock(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    595,
 							Version: 1,
 						}),
 					},
 				},
-				Metadata: mustMarshalMap(&BlockMetadata{
+				Metadata: MustMarshalMap(&BlockMetadata{
 					Size:       2271,
 					Version:    3,
 					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279",
@@ -2052,6 +2043,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 						},
 					},
 				},
+				//input for cert fee
 				"62091923e9805a8650d752b3b83e0d56ce70e775ee67c080feade7e5ee677ad9:0": {
 					Account: &types.AccountIdentifier{
 						Address: "ztpha3vQzv7eTdBvPC1oWnouuManmCEVbTT",
@@ -2083,11 +2075,11 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
 								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									Coinbase: "039ff40a0102",
 									Sequence: 4294967295,
 								}),
@@ -2095,7 +2087,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2115,7 +2107,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
 										Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
@@ -2130,7 +2122,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2150,7 +2142,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
 										Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
@@ -2165,7 +2157,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2185,7 +2177,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:2",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
 										Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
@@ -2200,7 +2192,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(3),
+									NetworkIndex: Int64Pointer(3),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2220,7 +2212,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:3",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
 										Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
@@ -2233,7 +2225,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    187,
 							Version: 1,
 						}),
@@ -2246,7 +2238,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -2263,7 +2255,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -2274,7 +2266,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -2291,7 +2283,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -2302,7 +2294,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -2319,7 +2311,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -2330,7 +2322,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2347,7 +2339,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -2362,7 +2354,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2379,7 +2371,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -2392,7 +2384,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    595,
 							Version: 1,
 						}),
@@ -2405,7 +2397,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -2422,7 +2414,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "62091923e9805a8650d752b3b83e0d56ce70e775ee67c080feade7e5ee677ad9:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022014d8dee1da3821dce95e48060f8f38394aee00f84d03a8203611ff3e703c10a002205ce62cffdc12dd26742489120d50d071ff08f993b9cca0b31a73e0f20f20cb5d01 0241b92fed18a3ded2b98459b5432982a0712912ad86b929ec6feb19655824b7cc",
 										Hex: "473044022014d8dee1da3821dce95e48060f8f38394aee00f84d03a8203611ff3e703c10a002205ce62cffdc12dd26742489120d50d071ff08f993b9cca0b31a73e0f20f20cb5d01210241b92fed18a3ded2b98459b5432982a0712912ad86b929ec6feb19655824b7cc",
@@ -2433,7 +2425,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2450,7 +2442,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e89:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM: "OP_DUP OP_HASH160 ec54fedd6a312d5c536046323bfabb9d2a475d7a OP_EQUALVERIFY OP_CHECKSIG 4ca064b46515f3f00e846e6c1b45ef36a082ea786783096d2cb6169556756e08 21 OP_CHECKBLOCKATHEIGHT",
 										Hex: "76a914ec54fedd6a312d5c536046323bfabb9d2a475d7a88ac204ca064b46515f3f00e846e6c1b45ef36a082ea786783096d2cb6169556756e080115b4",
@@ -2465,7 +2457,7 @@ func TestParseBlockWithCertificate(t *testing.T) {
 						},
 					},
 				},
-				Metadata: mustMarshalMap(&BlockMetadata{
+				Metadata: MustMarshalMap(&BlockMetadata{
 					Size:       2271,
 					Version:    3,
 					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279",
@@ -2598,11 +2590,11 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
 								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									Coinbase: "0280020101",
 									Sequence: 4294967295,
 								}),
@@ -2610,7 +2602,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2630,7 +2622,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										Identifier: "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 1571d181a7f5e891815d42863ae6aae630e59b39 OP_EQUALVERIFY OP_CHECKSIG", // nolint
 										Hex:  "76a9141571d181a7f5e891815d42863ae6aae630e59b3988ac",         // nolint
@@ -2645,7 +2637,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2665,7 +2657,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										Identifier: "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 ea81ee2d877a25c7530a33fcf5a65c72f681250f OP_EQUAL", // nolint
 										Hex:  "a914ea81ee2d877a25c7530a33fcf5a65c72f681250f87",         // nolint
@@ -2680,7 +2672,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2700,7 +2692,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										Identifier: "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e:2",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 e7d25d82be231cf77ab8aecb80b6066923819ffc OP_EQUAL", // nolint
 										Hex:  "a914e7d25d82be231cf77ab8aecb80b6066923819ffc87",         // nolint
@@ -2715,7 +2707,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(3),
+									NetworkIndex: Int64Pointer(3),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2735,7 +2727,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										Identifier: "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e:3",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 ca76beb25c5f1c29c305a2b3e71a2de5fe1d2eed OP_EQUAL", // nolint
 										Hex:  "a914ca76beb25c5f1c29c305a2b3e71a2de5fe1d2eed87",         // nolint
@@ -2748,7 +2740,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    186,
 							Version: 1,
 						}),
@@ -2761,7 +2753,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2778,7 +2770,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 										Identifier: "815c88e2bb7a0b083c74bf9643f94db252704f475290c58f6cb123e8793f5376:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM: "OP_DUP OP_HASH160 80271800053d996d0ebd51ee357e37bfedafc6a6 OP_EQUALVERIFY OP_CHECKSIG",
 										Hex: "76a91480271800053d996d0ebd51ee357e37bfedafc6a688ac",
@@ -2793,7 +2785,7 @@ func TestParseBlockWithMatureCertificate(t *testing.T) {
 						},
 					},
 				},
-				Metadata: mustMarshalMap(&BlockMetadata{
+				Metadata: MustMarshalMap(&BlockMetadata{
 					Size:       365,
 					Version:    3,
 					MerkleRoot: "3a7a90cf2a8267ed3b0cdb6ba21ac0b3774bc3ef8b0bd29c3c98c5324798008e",
@@ -2926,11 +2918,11 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
 								Status: SuccessStatus,
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									Coinbase: "039ff40a0102",
 									Sequence: 4294967295,
 								}),
@@ -2938,7 +2930,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2958,7 +2950,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 557662a6b307f95aa00311c074f7feebb955d451 OP_EQUALVERIFY OP_CHECKSIG", // nolint
 										Hex:  "76a914557662a6b307f95aa00311c074f7feebb955d45188ac",         // nolint
@@ -2973,7 +2965,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -2993,7 +2985,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8d3468b6686ac59caf9ad94e547a737b09fa1027 OP_EQUAL", // nolint
 										Hex:  "a9148d3468b6686ac59caf9ad94e547a737b09fa102787",         // nolint
@@ -3008,7 +3000,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3028,7 +3020,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:2",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 fc1d7f04db5e2c05b051e0decc85effe6bc539d5 OP_EQUAL", // nolint
 										Hex:  "a914fc1d7f04db5e2c05b051e0decc85effe6bc539d587",         // nolint
@@ -3043,7 +3035,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(3),
+									NetworkIndex: Int64Pointer(3),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3063,7 +3055,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e88:3",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_HASH160 8b85fc1e171a4c7994c088b91d5a75dff9e56cad OP_EQUAL", // nolint
 										Hex:  "a9148b85fc1e171a4c7994c088b91d5a75dff9e56cad87",         // nolint
@@ -3076,7 +3068,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    187,
 							Version: 1,
 						}),
@@ -3089,7 +3081,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -3106,7 +3098,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "9401f535c210f3ff362d3f51dba88ecddf4f87ed9d0563c1f9e8af75eca1fd1a:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e27870001 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "473044022059135f673a4919ab56775064cc82080ead1c74d8f0ebd943062b247c5946cf88022048f26c94a15752fa04d8bfff7388dd65d57485acd2395e539a50b2ca8e278700012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -3117,7 +3109,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -3134,7 +3126,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "14e8fe02ec4e237d8cb6bf95943bd05706a19f6bd29f9b2b1fefc4fa09ef6737:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "30440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "4730440220527c59b1d2dbb87b71e01c9d1489f110727fc3120e5306539bd4668ed1063d30022079b6ca4ff77de3ab953bb0d896b74bb60c8ceca28248340201e701da0d1fd12b012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -3145,7 +3137,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(2),
+									NetworkIndex: Int64Pointer(2),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -3162,7 +3154,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "4c292f9ba0e94f2d48a16f8765217e62b6673796bffd92c26b13ed5e661946bc:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb01 03ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
 										Hex: "47304402202d3b75ed231c1fe478c471452a0385c5cdc9fe2e337d5ee62cacd8a26d013e5002207d864a38e013d8c61b1972bd7bf78a53accd9b8d600fbbd7c79c21b2171fd8cb012103ae26fe63b19c80972b6ffbd47e9f3b3e202740e5e349b0e23fd712927b0792ce", // nolint
@@ -3173,7 +3165,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        3,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3190,7 +3182,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 b87cc09d17751ffeab924a82134665ae4202cbfc OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914b87cc09d17751ffeab924a82134665ae4202cbfc88ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -3205,7 +3197,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        4,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3222,7 +3214,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "67c76a34cb6bde6f9628fdc8348c23191d3222e88386ed05c97e3c63384a01af:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM:  "OP_DUP OP_HASH160 fd2831ec8fc1bf3ccdeadbe9fcdb515aac904761 OP_EQUALVERIFY OP_CHECKSIG bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a00 717682 OP_CHECKBLOCKATHEIGHT",
 										Hex:  "76a914fd2831ec8fc1bf3ccdeadbe9fcdb515aac90476188ac20bd1d792d97a7da359adbc2fdadd04536f79aad9afc5821c4340043f7fb302a000372f30ab4",
@@ -3235,7 +3227,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 								}),
 							},
 						},
-						Metadata: mustMarshalMap(&TransactionMetadata{
+						Metadata: MustMarshalMap(&TransactionMetadata{
 							Size:    595,
 							Version: 1,
 						}),
@@ -3245,10 +3237,11 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							Hash: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e89",
 						},
 						Operations: []*types.Operation{
+							//input for fee
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        0,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   InputOpType,
 								Status: SuccessStatus,
@@ -3265,7 +3258,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "62091923e9805a8650d752b3b83e0d56ce70e775ee67c080feade7e5ee677ad9:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptSig: &ScriptSig{
 										ASM: "3044022014d8dee1da3821dce95e48060f8f38394aee00f84d03a8203611ff3e703c10a002205ce62cffdc12dd26742489120d50d071ff08f993b9cca0b31a73e0f20f20cb5d01 0241b92fed18a3ded2b98459b5432982a0712912ad86b929ec6feb19655824b7cc",
 										Hex: "473044022014d8dee1da3821dce95e48060f8f38394aee00f84d03a8203611ff3e703c10a002205ce62cffdc12dd26742489120d50d071ff08f993b9cca0b31a73e0f20f20cb5d01210241b92fed18a3ded2b98459b5432982a0712912ad86b929ec6feb19655824b7cc",
@@ -3276,7 +3269,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        1,
-									NetworkIndex: int64Pointer(0),
+									NetworkIndex: Int64Pointer(0),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3293,7 +3286,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e89:0",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM: "OP_DUP OP_HASH160 ec54fedd6a312d5c536046323bfabb9d2a475d7a OP_EQUALVERIFY OP_CHECKSIG 4ca064b46515f3f00e846e6c1b45ef36a082ea786783096d2cb6169556756e08 21 OP_CHECKBLOCKATHEIGHT",
 										Hex: "76a914ec54fedd6a312d5c536046323bfabb9d2a475d7a88ac204ca064b46515f3f00e846e6c1b45ef36a082ea786783096d2cb6169556756e080115b4",
@@ -3309,7 +3302,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 							{
 								OperationIdentifier: &types.OperationIdentifier{
 									Index:        2,
-									NetworkIndex: int64Pointer(1),
+									NetworkIndex: Int64Pointer(1),
 								},
 								Type:   OutputOpType,
 								Status: SuccessStatus,
@@ -3326,7 +3319,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 										Identifier: "afa747bcb78e22e5550e880d0803a5fa4cdbc7e04ff303a4b14da2c36e348e89:1",
 									},
 								},
-								Metadata: mustMarshalMap(&OperationMetadata{
+								Metadata: MustMarshalMap(&OperationMetadata{
 									ScriptPubKey: &ScriptPubKey{
 										ASM: "OP_DUP OP_HASH160 4aeea9b9beec0af6eb8e6e8d6015a8a679590553 OP_EQUALVERIFY OP_CHECKSIG",
 										Hex: "76a9144aeea9b9beec0af6eb8e6e8d6015a8a67959055388ac",
@@ -3341,7 +3334,7 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 						},
 					},
 				},
-				Metadata: mustMarshalMap(&BlockMetadata{
+				Metadata: MustMarshalMap(&BlockMetadata{
 					Size:       2271,
 					Version:    3,
 					MerkleRoot: "97c960c90e0b6bc30d2629f06d114f1c49aadb0e3d9bd70eb4f0f9ed1ea69279",
@@ -3390,6 +3383,38 @@ func TestParseBlockWithCertAndMatureCert(t *testing.T) {
 	}
 }
 
+func TestParseBlockWithAllTheAbove(t *testing.T){
+	tests := map[string]struct {
+		block *Block
+		coins map[string]*storage.AccountCoin
+
+		expectedBlock *types.Block
+		expectedError error
+	}{
+		"allTheAboveBlock" : {
+		block: allTheAboveBlock,
+		coins: allTheAboveCoins,
+		expectedBlock: allTheAboveExpectedBlock,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			var (
+				assert = assert.New(t)
+			)
+
+			client := NewClient("", TestnetGenesisBlockIdentifier, MainnetCurrency)
+
+			block, err := client.ParseBlock(context.Background(), test.block, test.coins)
+			if test.expectedError != nil {
+				assert.Contains(err.Error(), test.expectedError.Error())
+			} else {
+				assert.Equal(test.expectedBlock, block)
+			}
+		})
+	}
+}
 func TestSuggestedFeeRate(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture

@@ -68,3 +68,12 @@ func ParseSingleAddress(
 
 	return class, address, nil
 }
+
+func Int64Pointer(v int64) *int64 {
+	return &v
+}
+
+func MustMarshalMap(v interface{}) map[string]interface{} {
+	m, _ := types.MarshalMap(v)
+	return m
+}
