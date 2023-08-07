@@ -14,14 +14,14 @@
 # limitations under the License.
 
 ## Build zend
-FROM ubuntu:18.04 as zend-builder
+FROM ubuntu:20.04 as zend-builder
 
 MAINTAINER cronic@horizen.io
 
 SHELL ["/bin/bash", "-c"]
 
-# Latest release zen 4.0.0
-ARG ZEN_COMMITTISH=v4.0.0
+# Latest release zen 4.1.0-rc1
+ARG ZEN_COMMITTISH=v4.1.0-rc1
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> https://keys.openpgp.org/vks/v1/by-fingerprint/219F55740BBF7A1CE368BA45FB7053CE4991B669
 # Luigi Varriale <luigi@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C
@@ -60,7 +60,7 @@ RUN set -euxo pipefail \
 
 
 ## Build Rosetta Server Components
-FROM ubuntu:18.04 as rosetta-builder
+FROM ubuntu:20.04 as rosetta-builder
 
 MAINTAINER cronic@horizen.io
 
@@ -87,7 +87,7 @@ RUN set -euxo pipefail \
 
 
 ## Build Final Image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER cronic@horizen.io
 
