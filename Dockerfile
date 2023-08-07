@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ## Build zend
-FROM ubuntu:18.04 as zend-builder
+FROM ubuntu:20.04 as zend-builder
 
 MAINTAINER cronic@horizen.io
 
@@ -60,7 +60,7 @@ RUN set -euxo pipefail \
 
 
 ## Build Rosetta Server Components
-FROM ubuntu:18.04 as rosetta-builder
+FROM ubuntu:20.04 as rosetta-builder
 
 MAINTAINER cronic@horizen.io
 
@@ -87,7 +87,7 @@ RUN set -euxo pipefail \
 
 
 ## Build Final Image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER cronic@horizen.io
 
