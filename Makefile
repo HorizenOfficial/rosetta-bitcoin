@@ -49,8 +49,8 @@ run-mainnet-offline:
 
 run-testnet-online:
 	docker container rm rosetta-zen-testnet-online || true
-	docker run --rm -v "${PWD}/zen-data:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
-	docker run -d --name=rosetta-zen-testnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest;
+	docker run --rm -v "${PWD}/zen-data-testnet:/data" ubuntu:18.04 bash -c 'chown -R nobody:nogroup /data';
+	docker run -d --name=rosetta-zen-testnet-online --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/zen-data-testnet:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 19033:19033 rosetta-zen:latest;
 
 run-testnet-offline:
 	docker container rm rosetta-zen-testnet-offline || true
