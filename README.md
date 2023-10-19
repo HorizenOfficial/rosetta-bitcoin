@@ -228,3 +228,4 @@ This project is available open source under the terms of the [Apache 2.0 License
 
 © 2020 Coinbase
 © 2020 Zen Blockchain Foundation
+© 2023 Horizen Foundation
