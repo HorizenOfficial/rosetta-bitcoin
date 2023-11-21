@@ -29,7 +29,8 @@ ARG IS_RELEASE=false
 # Paolo Tagliaferri <paolotagliaferri@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1
 # Daniele Rogora <danielerogora@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/661F6FC64773A0F47936625FD3A22623FF9B9F11
 # Alessandro Petrini <apetrini@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/BF1FCDC8AEE7AE53013FF0941FCA7260796CB902
-ARG ZEND_MAINTAINER_KEYS="219f55740bbf7a1ce368ba45fb7053ce4991b669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1 661F6FC64773A0F47936625FD3A22623FF9B9F11 BF1FCDC8AEE7AE53013FF0941FCA7260796CB902"
+# Giacomo Pirinoli <gpirinoli@horizenlabs.io> https://keyserver.ubuntu.com/pks/lookup?search=540AE28ADDE8B900DF6EB29BF136264D7F4A2BB5&fingerprint=on&op=index
+ARG ZEND_MAINTAINER_KEYS="219f55740bbf7a1ce368ba45fb7053ce4991b669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1 661F6FC64773A0F47936625FD3A22623FF9B9F11 BF1FCDC8AEE7AE53013FF0941FCA7260796CB902 540AE28ADDE8B900DF6EB29BF136264D7F4A2BB5"
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
@@ -43,11 +44,14 @@ RUN set -euxo pipefail \
     && git clone https://github.com/HorizenOfficial/zen.git \
     && cd /zen && git checkout "${ZEN_COMMITTISH}" \
     && if [ "$IS_RELEASE" = "true" ]; then \
-      ( gpg2 --batch --keyserver hkps://keys.openpgp.org --keyserver-options timeout=15 --recv $ZEND_MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver keyserver.ubuntu.com --keyserver-options timeout=15 --recv $ZEND_MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys $ZEND_MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys $ZEND_MAINTAINER_KEYS || \
-      gpg2 --batch --keyserver hkp://pgp.mit.edu:80 --keyserver-options timeout=15 --recv-keys $ZEND_MAINTAINER_KEYS ) \
+      read -a keys <<< "$ZEND_MAINTAINER_KEYS" \
+      && for key in "${keys[@]}"; do \
+        gpg2 --batch --keyserver keyserver.ubuntu.com --keyserver-options timeout=15 --recv "$key" || \
+        gpg2 --batch --keyserver hkps://keys.openpgp.org --keyserver-options timeout=15 --recv "$key" || \
+        gpg2 --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --keyserver-options timeout=15 --recv-keys "$key" || \
+        gpg2 --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --keyserver-options timeout=15 --recv-keys "$key" || \
+        gpg2 --batch --keyserver hkp://pgp.mit.edu:80 --keyserver-options timeout=15 --recv-keys "$key"; \
+      done \
       && if git verify-tag -v "${ZEN_COMMITTISH}"; then \
         echo "Valid signed tag"; \
       else \
