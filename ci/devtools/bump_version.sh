@@ -2,8 +2,8 @@
 
 set -eEuox pipefail
 
-ZEND_VERISON_OLD="${ZEND_VERISON_OLD:-5.0.0}"
-ZEND_VERSION_NEW="${ZEND_VERSION_NEW:-5.0.1}"
+ZEND_VERISON_OLD="${ZEND_VERISON_OLD:-5.0.1}"
+ZEND_VERSION_NEW="${ZEND_VERSION_NEW:-5.0.2}"
 
 bsd_sed=""
 [ "$(uname -s)" = "Darwin" ] && bsd_sed=" ''"
