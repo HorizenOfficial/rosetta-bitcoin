@@ -26,11 +26,8 @@ ARG ZEN_COMMITTISH=v5.0.5
 ARG IS_RELEASE=false
 # cronic <cronic@zensystem.io> https://keys.openpgp.org/vks/v1/by-fingerprint/219F55740BBF7A1CE368BA45FB7053CE4991B669
 # Luigi Varriale <luigi@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C
-# Paolo Tagliaferri <paolotagliaferri@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1
-# Daniele Rogora <danielerogora@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/661F6FC64773A0F47936625FD3A22623FF9B9F11
-# Alessandro Petrini <apetrini@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/BF1FCDC8AEE7AE53013FF0941FCA7260796CB902
-# Giacomo Pirinoli <gpirinoli@horizenlabs.io> https://keyserver.ubuntu.com/pks/lookup?search=05A7B1EDFE39C7654176002C629611734CE354B9&fingerprint=on&op=index
-ARG ZEND_MAINTAINER_KEYS="219f55740bbf7a1ce368ba45fb7053ce4991b669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C D0459BD6AAD14E8D9C83FF1E8EDE560493C65AC1 661F6FC64773A0F47936625FD3A22623FF9B9F11 BF1FCDC8AEE7AE53013FF0941FCA7260796CB902 05A7B1EDFE39C7654176002C629611734CE354B9"
+# Daniele Rogora <danielerogora@horizenlabs.io> https://keys.openpgp.org/vks/v1/by-fingerprint/1754AAB85B4A25165464478F670FC45BE6CA359F
+ARG ZEND_MAINTAINER_KEYS="219f55740bbf7a1ce368ba45fb7053ce4991b669 FC3388A460ACFAB04E8328C07BB2A1D2CFDFCD2C 1754AAB85B4A25165464478F670FC45BE6CA359F"
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
